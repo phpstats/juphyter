@@ -600,16 +600,6 @@ def test_the_daemon_leaves_no_engine_or_watchdog_behind(daemonized: Daemonized) 
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="The engine exits after default_socket_timeout seconds with no "
-    "request, which is 60 by default. Channel::connect() leaves the stream's "
-    "read timeout at the ini value and Channel::receive() reads a timed-out "
-    "fgets() as end of input, so Engine::serve() returns and the process ends. "
-    "Fixing it is src/Protocol/Channel.php's: either stream_set_timeout($s, -1) "
-    "on connect, or check stream_get_meta_data()['timed_out'] before calling it "
-    "end of input.",
-)
 def test_a_kept_alive_kernel_survives_a_long_idle_period(
     renderer: Renderer, kernel: Kernel
 ) -> None:
@@ -621,17 +611,15 @@ def test_a_kept_alive_kernel_survives_a_long_idle_period(
     a kernel for five minutes by default, so the question this one asks is
     whether an engine idle for that order of time is still there.
 
-    It is not. The engine exits after `default_socket_timeout` seconds without
-    a request, which is 60 unless an ini file says otherwise, and the next cell
-    fails with a broken pipe. Quarto is not involved: a kernel started with
-    `jupyter_client` and left alone for 90 seconds fails the same way, and an
-    engine spawned with `-d default_socket_timeout=5` exits after five seconds
-    rather than sixty. The marker above says where the fix goes.
-
-    The test is opt-in as well as expected to fail, because running it costs
-    the idle period. `JUPHYTER_QUARTO_IDLE=180` runs it with a three-minute
-    gap. Anything above the keepalive Quarto is asked for would expire the
-    daemon instead of testing the engine, so the keepalive is set from it.
+    It is, and it was not until the read timeout on the engine's socket was
+    disabled: an engine used to exit after `default_socket_timeout` seconds
+    without a request, 60 by default, and the next cell failed with a broken
+    pipe. `tests/Engine/IdleTest.php` is the fast test for that, against a
+    one-second timeout rather than the real one. This one is the slow check
+    that the same holds through Quarto's daemon over a realistic period, so it
+    is opt-in: `JUPHYTER_QUARTO_IDLE=180` runs it with a three-minute gap.
+    Anything above the keepalive Quarto is asked for would expire the daemon
+    instead of testing the engine, so the keepalive is set from it.
     """
     seconds = int(os.environ.get("JUPHYTER_QUARTO_IDLE", "0"))
 
@@ -639,7 +627,8 @@ def test_a_kept_alive_kernel_survives_a_long_idle_period(
         pytest.skip(
             "Set JUPHYTER_QUARTO_IDLE to a number of seconds to leave a "
             "kept-alive kernel idle between two renders. It takes that long, "
-            "and it is expected to fail: see this test's docstring."
+            "which is why tests/Engine/IdleTest.php covers the same ground "
+            "against a one-second timeout."
         )
 
     keepalive = seconds + 120

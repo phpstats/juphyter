@@ -46,6 +46,27 @@ use RuntimeException;
  * rest of it is drained and the caller is told the line was unreadable, so a
  * peer that sends no newline cannot make the engine grow until it dies or wait
  * forever.
+ *
+ * ## Why the read timeout is off
+ *
+ * A socket from `stream_socket_client()` carries `default_socket_timeout` as
+ * its read timeout, which is 60 seconds unless an ini file says otherwise, and
+ * `fgets()` returns false when it expires. That false is indistinguishable from
+ * end of input to a caller that does not look at the stream's metadata, so an
+ * engine that read it as one exited after a minute of sitting between requests:
+ * a notebook left alone for a minute lost its session, and the next cell failed
+ * with a broken pipe.
+ *
+ * There is no timeout worth having here. Waiting between requests is what the
+ * engine does, and for however long the front end leaves it. The timeout is
+ * disabled on connect, and {@see receive()} tells a timeout from an end of
+ * input through `stream_get_meta_data()` as well, so a stream this class did
+ * not open is read correctly too and nothing depends on the ini value.
+ *
+ * A peer that really goes is still noticed. A closed socket reaches end of
+ * input, `fgets()` returns false with `eof` set, and the engine's loop returns
+ * on that: it is what ends an engine whose transport was killed outright. A
+ * cell that never finishes is the watchdog's business rather than this class's.
  */
 final class Channel
 {
@@ -93,6 +114,10 @@ final class Channel
             ));
         }
 
+        // Blocking reads, with no timeout: see the class comment. The $timeout
+        // above is the connect timeout and is a different thing.
+        stream_set_timeout($stream, -1);
+
         return new self($stream);
     }
 
@@ -106,6 +131,9 @@ final class Channel
      *
      * An unreadable line comes back as the empty string after the rest of it
      * has been drained, which the caller reports and carries on from.
+     *
+     * A read that timed out is waited out rather than reported as end of input.
+     * Each turn of that loop costs a whole timeout, so it cannot spin.
      */
     public function receive(): ?string
     {
@@ -114,6 +142,10 @@ final class Channel
         }
 
         $line = fgets($this->stream, self::MAX_LINE);
+
+        while ($line === false && $this->timedOut()) {
+            $line = fgets($this->stream, self::MAX_LINE);
+        }
 
         if ($line === false) {
             return null;
@@ -194,10 +226,37 @@ final class Channel
         while (! feof($this->stream)) {
             $chunk = fgets($this->stream, self::MAX_LINE);
 
-            if ($chunk === false || str_ends_with($chunk, "\n")) {
+            if ($chunk === false) {
+                // The same distinction receive() makes: a timeout here would
+                // leave the next read part way through a line.
+                if ($this->timedOut()) {
+                    continue;
+                }
+
+                return;
+            }
+
+            if (str_ends_with($chunk, "\n")) {
                 return;
             }
         }
+    }
+
+    /**
+     * Whether the last read expired rather than reaching the end of the input.
+     *
+     * Both have `fgets()` return false, and only the stream's metadata tells
+     * them apart.
+     */
+    private function timedOut(): bool
+    {
+        if ($this->stream === null) {
+            return false;
+        }
+
+        $meta = stream_get_meta_data($this->stream);
+
+        return ($meta['timed_out'] ?? false) && ! ($meta['eof'] ?? true);
     }
 
     /** Forget a socket there is no point writing to again. */

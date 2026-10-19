@@ -91,6 +91,11 @@ PHP cells come out syntax-highlighted. Pandoc's PHP syntax definition expects a
 `<?php` opening tag, which a notebook cell has no place for, and it highlights
 the cell regardless.
 
+Every render prints `Unknown message type: 'comm_open'` once, from ipykernel
+rather than from Quarto. The kernel installs no comm manager, which is the same
+absence that leaves ipywidgets unsupported, and the message has no effect on
+what is rendered.
+
 ## What each format carries
 
 A phiz plot publishes four representations and a phibble frame publishes two,
@@ -165,8 +170,12 @@ A document that declares a class or a function is such a document: PHP cannot
 redeclare either, so a second render against a kept-alive kernel would fail on
 the cell that declares it.
 
-When a kept-alive kernel does end, it takes the PHP engine and the watchdog
-process that guards it with it, leaving nothing running.
+The engine is ready for the daemon whenever Quarto starts using it. It has no
+read timeout on its end of the socket, so it waits between requests for as long
+as the front end leaves it. A kernel made daemonizable on purpose and then left
+idle for three minutes between two renders answered the second one from the same
+session. When a kept-alive kernel does end, it takes the PHP engine and the
+watchdog process that guards it with it, leaving nothing running.
 
 ## Freeze
 
