@@ -99,9 +99,9 @@ describe('discovery', function () {
         foreach ($commands as $name => $class) {
             expect($name)->toBeString()
                 ->and($name)->toBe($class::name())
-                ->and($class)->toBeSubclassOf(Juphyter\Console\Command::class);
+                ->and(is_subclass_of($class, Juphyter\Console\Command::class))->toBeTrue();
         }
-    })->throwsNoExceptions();
+    });
 });
 
 describe('dispatch', function () {
