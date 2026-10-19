@@ -38,10 +38,10 @@ use RuntimeException;
  * out of the PHAR into the kernelspec's own directory and points `PYTHONPATH`
  * there. `uninstall` removes the directory, which takes the copy with it.
  *
- * Until the wrapper module lands, there is no `kernel/` directory to point at.
- * The command still writes the kernelspec and says on standard error that the
- * module is missing, because the kernelspec is what the other install behavior
- * is tested against and a half-written one would be worse than a noted one.
+ * A package with no `kernel/juphyter_kernel` in it is a damaged install: the
+ * kernelspec it would write names `python -m juphyter_kernel`, and nothing
+ * would start. The command refuses before it writes anything and says where
+ * the module should have been.
  *
  * ## Construction
  *
@@ -138,6 +138,11 @@ final class InstallCommand extends Command
         $name = KernelSpec::normalizeName($options['name'] ?? self::DEFAULT_NAME);
         $prefix = $options['prefix'] ?? null;
 
+        // First, because it is a property of this copy of juphyter rather than
+        // of the machine, and there is no point asking Python anything when the
+        // kernel it would be asked to host is not here.
+        $this->requireKernelModule();
+
         [$php, $phpVersion, $canSignal] = $this->php($options['php'] ?? null);
 
         $python = $this->probe->interpreter($options['python'] ?? null);
@@ -171,13 +176,6 @@ final class InstallCommand extends Command
 
         if (@file_put_contents($file, $spec->toJson()) === false) {
             throw new RuntimeException(sprintf('juphyter: could not write %s.', $file));
-        }
-
-        if (! is_dir($module)) {
-            fwrite($this->stderr, sprintf(
-                "juphyter: the Python wrapper is not at %s, so the kernel will not start yet.\n",
-                $module,
-            ));
         }
 
         // A warning rather than a refusal: everything else about the kernel
@@ -311,6 +309,34 @@ final class InstallCommand extends Command
         }
 
         return $this->packageRoot.'/kernel';
+    }
+
+    /**
+     * Refuse an install whose Python wrapper is missing.
+     *
+     * The kernelspec's `argv` runs `python -m juphyter_kernel`, and the module
+     * ships inside this package, so a package without it can only produce a
+     * kernelspec that a front end lists and cannot start. The `phar://` case
+     * reads inside the archive, which the stream wrapper does for `is_file()`
+     * as it would for a directory.
+     *
+     * @throws RuntimeException When the module is not where it ships.
+     */
+    private function requireKernelModule(): void
+    {
+        $module = $this->packageRoot.'/kernel/juphyter_kernel';
+
+        if (is_file($module.'/kernel.py')) {
+            return;
+        }
+
+        throw new RuntimeException(sprintf(
+            "juphyter: the Python wrapper is not at %s, so there is nothing for a kernelspec to\n"
+            ."start. The kernel runs as `python -m juphyter_kernel`, and that module ships inside\n"
+            ."this package. Install juphyter again, or download the PHAR again, and run this\n"
+            .'command once more.',
+            $module,
+        ));
     }
 
     /** Copy the wrapper module out of the PHAR, when that is where it lives. */

@@ -105,8 +105,31 @@ function installPythonPath(): string
     return $directory;
 }
 
+/**
+ * A package root holding the Python wrapper, as an installed package does.
+ *
+ * `install` refuses a package without `kernel/juphyter_kernel`, because the
+ * kernelspec it would write runs `python -m juphyter_kernel`. Every test that
+ * is about something else therefore needs a root that has it.
+ */
+function installPackageRoot(): string
+{
+    static $directory = null;
+
+    if ($directory === null) {
+        $directory = sys_get_temp_dir().'/juphyter-package-root-'.bin2hex(random_bytes(6));
+        mkdir($directory.'/kernel/juphyter_kernel', 0o777, true);
+        file_put_contents($directory.'/kernel/juphyter_kernel/__init__.py', "KERNEL = 1\n");
+        file_put_contents($directory.'/kernel/juphyter_kernel/kernel.py', "pass\n");
+    }
+
+    return $directory;
+}
+
 afterAll(function () {
-    foreach (glob(sys_get_temp_dir().'/juphyter-probe-path-*') ?: [] as $directory) {
+    $temporary = glob(sys_get_temp_dir().'/juphyter-probe-path-*') ?: [];
+
+    foreach ([...$temporary, ...(glob(sys_get_temp_dir().'/juphyter-package-root-*') ?: [])] as $directory) {
         installRemoveTree($directory);
     }
 });
@@ -122,10 +145,11 @@ function runInstall(
     array $arguments,
     array $environment = [],
     ?Closure $runner = null,
-    string $packageRoot = '/app/vendor/phpstats/juphyter',
+    ?string $packageRoot = null,
     string $osFamily = 'Darwin',
 ): array {
     $runner ??= installRunner();
+    $packageRoot ??= installPackageRoot();
 
     return captured(fn ($stdout, $stderr) => (new InstallCommand(
         new JupyterPaths($environment, $osFamily),
@@ -161,8 +185,8 @@ describe('writing the kernelspec', function () {
             'interrupt_mode' => 'signal',
             'env' => [
                 'JUPHYTER_PHP' => PHP_BINARY,
-                'JUPHYTER_ENGINE' => '/app/vendor/phpstats/juphyter/bin/juphyter',
-                'PYTHONPATH' => '/app/vendor/phpstats/juphyter/kernel',
+                'JUPHYTER_ENGINE' => installPackageRoot().'/bin/juphyter',
+                'PYTHONPATH' => installPackageRoot().'/kernel',
             ],
         ]);
     });
@@ -386,22 +410,15 @@ describe('the PHP binary', function () {
 });
 
 describe('running from a PHAR', function () {
-    it('points JUPHYTER_ENGINE at the archive and PYTHONPATH beside the kernelspec', function () {
-        $prefix = installWorkspace();
-        $run = runInstall(
-            ['--prefix', $prefix],
-            packageRoot: 'phar:///opt/bin/juphyter.phar',
-        );
-
-        $directory = $prefix.'/share/jupyter/kernels/php';
-        $spec = readKernelSpec($directory.'/kernel.json');
-
-        expect($run['result'])->toBe(0)
-            ->and($spec['env']['JUPHYTER_ENGINE'])->toBe('/opt/bin/juphyter.phar')
-            ->and($spec['env']['PYTHONPATH'])->toBe($directory.'/kernel');
-    });
-
-    it('copies the wrapper module out of the archive, which Python cannot read', function () {
+    /*
+     * A real archive, because the install's PHAR behavior is all about reading
+     * one: the wrapper module has to be found inside it, copied out of it, and
+     * the archive's own path has to end up in JUPHYTER_ENGINE. Writing a PHAR
+     * needs phar.readonly=0, so these skip without it; the same ground is
+     * covered by PharTest against an archive the build script produced, which
+     * re-runs itself with the setting.
+     */
+    it('names the archive as the engine and copies the wrapper out of it', function () {
         if (! Phar::canWrite()) {
             $this->markTestSkipped('Writing a PHAR needs phar.readonly=0.');
         }
@@ -418,35 +435,91 @@ describe('running from a PHAR', function () {
         $prefix = $home.'/prefix';
         $run = runInstall(['--prefix', $prefix], packageRoot: 'phar://'.$archive);
 
-        $module = $prefix.'/share/jupyter/kernels/php/kernel';
+        $directory = $prefix.'/share/jupyter/kernels/php';
+        $module = $directory.'/kernel';
+        $spec = readKernelSpec($directory.'/kernel.json');
 
         expect($run['result'])->toBe(0)
             ->and($run['stderr'])->toBe('')
             ->and($module.'/juphyter_kernel/__init__.py')->toBeFile()
             ->and(file_get_contents($module.'/juphyter_kernel/__init__.py'))->toBe("KERNEL = 1\n")
             ->and($module.'/juphyter_kernel/kernel.py')->toBeFile()
-            ->and(readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json')['env']['PYTHONPATH'])
-            ->toBe($module);
+            // The archive's path on disk, not a phar:// URL: the wrapper runs
+            // this file with the PHP binary.
+            ->and($spec['env']['JUPHYTER_ENGINE'])->toBe($archive)
+            // And beside the kernelspec, because Python cannot import from
+            // inside an archive.
+            ->and($spec['env']['PYTHONPATH'])->toBe($module);
+    });
+
+    it('refuses an archive with no wrapper module in it', function () {
+        if (! Phar::canWrite()) {
+            $this->markTestSkipped('Writing a PHAR needs phar.readonly=0.');
+        }
+
+        $home = installWorkspace();
+        $archive = $home.'/empty.phar';
+
+        $phar = new Phar($archive);
+        $phar->addFromString('src/Console/InstallCommand.php', "<?php\n");
+        $phar->setStub('<?php __HALT_COMPILER(); ?>');
+        unset($phar);
+
+        $run = runInstall(['--prefix', $home.'/prefix'], packageRoot: 'phar://'.$archive);
+
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])->toContain('the Python wrapper is not at phar://'.$archive)
+            ->and(is_dir($home.'/prefix'))->toBeFalse();
     });
 });
 
 describe('the missing Python wrapper', function () {
-    it('says on standard error that the kernel will not start yet', function () {
-        $prefix = installWorkspace();
-        $run = runInstall(['--prefix', $prefix]);
-
-        expect($run['result'])->toBe(0)
-            ->and($run['stderr'])
-            ->toContain('the Python wrapper is not at /app/vendor/phpstats/juphyter/kernel');
-    });
-
-    it('says nothing when the module is there', function () {
+    it('fails and writes nothing when the package has no wrapper module', function () {
         $home = installWorkspace();
-        mkdir($home.'/package/kernel/juphyter_kernel', 0o777, true);
+        mkdir($home.'/package', 0o777, true);
+
         $run = runInstall(['--prefix', $home.'/prefix'], packageRoot: $home.'/package');
 
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])
+            ->toContain('the Python wrapper is not at '.$home.'/package/kernel/juphyter_kernel')
+            ->toContain('python -m juphyter_kernel')
+            ->and($run['stdout'])->toBe('')
+            ->and(is_dir($home.'/prefix'))->toBeFalse();
+    });
+
+    it('fails when the module directory is there but the module is not', function () {
+        $home = installWorkspace();
+        mkdir($home.'/package/kernel/juphyter_kernel', 0o777, true);
+
+        $run = runInstall(['--prefix', $home.'/prefix'], packageRoot: $home.'/package');
+
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])->toContain('the Python wrapper is not at')
+            ->and(is_dir($home.'/prefix'))->toBeFalse();
+    });
+
+    it('asks nothing of Python when the wrapper is missing', function () {
+        $home = installWorkspace();
+        mkdir($home.'/package', 0o777, true);
+        $calls = [];
+
+        runInstall(
+            ['--prefix', $home.'/prefix'],
+            runner: installRunner([], $calls),
+            packageRoot: $home.'/package',
+        );
+
+        expect($calls)->toBe([]);
+    });
+
+    it('installs when the module is there', function () {
+        $home = installWorkspace();
+        $run = runInstall(['--prefix', $home.'/prefix']);
+
         expect($run['result'])->toBe(0)
-            ->and($run['stderr'])->toBe('');
+            ->and($run['stderr'])->toBe('')
+            ->and($home.'/prefix/share/jupyter/kernels/php/kernel.json')->toBeFile();
     });
 });
 
