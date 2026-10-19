@@ -3,7 +3,7 @@
 A Jupyter kernel for PHP, for statistical work with the
 [phpstats](https://phpstats.org) packages. It runs PHP cells in JupyterLab and
 in Quarto documents, and renders [phibble](https://github.com/phpstats/phibble)
-tables and [phiz](https://github.com/erikwestlund/phiz) plots as notebook
+tables and [phiz](https://github.com/phpstats/phiz) plots as notebook
 output rather than as text.
 
 ## Install

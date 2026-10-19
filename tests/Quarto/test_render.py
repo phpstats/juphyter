@@ -111,10 +111,8 @@ def test_the_notebook_sits_below_the_project_it_finds_its_packages_in(
     assert project.autoloader.is_file()
     assert not (project.notebooks / "vendor").exists()
 
-    for package in ("phibble", "phplyr"):
+    for package in ("phibble", "phplyr", "phiz"):
         assert (project.root / "vendor" / "phpstats" / package).is_dir()
-
-    assert (project.root / "vendor" / "erikwestlund" / "phiz").is_dir()
 
 
 # --------------------------------------------------------------------------

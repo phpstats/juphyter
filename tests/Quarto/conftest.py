@@ -59,7 +59,7 @@ KERNEL_NAME = "juphyter-render"
 PHP_FLOOR = (8, 5)
 
 #: The packages the fixture notebook uses.
-FAMILY = ("phpstats/phibble", "phpstats/phplyr", "erikwestlund/phiz")
+FAMILY = ("phpstats/phibble", "phpstats/phplyr", "phpstats/phiz")
 
 #: What Quarto's jupyter engine imports, plus the kernel's own host.
 PYTHON_MODULES = ("nbclient", "nbformat", "jupyter_client", "yaml", "ipykernel")

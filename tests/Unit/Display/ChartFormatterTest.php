@@ -145,7 +145,7 @@ describe('a real phiz chart', function () {
 
         if (! class_exists(ChartFormatter::CHART)) {
             $this->markTestSkipped(
-                'phiz is not installed. Run: composer require --dev erikwestlund/phiz:^0.3'
+                'phiz is not installed. Run: composer require --dev phpstats/phiz:^0.3'
             );
         }
     });
@@ -194,7 +194,7 @@ describe('a real vl-convert binary', function () {
 
         if (! class_exists(ChartFormatter::CHART)) {
             $this->markTestSkipped(
-                'phiz is not installed. Run: composer require --dev erikwestlund/phiz:^0.3'
+                'phiz is not installed. Run: composer require --dev phpstats/phiz:^0.3'
             );
         }
 

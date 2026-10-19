@@ -122,7 +122,7 @@ your own project:
 
 ```bash
 composer require --dev --prefer-source "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
-composer require --dev --prefer-source "erikwestlund/phiz:^0.3"
+composer require --dev --prefer-source "phpstats/phiz:^0.3"
 ```
 
 They are not on Packagist, so each needs a `repositories` entry with
