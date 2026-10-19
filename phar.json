@@ -1,0 +1,14 @@
+{
+    "main": "bin/juphyter",
+    "output": "build/juphyter.phar",
+    "chmod": "0755",
+    "compression": "NONE",
+    "directories": [
+        "src",
+        "kernel"
+    ],
+    "files": [
+        "composer.json",
+        "LICENSE"
+    ]
+}
