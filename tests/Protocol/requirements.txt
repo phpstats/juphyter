@@ -1,0 +1,19 @@
+# The protocol tests' Python dependencies.
+#
+# ipykernel 7 is a floor rather than a preference. It moved kernelbase onto
+# anyio and made do_execute, do_complete, do_is_complete and do_shutdown
+# coroutines, and the wrapper in kernel/juphyter_kernel is written against that
+# API. juphyter install refuses an older one for the same reason; the number
+# lives in PythonProbe::IPYKERNEL_FLOOR as well.
+ipykernel>=7.0
+
+# The Jupyter protocol client these tests drive the kernel with. 8 is where
+# KernelManager and its provisioners settled; jupyter_kernel_test needs it too.
+jupyter_client>=8
+
+# KernelTests, which exercises a kernel over the real protocol and validates
+# every message against the v5 schema.
+jupyter_kernel_test>=0.7
+
+# The runner. The tests are plain pytest functions around one unittest class.
+pytest>=8

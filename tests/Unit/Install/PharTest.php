@@ -183,13 +183,37 @@ function pharPrefix(): string
     return $prefix;
 }
 
+/**
+ * A compiled Python file in the checkout's own `kernel/` directory.
+ *
+ * Running the protocol tests leaves bytecode there, and the build stages
+ * `kernel/` wholesale, so without an exclusion the archive would carry a
+ * `.pyc` pinned to one CPython version and copy it beside every kernelspec a
+ * PHAR install writes. The file is made before the archive is built and
+ * removed afterwards; it is ignored by git either way.
+ */
+function pharBytecode(): string
+{
+    return pharRoot().'/kernel/juphyter_kernel/__pycache__/juphyter-phar-test.pyc';
+}
+
 beforeEach(function () {
     if (! pharHasComposer()) {
         $this->markTestSkipped('Building the PHAR needs composer on PATH.');
     }
 });
 
+beforeAll(function () {
+    if (! is_dir(dirname(pharBytecode()))) {
+        mkdir(dirname(pharBytecode()), 0o777, true);
+    }
+
+    file_put_contents(pharBytecode(), "not really bytecode\n");
+});
+
 afterAll(function () {
+    @unlink(pharBytecode());
+    @rmdir(dirname(pharBytecode()));
     pharRemoveTree(pharScratch());
 });
 
@@ -209,6 +233,30 @@ describe('the build', function () {
             ->and($phar->offsetExists('vendor/nikic/php-parser/lib/PhpParser/Parser.php'))->toBeTrue()
             ->and($phar->offsetExists('vendor/pestphp/pest/src/Plugin.php'))->toBeFalse()
             ->and($phar->offsetExists('tests/Pest.php'))->toBeFalse();
+    });
+
+    it('carries the Python wrapper, which a PHAR install copies out of it', function () {
+        $phar = new Phar(pharArchive());
+
+        expect($phar->offsetExists('kernel/juphyter_kernel/__init__.py'))->toBeTrue()
+            ->and($phar->offsetExists('kernel/juphyter_kernel/__main__.py'))->toBeTrue()
+            ->and($phar->offsetExists('kernel/juphyter_kernel/kernel.py'))->toBeTrue();
+    });
+
+    it('leaves compiled Python bytecode out, however the checkout looks', function () {
+        $phar = new Phar(pharArchive());
+        $compiled = [];
+
+        foreach (new RecursiveIteratorIterator($phar) as $path => $file) {
+            $relative = substr((string) $path, strlen('phar://'.pharArchive().'/'));
+
+            if (str_ends_with($relative, '.pyc') || str_contains($relative, '__pycache__')) {
+                $compiled[] = $relative;
+            }
+        }
+
+        expect(pharBytecode())->toBeFile('the fixture bytecode was not created')
+            ->and($compiled)->toBe([]);
     });
 
     it('drops the shebang of bin/juphyter, which would otherwise be printed', function () {
@@ -313,12 +361,18 @@ describe('installing from the archive', function () {
             ->and($module.'/juphyter_kernel/kernel.py')->toBeFile();
     });
 
-    it('says the wrapper is missing while the archive has no kernel directory', function () {
+    it('copies the real wrapper out, so the installed kernel can start', function () {
         $prefix = pharPrefix();
-        $run = pharJuphyter(['install', '--prefix='.$prefix]);
+        $run = pharJuphyter(['install', '--prefix='.$prefix, '--name=php-real']);
+
+        $module = $prefix.'/share/jupyter/kernels/php-real/kernel';
 
         expect($run['code'])->toBe(0)
-            ->and($run['stderr'])->toContain('the Python wrapper is not at');
+            ->and($run['stderr'])->toBe('')
+            ->and($module.'/juphyter_kernel/kernel.py')->toBeFile()
+            ->and($module.'/juphyter_kernel/__main__.py')->toBeFile()
+            ->and(file_get_contents($module.'/juphyter_kernel/__init__.py'))
+            ->toContain('juphyter_kernel');
     });
 
     it('prints the pip command when the interpreter has no ipykernel', function () {

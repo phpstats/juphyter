@@ -1,0 +1,62 @@
+name: protocol
+
+# The wrapper kernel against a real Jupyter client.
+#
+# tests.yml covers the PHP side, including the engine over its socket, and
+# needs no Python. This workflow is the only place the Python transport in
+# kernel/juphyter_kernel meets ipykernel, jupyter_client and the version 5
+# message schema, which is what jupyter_kernel_test validates.
+#
+# ubuntu-latest only. The protocol tests drive processes, signals and unix
+# sockets, so a macos-latest leg would be worth having, but the macOS runners
+# cost several times a linux minute and tests.yml already exercises the engine
+# on macOS. Adding the leg is a matrix entry when that trade changes.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  protocol:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.5']
+    name: protocol (PHP ${{ matrix.php }})
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # pcntl carries the interrupt the protocol tests send, posix the reaping,
+      # and sockets the engine's channel to the transport.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pcntl, posix, sockets
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress
+
+      - name: Install the protocol tests' Python dependencies
+        run: python -m pip install -r tests/Protocol/requirements.txt
+
+      - name: Report the versions under test
+        run: |
+          php -v | head -1
+          python -c "import ipykernel, jupyter_client, jupyter_kernel_test as k; \
+            print('ipykernel', ipykernel.__version__); \
+            print('jupyter_client', jupyter_client.__version__); \
+            print('jupyter_kernel_test', k.__version__)"
+
+      # The kernel under test is installed by juphyter itself, into a temporary
+      # JUPYTER_DATA_DIR the tests make and remove, so nothing here writes a
+      # kernelspec of its own.
+      - name: Run the protocol tests
+        run: python -m pytest tests/Protocol -v

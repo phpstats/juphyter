@@ -7,3 +7,11 @@
 /docs/.quarto/
 /build/
 *.phar
+
+# Python bytecode and pytest's cache, from the wrapper kernel in kernel/ and
+# the protocol tests. The bytecode is pinned to one CPython version, and
+# scripts/build-phar.php copies kernel/ into the archive, so a stale .pyc would
+# ship inside the PHAR and land beside every kernelspec a PHAR install writes.
+__pycache__/
+*.pyc
+/.pytest_cache/
