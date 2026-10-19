@@ -1,0 +1,83 @@
+name: family
+
+# The display formatters against the packages they format.
+#
+# None of phibble, phplyr or phiz is a dependency of juphyter, which has to
+# install and run with any subset of the family present. tests.yml is therefore
+# the "none" set, and this workflow is the only place the formatters meet a real
+# phibble table, a real phiz chart and a real vl-convert binary.
+#
+# It lives in its own file rather than in tests.yml because tests.yml belongs to
+# the package skeleton, and protocol.yml and quarto.yml arrive the same way.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # The version phiz pins its bundled Vega-Lite against (Phiz\Assets::VL_CONVERT_VEGA_LITE).
+  VL_CONVERT_VERSION: 1.9.0
+
+jobs:
+  family:
+    # ubuntu-latest only, because the vl-convert asset below is the linux-64
+    # build. Adding macos-latest means selecting the asset per runner.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.5']
+    name: family (PHP ${{ matrix.php }})
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pcntl, posix, sockets, pdo_sqlite
+          coverage: none
+
+      # The vl-convert *binary*, from the project's own release. The
+      # vl-convert-python wheel is not a substitute: it ships the extension
+      # module `vl_convert.abi3.so` and no executable, so phiz would find
+      # nothing on PATH and every static-rendering test would skip.
+      - name: Install vl-convert
+        run: |
+          curl -fsSL -o vl-convert.zip \
+            "https://github.com/vega/vl-convert/releases/download/v${VL_CONVERT_VERSION}/vl-convert_linux-64.zip"
+          mkdir -p "$HOME/.local/bin"
+          unzip -q -j vl-convert.zip 'bin/vl-convert' -d "$HOME/.local/bin"
+          chmod +x "$HOME/.local/bin/vl-convert"
+          rm vl-convert.zip
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # The static SVG is what makes publishing a Vega-Lite 6 spec under the v5
+      # MIME type safe, so this job must go red rather than green-with-skips if
+      # the binary is missing or is not the pinned version.
+      - name: Check vl-convert is on PATH at the pinned version
+        run: |
+          command -v vl-convert
+          vl-convert --version
+          if [ "$(vl-convert --version)" != "vl-convert ${VL_CONVERT_VERSION}" ]; then
+            echo "Expected vl-convert ${VL_CONVERT_VERSION} on PATH." >&2
+            exit 1
+          fi
+
+      # phibble and phplyr are added rather than declared: a `composer require`
+      # here keeps the committed manifest at the "none" set. no-api on the
+      # repository entries and --prefer-source together need no GitHub token.
+      - name: Install phibble and phplyr
+        run: composer require --dev --no-interaction --no-progress --prefer-source
+               "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
+
+      # phiz requires PHP 8.5, so below that the set stops at phibble and
+      # phplyr, as the siblings do it.
+      - name: Install phiz
+        if: matrix.php == '8.5'
+        run: composer require --dev --no-interaction --no-progress --prefer-source
+               "erikwestlund/phiz:^0.3"
+
+      - run: vendor/bin/pest
