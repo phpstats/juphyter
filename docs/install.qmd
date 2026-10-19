@@ -1,0 +1,159 @@
+---
+title: "Installation"
+---
+
+juphyter has two halves. The engine that runs your cells is PHP, and the
+transport that speaks the Jupyter protocol is a small Python module that runs
+inside `ipykernel`. Installing juphyter means putting a kernelspec where Jupyter
+looks for one, pointing at both.
+
+## What you need
+
+- **PHP 8.3 or later.** That floor matches phibble and phplyr. phiz needs PHP
+  8.5, so plots are available only on a kernel running 8.5 or newer.
+- **A Python with `jupyter` and `ipykernel` 7.0 or later.** The wrapper
+  subclasses `ipykernel.kernelbase.Kernel`, which changed in version 7. This
+  costs nothing extra in practice: JupyterLab is a Python application, and
+  Quarto's jupyter engine requires a Python Jupyter whatever kernel it drives.
+- **macOS or Linux.** The kernel interrupts a running cell with POSIX signals,
+  which the Windows PHP build does not provide.
+
+`pcntl` is wanted rather than required. Without it the kernel runs and the stop
+button does nothing, so `juphyter install` checks the PHP binary it is about to
+name and says so rather than refusing to install.
+
+## In a project
+
+```bash
+composer require --dev phpstats/juphyter
+vendor/bin/juphyter install
+```
+
+The command prints where the kernelspec went and which Python, PHP, and engine
+it recorded:
+
+```
+Installed the juphyter kernel "php" for PHP 8.5.10.
+  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json
+  python       /Users/you/.venvs/notebooks/bin/python (ipykernel 7.4.0)
+  php          /opt/homebrew/bin/php
+  engine       /path/to/your/project/vendor/phpstats/juphyter/bin/juphyter
+```
+
+If `ipykernel` is missing from that interpreter the command writes nothing and
+prints the `pip install` line that fixes it. The interpreter it picks is the one
+that owns the `jupyter` on your `PATH`, read from that script's shebang, because
+that is the environment your Jupyter actually runs in. Use `--python` to name a
+different one.
+
+## Without a project
+
+A standalone PHAR gives you a kernel without creating a Composer project:
+
+```bash
+php juphyter.phar install
+```
+
+The kernelspec then names the PHAR as its engine, and the engine finds a
+project's dependencies at run time by walking up from the notebook's own
+directory. A PHAR install also copies the Python wrapper out of the archive and
+beside the kernelspec, because Python cannot import from inside a `phar://`
+path.
+
+## Several PHP versions at once
+
+Each kernel needs its own name, and the display name follows the version it
+finds:
+
+```bash
+vendor/bin/juphyter install --name php83 --php /path/to/php83
+vendor/bin/juphyter install --name php85 --php /path/to/php85
+```
+
+That produces two kernels in the launcher, "PHP 8.3" and "PHP 8.5". Pass
+`--display-name` to label them yourself.
+
+An absolute `--php` path is recorded as you wrote it. That matters with
+Homebrew, where resolving the symlink would pin the kernelspec to a versioned
+path such as `/opt/homebrew/Cellar/php/8.5.10/bin/php` that `brew upgrade`
+removes. A bare name such as `php8.4` is still resolved to an absolute path,
+since a kernelspec cannot rely on your `PATH`.
+
+## Where the kernelspec goes
+
+`juphyter install` writes to the per-user Jupyter data directory, which is
+`~/Library/Jupyter/kernels` on macOS and `$XDG_DATA_HOME/jupyter/kernels` or
+`~/.local/share/jupyter/kernels` on Linux. `JUPYTER_DATA_DIR` and
+`JUPYTER_PLATFORM_DIRS` are both honored, as `jupyter --paths` reports them.
+`--prefix PATH` writes under `PATH/share/jupyter` instead, which is the layout
+`jupyter kernelspec install --prefix` produces.
+
+`juphyter uninstall` removes a kernelspec, and only one that juphyter wrote. It
+refuses to delete somebody else's kernel of the same name, as does a reinstall.
+
+## Which dependencies a notebook sees
+
+The engine starts in the notebook's own directory, walks up looking for
+`vendor/autoload.php`, and loads the first one it finds. A notebook anywhere
+inside a Composer project therefore sees that project's packages with no
+configuration.
+
+Two ways to override it. `--autoload PATH` at install time records a fixed
+autoloader in the kernelspec, and `JUPHYTER_AUTOLOAD` in the environment wins
+over both. A `juphyter.json` beside the notebook, or anywhere above it, can set
+the same thing along with two run-time settings:
+
+```json
+{
+  "autoload": "vendor/autoload.php",
+  "memory_limit": "512M",
+  "include_path": "lib"
+}
+```
+
+Relative paths in that file resolve against the file's own directory, so one
+`juphyter.json` at a project's root serves every notebook beneath it.
+
+## The phpstats packages
+
+None of them is a dependency of juphyter, which installs and runs with any
+subset of the family present, including none of it. Add the ones you want to
+your own project:
+
+```bash
+composer require --dev --prefer-source "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
+composer require --dev --prefer-source "erikwestlund/phiz:^0.3"
+```
+
+They are not on Packagist, so each needs a `repositories` entry with
+`"no-api": true`, which makes Composer read the repository with `git` rather
+than through the GitHub API and so needs no token. `--prefer-source` is needed
+for the same reason, because a dist zipball still comes from the API. phiz
+requires PHP 8.5 and has to be left out below that.
+
+## Static images
+
+Plots render as interactive charts in JupyterLab and in Quarto's HTML output
+with nothing else installed. Rendering a Quarto document to PDF or Word needs a
+static image, which phiz produces with the
+[vl-convert](https://github.com/vega/vl-convert) binary. Put it on your `PATH`,
+or name it in `PHIZ_VL_CONVERT`. Without it, a plot in a PDF falls back to its
+text description.
+
+The Python package `vl-convert-python` is not a substitute: it ships a library
+and no executable, and phiz runs the binary.
+
+## Checking it worked
+
+```bash
+jupyter kernelspec list
+```
+
+The kernel should appear under the name you gave it. In JupyterLab it appears in
+the launcher, and in a Quarto document you name it in the front matter:
+
+```yaml
+---
+jupyter: php
+---
+```

@@ -1,0 +1,151 @@
+---
+title: "Limitations"
+---
+
+Some of these follow from PHP itself and will not change. Others are milestone
+boundaries and will. Each one says which.
+
+## A cell cannot redeclare a class or a function
+
+PHP has no way to replace a class, interface, trait, enum, or function once it
+is declared, so re-running a cell that declares one cannot work. The kernel
+refuses such a cell before executing anything, naming the collision:
+
+```
+RedeclarationError: The class, interface, trait or enum "Widget" was already
+declared in this session, and PHP cannot redeclare it. Restart the kernel to
+redefine it.
+```
+
+Refusing is deliberate. Letting it reach `eval()` would be an uncatchable fatal
+error that ends the kernel rather than an error the notebook can show.
+
+The session records a name only once PHP really holds it, so a cell that failed
+to declare anything leaves the name free. `class Widget extends Typo {}` throws
+and declares nothing, and the corrected cell runs. The common case this serves
+is running cells out of order: define a base class after its subclass, run the
+subclass cell first, then run them in the right order, and it works.
+
+A conditional declaration is not affected, because PHP does not bind one at
+compile time:
+
+```php
+if (! function_exists('helper')) {
+    function helper() { /* ... */ }
+}
+```
+
+This follows from PHP and will not change.
+
+## A cell cannot declare a namespace
+
+A `namespace` declaration is refused. Changing namespace part way through a
+session breaks name resolution for everything already defined, and the kernel
+would have no honest way to decide which namespace a later cell belongs to.
+Use fully qualified names, or `use` statements, which do carry from one cell to
+the next.
+
+This is a deliberate refusal and is not planned to change.
+
+## Every cell runs under strict types
+
+The kernel prepends `declare(strict_types=1);` to each cell, because PHP accepts
+that declaration nowhere but the first statement. A cell writing it for itself is
+fine and the kernel removes the duplicate. `declare(strict_types=0)` is refused,
+since the kernel cannot honor it, and so is `declare(encoding=...)`, which has
+the same first-statement rule. `declare(ticks=...)` is left alone.
+
+## References and `$this` do not survive between cells
+
+Variables are carried across cells by value. A reference taken in one cell is an
+ordinary copy in the next, and `$this` has no meaning at a notebook's top level.
+Objects, arrays, scalars, and resources all persist normally. Every PHP REPL
+behaves this way.
+
+## A closure called from another cell has no line in its traceback
+
+A traceback names the cell and the line for ordinary functions and methods,
+across cells:
+
+```
+RuntimeException: from the function
+  at Cell 1, line 3, in boom()
+  at Cell 2, line 2
+```
+
+A closure is different. PHP's trace does not say where a closure was declared,
+and every cell's `eval()` shares one file name, so a closure declared in one
+cell and called from another cannot be placed. The kernel reports the frame
+without a location rather than guessing:
+
+```
+LogicException: from the closure
+  in a closure
+  at Cell 4, line 4
+```
+
+Naming a line it could not know would send you to the wrong place, which is
+worse than naming none. The call site is still reported. This is a milestone
+boundary.
+
+## A cell whose value is null shows no output
+
+`var_dump($x);`, `Juphyter\display($frame)`, and any other call that returns
+nothing produce no `Out[N]`, the same way a Python notebook shows nothing for
+`None`. Every other value is shown, including `0`, `false`, `''`, `[]`, and
+`'null'`.
+
+## A cell that calls `exit` or `die` ends the kernel
+
+PHP cannot catch either, so the process goes. The kernel reports it rather than
+disappearing silently:
+
+```
+SystemExit: The cell ended the kernel process with exit or die, so nothing
+further can run. Restart the kernel to carry on.
+```
+
+Anything the cell printed first is still shown. This follows from PHP.
+
+## Interrupting needs pcntl, and a cell can still swallow it
+
+The stop button sends a signal, so the PHP binary running cells needs the
+`pcntl` extension with its functions callable. `juphyter install` checks the
+binary it names and warns when it cannot signal, including the case where the
+extension is loaded but its functions sit in `disable_functions`.
+
+An interrupt arrives as `Juphyter\Engine\Interrupt`, which extends `Error`
+rather than `Exception` so that ordinary defensive code does not absorb it. A
+cell that catches `Throwable` in a loop can still swallow it, which is the same
+trade Python makes by putting `KeyboardInterrupt` outside `Exception`.
+
+## A frame's numbers in an HTML table are not pillar's
+
+A frame's `text/plain` output is phibble's own, character for character. The
+HTML table is the kernel's, and it formats a float with PHP's own string
+conversion rather than reproducing pillar's significant-figure logic, so a wide
+`dbl` column can read differently in the two. The HTML header also omits the
+group count that the text output carries. Both are milestone boundaries.
+
+## macOS and Linux only
+
+The kernel interrupts a cell with POSIX signals and reaps a child process, which
+the Windows PHP build does not support. This matches the platforms the phit and
+phpolars extensions declare.
+
+## Not yet implemented
+
+These are milestone boundaries with nothing in the design against them:
+
+- **Documentation on hover.** Jupyter's `inspect_request` is not answered, so
+  shift-tab shows nothing.
+- **Reading input.** A cell cannot prompt, so `readline()` and `fgets(STDIN)`
+  have nothing to read.
+- **Magics.** There are no `%`-prefixed commands.
+- **Widgets.** `ipywidgets` is not supported.
+- **The debugger.** Jupyter's debug protocol is not implemented, so JupyterLab's
+  debugger does not attach.
+- **A Vega-Lite 6 renderer.** phiz emits Vega-Lite 6 and JupyterLab's bundled
+  renderer reads version 5, so plots are published under the version 5 MIME
+  type. Everything phiz currently produces compiles under the renderer
+  JupyterLab ships, and the static SVG covers anything that does not.
