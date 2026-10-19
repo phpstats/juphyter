@@ -320,15 +320,9 @@ jupyter: php
 ---
 ```
 
-```yaml
----
-jupyter:
-  kernelspec:
-    name: php85
-    language: php
-    display_name: "PHP 8.5"
----
-```
+The explicit `kernelspec:` block is not worth using. Quarto also requires a
+`path` key there and raises `KeyError: 'path'` without it, so `jupyter: <name>`
+is the form to document and the form the tests cover.
 
 Quarto resolves the name against installed kernelspecs, so `juphyter install`
 has to write somewhere Jupyter looks: `JUPYTER_DATA_DIR` when set, then the
@@ -446,12 +440,24 @@ nightly.
 
 ## Risks and open questions
 
-1. **Vega-Lite 6 under a v5 MIME type.** The most likely rich-display failure.
-   Mitigated by the static SVG path, resolved by checking a real plot in
-   JupyterLab during task 8. Recorded above with two follow-up options.
-2. **PHP syntax highlighting in Quarto.** Pandoc's PHP syntax expects `<?php`.
-   Cosmetic, but visible on every page of a documentation site. Checked in
-   task 8.
+1. **Vega-Lite 6 under a v5 MIME type. Settled: it works.** This was written as
+   the most likely rich-display failure and it is not one. JupyterLab 4.6.4
+   declares Vega-Lite MIME types v3, v4 and v5 and mentions v6 nowhere in its
+   shipped bundle, so the v5 type is the only one its renderer would pick up,
+   and it bundles Vega-Lite 5.6.1 against phiz's v6 `$schema`. Sixteen specs
+   generated across phiz's feature surface, covering bars, `lm` and `loess`
+   smoothing, facet wrap and grid, histograms, KDE density, boxplots, log
+   scales, tooltips with pan and zoom, brush selection, legend highlighting,
+   themes, temporal encoding and both `Compose` layouts, all compiled under
+   5.6.1 with no warnings and no failures. So neither follow-up is needed: no
+   JupyterLab mime extension, and no upstream ask to phiz for a v5 `$schema`.
+   The static SVG remains worth having for Quarto's PDF and docx output, where
+   it was shown to produce a real vector figure, but it is a convenience rather
+   than the thing making the v5 choice safe.
+2. **PHP syntax highlighting in Quarto. Settled: it works.** The concern was
+   wrong. Quarto tags an executed PHP cell `sourceCode php` and Pandoc emits
+   real token spans for keywords, functions, variables, strings and operators,
+   with no `<?php` tag present. Nothing to do.
 3. **Traceback quality under `eval()`.** Frames read as `eval()'d code` and are
    rewritten to `Cell N`. If the rewriting proves too lossy, the fallback is
    writing each cell to a per-cell file and `require`-ing it, which was
@@ -474,6 +480,33 @@ nightly.
    repository. juphyter's registry prefers such a method when it exists, so the
    question can be settled later without blocking anything here.
 
+
+## Follow-ups after the milestone
+
+These came out of the review rounds and are written down here so they do not
+depend on anyone's memory.
+
+- **phiz's Composer name.** Group 1's website work renames `erikwestlund/phiz`
+  to `phpstats/phiz`, and it has to land in phiz and in phibble's `require-dev`
+  together. juphyter has six references to the old name: the `suggest` entry in
+  `composer.json`, the dev install line in `.github/workflows/family.yml`, two
+  skip messages in `tests/Unit/Display/ChartFormatterTest.php`, the require in
+  `tests/Quarto/fixture/composer.json`, the `FAMILY` tuple in
+  `tests/Quarto/conftest.py`, and the install guide and README. Nothing of ours
+  requires phiz, so no install breaks; what breaks is the family CI job and the
+  render fixture, which install it by name. Cleanest as one commit once main is
+  whole, sequenced with group 1 through the shared integrator.
+- **A `quarto_cleanup_cell` in the kernelspec.** Quarto does not daemonize PHP
+  kernels today, because it has no entry for the language, so the key has
+  nothing to act on. Worth adding when Quarto learns about PHP, alongside the
+  native transport.
+- **Freeze, for the family's other packages.** Measured while answering group 1:
+  `quarto render` writes to the output directory and keeps `_freeze/` separate,
+  and a frozen page renders without PHP, the engine, Python or any extension,
+  provided a kernelspec of that name exists. A stub `kernel.json` naming paths
+  that do not exist is enough. A cache miss ends that, so editing a PHP cell
+  needs the real kernel. This is what makes executable docs adoptable across
+  packages whose contributors lack the full stack.
 ## Milestone 1 tasks
 
 Each task owns its files outright. Where two tasks touch the same area, the
