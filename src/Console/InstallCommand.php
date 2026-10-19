@@ -214,9 +214,24 @@ final class InstallCommand extends Command
      * The PHP binary and its version.
      *
      * With no `--php`, that is the interpreter running this command, which it
-     * can answer from its own constants. With `--php`, it is whatever the given
-     * binary reports about itself, which both validates it and turns a relative
-     * name into the absolute path the kernelspec needs.
+     * can answer from its own constants. With `--php`, the binary is run: that
+     * validates it, reports its version for the default display name, and
+     * answers whether it can be interrupted.
+     *
+     * ## Which path the kernelspec names
+     *
+     * An absolute path to an executable is recorded exactly as it was given.
+     * `PHP_BINARY` is the path with every symlink resolved, so taking it would
+     * turn `--php /opt/homebrew/bin/php` into
+     * `/opt/homebrew/Cellar/php/8.5.10/bin/php`, which Homebrew deletes on the
+     * next `brew upgrade php` and the kernel then stops starting. The same
+     * applies to a wrapper script: run it and `PHP_BINARY` names whatever PHP
+     * it chose, which is not the thing to record.
+     *
+     * Anything else is resolved through `PHP_BINARY`, because a kernelspec
+     * cannot name `php8.4` or `./php`. Jupyter starts the kernel from the
+     * notebook's directory with whatever `PATH` the front end had, and neither
+     * is the `PATH` or the directory this command was run in.
      *
      * @return array{string, string, bool} The binary, its version, and whether
      *                                      it can handle signals.
@@ -264,7 +279,17 @@ final class InstallCommand extends Command
         // nothing rather than warn about a binary that never answered.
         $signals = trim($lines[2] ?? '1') === '1';
 
+        if (self::isAbsoluteExecutable($php)) {
+            return [$php, $version, $signals];
+        }
+
         return [$binary !== '' ? $binary : $php, $version, $signals];
+    }
+
+    /** Whether a `--php` value is already a path the kernelspec can name. */
+    private static function isAbsoluteExecutable(string $php): bool
+    {
+        return str_starts_with($php, '/') && is_file($php) && is_executable($php);
     }
 
     /** `8.4` from `8.4.25`, for the default display name. */

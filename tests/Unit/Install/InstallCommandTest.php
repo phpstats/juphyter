@@ -383,6 +383,68 @@ describe('the PHP binary', function () {
             ->toBe('/herd/bin/php85');
     });
 
+    it('keeps an absolute --php exactly as it was given', function () {
+        // A symlink, because that is the case that matters: PHP_BINARY is the
+        // path with its symlinks resolved, so `--php /opt/homebrew/bin/php`
+        // would otherwise be recorded as the versioned Cellar path that
+        // Homebrew deletes on the next upgrade.
+        $home = installWorkspace();
+        $link = $home.'/php-link';
+        symlink(PHP_BINARY, $link);
+
+        $run = runInstall(['--prefix', $home.'/prefix', '--php', $link], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/opt/homebrew/Cellar/php/8.5.10/bin/php\n8.5.10\n1\n"],
+        ]));
+
+        $spec = readKernelSpec($home.'/prefix/share/jupyter/kernels/php/kernel.json');
+
+        expect($run['result'])->toBe(0)
+            ->and($spec['env']['JUPHYTER_PHP'])->toBe($link)
+            ->and($spec['env']['JUPHYTER_PHP'])->not->toContain('Cellar')
+            // The version still comes from what the binary reported, which is
+            // what the default display name is built from.
+            ->and($spec['display_name'])->toBe('PHP 8.5');
+    });
+
+    it('resolves a bare name through the binary it reports', function () {
+        $home = installWorkspace();
+
+        $run = runInstall(['--prefix', $home.'/prefix', '--php', 'php84'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/usr/bin/php8.4\n8.4.12\n1\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and(readKernelSpec($home.'/prefix/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
+            ->toBe('/usr/bin/php8.4');
+    });
+
+    it('resolves a relative path through the binary it reports', function () {
+        // Relative to this command's working directory, which is not the
+        // notebook's and not anything the kernelspec can name.
+        $home = installWorkspace();
+
+        $run = runInstall(['--prefix', $home.'/prefix', '--php', './php'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/srv/app/php\n8.5.10\n1\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and(readKernelSpec($home.'/prefix/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
+            ->toBe('/srv/app/php');
+    });
+
+    it('probes the path it was given, and not the one that comes back', function () {
+        $home = installWorkspace();
+        $link = $home.'/php-link';
+        symlink(PHP_BINARY, $link);
+        $calls = [];
+
+        runInstall(['--prefix', $home.'/prefix', '--php', $link], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/opt/homebrew/Cellar/php/8.5.10/bin/php\n8.5.10\n1\n"],
+        ], $calls));
+
+        expect($calls[0][0])->toBe($link);
+    });
+
     it('writes nothing when --php does not run', function () {
         $prefix = installWorkspace();
         $run = runInstall(
@@ -608,6 +670,26 @@ describe('the stop button', function () {
             ->and($result['stderr'])->toContain('disable_functions')
             ->and(readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
             ->toBe('/herd/bin/php83');
+    });
+
+    it('names the path the user gave in the warning, not the one PHP reports', function () {
+        // The warning is about the binary the kernelspec names, so it has to
+        // name the same one. A wrapper script makes the difference plain: it
+        // was the wrapper that answered, through whichever PHP it chose.
+        $home = installWorkspace();
+        $wrapper = $home.'/php-wrapper';
+        file_put_contents($wrapper, "#!/bin/sh\nexec php \"$@\"\n");
+        chmod($wrapper, 0o755);
+
+        $result = runInstall(['--prefix', $home.'/prefix', '--php', $wrapper], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/opt/homebrew/Cellar/php/8.3.9/bin/php\n8.3.9\n0\n"],
+        ]));
+
+        expect($result['result'])->toBe(0)
+            ->and($result['stderr'])->toContain($wrapper)
+            ->and($result['stderr'])->not->toContain('Cellar')
+            ->and(readKernelSpec($home.'/prefix/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
+            ->toBe($wrapper);
     });
 
     it('still reports the install on stdout alongside the warning', function () {
