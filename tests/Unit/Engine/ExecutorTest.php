@@ -564,12 +564,66 @@ describe('display', function () {
             '1 + 1;' => '2',
             '"text";' => 'text',
             'true;' => 'true',
-            'null;' => 'null',
             '1.5;' => '1.5',
             '[1, 2, 3];' => 'array(3)',
             'new stdClass();' => 'object(stdClass)',
         ] as $code => $expected) {
             expect(ofType(ran($code), 'result')[0]['bundle']['text/plain'])->toBe($expected);
+        }
+    });
+});
+
+describe('a value of null', function () {
+    // A void call is written for its effect, and an `Out` of "null" after it is
+    // noise. Python's notebooks never show None this way either.
+    it('publishes no result, and still ends in ok', function () {
+        $events = ran('null;');
+
+        expect(typesOf($events))->toBe(['ok'])
+            ->and(ofType($events, 'result'))->toBe([]);
+    });
+
+    it('publishes nothing for a void call as the last statement', function () {
+        [$executor, $events] = recorder();
+        $executor->execute('function nothing(): void {} ', 1);
+        $executor->execute('nothing();', 2);
+
+        expect(typesOf($events()))->toBe(['ok', 'ok']);
+    });
+
+    it('leaves var_dump with its output and no result', function () {
+        // var_dump writes in several pieces, and each piece is its own stream
+        // event; what matters is that none of them is a result.
+        $events = ran('$v = [1, 2]; var_dump($v);');
+
+        expect(ofType($events, 'result'))->toBe([])
+            ->and(ofType($events, 'stream'))->not->toBeEmpty()
+            ->and(array_values(array_unique(typesOf($events))))->toBe(['stream', 'ok'])
+            ->and(end($events)['type'])->toBe('ok');
+    });
+
+    it('still advances the execution count', function () {
+        [$executor, $events] = recorder();
+        $executor->execute('null;', 1);
+        $executor->execute('2;', 2);
+
+        expect(ofType($events(), 'ok')[0]['execution_count'])->toBe(1)
+            ->and(ofType($events(), 'result')[0]['execution_count'])->toBe(2);
+    });
+
+    it('publishes every other falsy value, which are values a cell meant', function () {
+        foreach ([
+            '0;' => '0',
+            'false;' => 'false',
+            '"";' => '',
+            '[];' => 'array(0)',
+            '0.0;' => '0',
+            '"null";' => 'null',
+        ] as $code => $expected) {
+            $events = ran($code);
+
+            expect(ofType($events, 'result'))->toHaveCount(1, 'no result for '.$code)
+                ->and(ofType($events, 'result')[0]['bundle']['text/plain'])->toBe($expected);
         }
     });
 });

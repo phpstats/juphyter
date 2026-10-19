@@ -149,9 +149,7 @@ final class UninstallCommand extends Command
     /**
      * Read `--option value` and `--option=value` pairs.
      *
-     * `install` has its own copy of this, shaped to its own option list, because
-     * the two commands are the only callers and a shared helper would be a third
-     * class for twenty lines.
+     * The grammar itself lives in {@see Options}, which every command shares.
      *
      * @param  list<string>  $arguments
      * @return array<string, string>
@@ -159,50 +157,7 @@ final class UninstallCommand extends Command
      */
     private static function parseOptions(array $arguments): array
     {
-        $options = [];
-        $count = count($arguments);
-
-        for ($i = 0; $i < $count; $i++) {
-            $argument = $arguments[$i];
-
-            if (! str_starts_with($argument, '--')) {
-                throw new RuntimeException(sprintf(
-                    "juphyter: unexpected argument \"%s\".\n\n%s",
-                    $argument,
-                    self::usage(),
-                ));
-            }
-
-            $name = substr($argument, 2);
-            $value = null;
-
-            if (str_contains($name, '=')) {
-                [$name, $value] = explode('=', $name, 2);
-            }
-
-            if (! in_array($name, self::OPTIONS, true)) {
-                throw new RuntimeException(sprintf(
-                    "juphyter: unknown option \"--%s\".\n\n%s",
-                    $name,
-                    self::usage(),
-                ));
-            }
-
-            if ($value === null) {
-                $next = $arguments[$i + 1] ?? null;
-
-                if ($next === null || str_starts_with($next, '--')) {
-                    throw new RuntimeException(sprintf('juphyter: --%s needs a value.', $name));
-                }
-
-                $value = $next;
-                $i++;
-            }
-
-            $options[$name] = $value;
-        }
-
-        return $options;
+        return Options::parse($arguments, self::OPTIONS, self::usage());
     }
 
     /** The command's own help. */

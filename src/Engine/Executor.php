@@ -34,7 +34,10 @@ use Throwable;
  *
  * Every call to {@see execute()} ends with exactly one terminal event, `ok` or
  * `error`, and any number of `stream` and `display` events before it. A cell
- * with a value emits `result` immediately before `ok`. `silent` and
+ * with a value emits `result` immediately before `ok`; a cell whose value is
+ * null emits none, since a void call is written for its effect and an `Out` of
+ * "null" after it would be noise. Every other value publishes, `0`, `false`,
+ * `''` and `[]` among them. `silent` and
  * `store_history` are the transport's to apply, so a sink that drops `display`
  * and `result` is how `silent` is served.
  *
@@ -246,14 +249,28 @@ final class Executor
         }
 
         if ($cleaned->hasResult() && array_key_exists($cleaned->resultVariable, $collected)) {
-            $formatted = $this->format($collected[$cleaned->resultVariable]);
+            $value = $collected[$cleaned->resultVariable];
 
-            $this->emit([
-                'type' => 'result',
-                'execution_count' => $executionCount,
-                'bundle' => $formatted['bundle'],
-                'metadata' => $formatted['metadata'],
-            ]);
+            // A cell whose value is null publishes nothing, as a notebook
+            // expects: `var_dump($x);`, `Juphyter\display($frame);` and any
+            // other void call is written for its effect, and an `Out` of
+            // "null" after it is noise. Python's notebooks never show None
+            // this way either.
+            //
+            // The test has to be here, because this is the last place that
+            // holds the value itself. By the time the event reaches the
+            // transport it is a MIME bundle, where a null and the string
+            // "null" differ only by the display layer's choice of quoting.
+            if ($value !== null) {
+                $formatted = $this->format($value);
+
+                $this->emit([
+                    'type' => 'result',
+                    'execution_count' => $executionCount,
+                    'bundle' => $formatted['bundle'],
+                    'metadata' => $formatted['metadata'],
+                ]);
+            }
         }
 
         $this->emit(['type' => 'ok', 'execution_count' => $executionCount]);

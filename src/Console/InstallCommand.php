@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Juphyter\Console;
 
 use Closure;
+use Juphyter\Engine\Interrupt;
 use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
@@ -137,7 +138,7 @@ final class InstallCommand extends Command
         $name = KernelSpec::normalizeName($options['name'] ?? self::DEFAULT_NAME);
         $prefix = $options['prefix'] ?? null;
 
-        [$php, $phpVersion] = $this->php($options['php'] ?? null);
+        [$php, $phpVersion, $canSignal] = $this->php($options['php'] ?? null);
 
         $python = $this->probe->interpreter($options['python'] ?? null);
         $ipykernel = $this->probe->requireIpykernel($python);
@@ -179,6 +180,19 @@ final class InstallCommand extends Command
             ));
         }
 
+        // A warning rather than a refusal: everything else about the kernel
+        // works, and a notebook nobody interrupts is still worth having.
+        if (! $canSignal) {
+            fwrite($this->stderr, sprintf(
+                "juphyter: %s cannot handle signals, so the front end's stop button will not\n"
+                ."  interrupt a running cell with this kernel. The kernelspec asks for\n"
+                ."  interrupt_mode \"signal\", which needs pcntl_async_signals(), pcntl_signal()\n"
+                ."  and SIGINT. Check that the pcntl extension is enabled for that binary and\n"
+                ."  that its functions are not in disable_functions.\n",
+                $php,
+            ));
+        }
+
         fwrite($this->stdout, sprintf(
             "%s the juphyter kernel \"%s\" for PHP %s.\n"
             ."  kernel.json  %s\n"
@@ -206,16 +220,26 @@ final class InstallCommand extends Command
      * binary reports about itself, which both validates it and turns a relative
      * name into the absolute path the kernelspec needs.
      *
-     * @return array{string, string}
+     * @return array{string, string, bool} The binary, its version, and whether
+     *                                      it can handle signals.
      * @throws RuntimeException When `--php` does not run.
      */
     private function php(?string $php): array
     {
         if ($php === null || $php === '') {
-            return [PHP_BINARY, PHP_VERSION];
+            return [PHP_BINARY, PHP_VERSION, Interrupt::available()];
         }
 
-        $result = ($this->runner)([$php, '-r', 'echo PHP_BINARY, PHP_EOL, PHP_VERSION;']);
+        // The third line asks the target PHP the same question
+        // Interrupt::available() asks at run time. It has to be asked of that
+        // binary and not of this one: the kernelspec names whatever --php gave
+        // it, and `extension_loaded('pcntl')` is no answer either, because a
+        // hardened ini file can leave the extension loaded with its functions
+        // in disable_functions, where the extension is present and the stop
+        // button is still dead.
+        $result = ($this->runner)([$php, '-r', 'echo PHP_BINARY, PHP_EOL, PHP_VERSION, PHP_EOL, '
+            .'(int) (function_exists("pcntl_async_signals") && function_exists("pcntl_signal") '
+            .'&& defined("SIGINT"));']);
 
         if ($result['code'] !== 0) {
             throw new RuntimeException(sprintf(
@@ -238,7 +262,11 @@ final class InstallCommand extends Command
             ));
         }
 
-        return [$binary !== '' ? $binary : $php, $version];
+        // An older juphyter's probe printed two lines. Absent a third, say
+        // nothing rather than warn about a binary that never answered.
+        $signals = trim($lines[2] ?? '1') === '1';
+
+        return [$binary !== '' ? $binary : $php, $version, $signals];
     }
 
     /** `8.4` from `8.4.25`, for the default display name. */
@@ -362,56 +390,15 @@ final class InstallCommand extends Command
     /**
      * Read `--option value` and `--option=value` pairs.
      *
+     * The grammar itself lives in {@see Options}, which every command shares.
+     *
      * @param  list<string>  $arguments
      * @return array<string, string>
      * @throws RuntimeException On an unknown option, a missing value, or a stray argument.
      */
     private static function parseOptions(array $arguments): array
     {
-        $options = [];
-        $count = count($arguments);
-
-        for ($i = 0; $i < $count; $i++) {
-            $argument = $arguments[$i];
-
-            if (! str_starts_with($argument, '--')) {
-                throw new RuntimeException(sprintf(
-                    "juphyter: unexpected argument \"%s\".\n\n%s",
-                    $argument,
-                    self::usage(),
-                ));
-            }
-
-            $name = substr($argument, 2);
-            $value = null;
-
-            if (str_contains($name, '=')) {
-                [$name, $value] = explode('=', $name, 2);
-            }
-
-            if (! in_array($name, self::OPTIONS, true)) {
-                throw new RuntimeException(sprintf(
-                    "juphyter: unknown option \"--%s\".\n\n%s",
-                    $name,
-                    self::usage(),
-                ));
-            }
-
-            if ($value === null) {
-                $next = $arguments[$i + 1] ?? null;
-
-                if ($next === null || str_starts_with($next, '--')) {
-                    throw new RuntimeException(sprintf('juphyter: --%s needs a value.', $name));
-                }
-
-                $value = $next;
-                $i++;
-            }
-
-            $options[$name] = $value;
-        }
-
-        return $options;
+        return Options::parse($arguments, self::OPTIONS, self::usage());
     }
 
     /** The command's own help. */

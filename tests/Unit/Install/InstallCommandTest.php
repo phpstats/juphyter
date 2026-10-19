@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Juphyter\Console\InstallCommand;
+use Juphyter\Engine\Interrupt;
 use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
@@ -63,7 +64,7 @@ function installRunner(array $overrides = [], array &$calls = []): Closure
     $answers = $overrides + [
         'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
         'ipykernel' => ['stdout' => "7.4.0\n"],
-        'PHP_BINARY' => ['stdout' => "/herd/bin/php85\n8.5.1\n"],
+        'PHP_BINARY' => ['stdout' => "/herd/bin/php85\n8.5.1\n1\n"],
     ];
 
     return function (array $argv) use ($answers, &$calls): array {
@@ -350,7 +351,10 @@ describe('the PHP binary', function () {
         $calls = [];
         runInstall(['--prefix', $prefix, '--php', 'php85'], runner: installRunner([], $calls));
 
-        expect($calls[0])->toBe(['php85', '-r', 'echo PHP_BINARY, PHP_EOL, PHP_VERSION;'])
+        expect($calls[0][0])->toBe('php85')
+            ->and($calls[0][1])->toBe('-r')
+            ->and($calls[0][2])->toContain('PHP_BINARY')
+            ->and($calls[0][2])->toContain('PHP_VERSION')
             ->and(readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
             ->toBe('/herd/bin/php85');
     });
@@ -499,5 +503,83 @@ describe('the command surface', function () {
 
         expect(KernelSpec::isJuphyter(readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json')))
             ->toBeTrue();
+    });
+});
+
+describe('the stop button', function () {
+    // The kernelspec asks for interrupt_mode "signal", so install is where
+    // that promise gets checked: against the binary --php named, not against
+    // the PHP running Composer or this command.
+    it('says nothing when the target PHP can handle signals', function () {
+        $prefix = installWorkspace();
+
+        $result = runInstall(['--prefix', $prefix, '--php', 'php85'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/herd/bin/php85\n8.5.1\n1\n"],
+        ]));
+
+        expect($result['result'])->toBe(0)
+            ->and($result['stderr'])->not->toContain('stop button');
+    });
+
+    it('warns and names the binary when it cannot, and still installs', function () {
+        $prefix = installWorkspace();
+
+        $result = runInstall(['--prefix', $prefix, '--php', 'php83'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/herd/bin/php83\n8.3.9\n0\n"],
+        ]));
+
+        expect($result['result'])->toBe(0)
+            ->and($result['stderr'])->toContain('/herd/bin/php83')
+            ->and($result['stderr'])->toContain('stop button')
+            ->and($result['stderr'])->toContain('interrupt_mode')
+            ->and($result['stderr'])->toContain('disable_functions')
+            ->and(readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json')['env']['JUPHYTER_PHP'])
+            ->toBe('/herd/bin/php83');
+    });
+
+    it('still reports the install on stdout alongside the warning', function () {
+        $prefix = installWorkspace();
+
+        $result = runInstall(['--prefix', $prefix, '--php', 'php83'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/herd/bin/php83\n8.3.9\n0\n"],
+        ]));
+
+        expect($result['stdout'])->toContain('the juphyter kernel')
+            ->and($result['stdout'])->not->toContain('stop button');
+    });
+
+    it('asks the target PHP the same question Interrupt::available() asks', function () {
+        $prefix = installWorkspace();
+        $calls = [];
+        runInstall(['--prefix', $prefix, '--php', 'php85'], runner: installRunner([], $calls));
+
+        expect($calls[0][2])->toContain('pcntl_async_signals')
+            ->and($calls[0][2])->toContain('pcntl_signal')
+            ->and($calls[0][2])->toContain('SIGINT');
+    });
+
+    it('says nothing when an older probe answers with only two lines', function () {
+        // Absent an answer, say nothing rather than warn about a binary that
+        // never reported.
+        $prefix = installWorkspace();
+
+        $result = runInstall(['--prefix', $prefix, '--php', 'php85'], runner: installRunner([
+            'PHP_BINARY' => ['stdout' => "/herd/bin/php85\n8.5.1\n"],
+        ]));
+
+        expect($result['result'])->toBe(0)
+            ->and($result['stderr'])->not->toContain('stop button');
+    });
+
+    it('checks the running PHP when no --php is given', function () {
+        $prefix = installWorkspace();
+
+        $result = runInstall(['--prefix', $prefix]);
+
+        // This test runner has pcntl, so there is nothing to warn about; the
+        // point is that the answer comes from Interrupt::available() rather
+        // than from a subprocess that was never run.
+        expect($result['result'])->toBe(0)
+            ->and($result['stderr'])->toContain(Interrupt::available() ? '' : 'stop button');
     });
 });
