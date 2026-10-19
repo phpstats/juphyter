@@ -34,7 +34,10 @@
     "autoload": {
         "psr-4": {
             "Juphyter\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -54,5 +57,22 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/phpstats/phibble",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/phpstats/phplyr",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/phpstats/phiz",
+            "no-api": true
+        }
+    ]
 }

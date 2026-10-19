@@ -44,3 +44,43 @@ jobs:
             echo "expected a non-zero exit code" >&2
             exit 1
           fi
+
+  family:
+    # The display formatters against the packages they format. None of the three
+    # is a dependency of juphyter, which has to install and run with any subset
+    # of the family present, so the job above is the "none" set and this one
+    # adds them with `composer require --dev` rather than by declaring them.
+    #
+    # phiz requires PHP 8.5, so below that the set is phibble and phplyr alone,
+    # as the siblings do it. vl-convert comes from its Python package so the
+    # static-SVG path runs here instead of skipping.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.5']
+    name: family (PHP ${{ matrix.php }})
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pcntl, posix, sockets, pdo_sqlite
+          coverage: none
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install vl-convert-python==1.9.0
+
+      - run: composer require --dev --no-interaction --no-progress --prefer-source
+               "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
+
+      - if: matrix.php == '8.5'
+        run: composer require --dev --no-interaction --no-progress --prefer-source
+               "erikwestlund/phiz:^0.3"
+
+      - run: vendor/bin/pest
