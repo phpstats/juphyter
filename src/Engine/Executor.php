@@ -215,11 +215,17 @@ final class Executor
         } catch (Throwable $e) {
             $thrown = $e;
         } finally {
-            $this->output->stop();
-
+            // Released before anything else, so the handler is not live for the
+            // flush below. A second SIGINT arriving there would throw from
+            // inside this block and abandon the rest of it: the declarations
+            // would not be committed and the cell's variables would not be
+            // collected. The window is now zero by construction rather than
+            // small by timing.
             if ($interrupting) {
                 Interrupt::release();
             }
+
+            $this->output->stop();
 
             // Committed whether the cell threw or not, and from a finally so
             // that no path can skip it. PHP binds an unconditional top-level
