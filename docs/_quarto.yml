@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+
+website:
+  title: "juphyter"
+  site-url: "https://phpstats.github.io/juphyter/"
+  repo-url: https://github.com/phpstats/juphyter
+  repo-actions: [source, issue]
+  sidebar:
+    style: docked
+    search: true
+    contents:
+      - index.qmd
+      - get-started.qmd
+      - install.qmd
+      - quarto.qmd
+      - jupyter.qmd
+      - limitations.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-copy: true
+
+# Every page runs its examples through the kernel this package installs, which
+# is the point of the site as much as its contents: the documentation for a PHP
+# kernel should be written in PHP cells. `scripts/render-docs` arranges the
+# kernel and the packages the examples use, so that is how the site is built.
+execute:
+  freeze: false

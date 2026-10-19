@@ -1,0 +1,110 @@
+---
+title: "juphyter render fixture"
+subtitle: "Every representation the render tests assert on"
+author: "The juphyter test suite"
+jupyter: juphyter-render
+format:
+  html:
+    toc: true
+  ipynb: default
+  typst: default
+---
+
+This document is the fixture `tests/Quarto` renders. It is not documentation.
+Each section exists because a test reads the rendered output and asserts on it,
+so a cell removed from here fails a test rather than quietly reducing coverage.
+
+The notebook sits one directory below the project that holds `composer.json` and
+`vendor/`, so rendering it exercises the engine's walk up from the notebook's
+own directory in search of an autoloader.
+
+## Setup
+
+The imports and the data load in a cell with `echo: false`, which keeps the
+source out of the rendered page. A test asserts that none of this source
+appears in the output.
+
+```{php}
+#| echo: false
+use Phibble\DataFrame;
+use Phiz\Datasets;
+use Phiz\Plot;
+use function Phplyr\{group_by, summarise, arrange, desc, n, mean};
+
+$mpg = DataFrame::fromRows(Datasets::mpg());
+```
+
+## A phibble frame
+
+A frame published as `text/html` becomes a table in the rendered page, with the
+row and column counts and the per-column type abbreviations phibble's own
+printing carries.
+
+```{php}
+$mpg
+```
+
+## A phplyr summary
+
+The pipeline runs on the frame bound by the setup cell, which is how state
+carries from one cell to the next.
+
+```{php}
+$by_class = $mpg
+    |> group_by('class')
+    |> summarise(count: n(), hwy: mean('hwy'))
+    |> arrange(desc('hwy'));
+
+$by_class
+```
+
+## A phiz plot
+
+The plot publishes four representations. Quarto takes `text/html` for HTML
+output and `image/svg+xml` for PDF, so the same cell is an interactive chart in
+one format and a static figure in the other.
+
+```{php}
+#| fig-cap: "Highway mileage against engine displacement, by vehicle class."
+Plot::of(Datasets::mpg())
+    ->aes(x: 'displ', y: 'hwy', color: 'class')
+    ->point(opacity: 0.7)
+    ->labs(x: 'Displacement (L)', y: 'Highway mpg');
+```
+
+## Several outputs from one cell
+
+`Juphyter\display()` publishes a bundle part way through a cell, so one cell can
+show more than one value.
+
+```{php}
+Juphyter\display($by_class |> arrange('hwy'));
+Juphyter\display(['classes' => $by_class->nrow(), 'rows' => $mpg->nrow()]);
+```
+
+## State and a multibyte string
+
+The variables bound above are still in scope, and a string outside ASCII
+survives the round trip through the socket, the Jupyter message, and the
+rendered page.
+
+```{php}
+$note = "Æthelred's résumé — 日本語";
+
+echo mb_strlen($note), " characters, ", strlen($note), " bytes\n";
+
+$note;
+```
+
+## A cell that raises
+
+`error: true` lets the render continue past a failing cell and keeps the
+traceback in the output. Both frames name the cell they came from rather than
+`eval()'d code`, which is the rewriting the engine does to a traceback.
+
+```{php}
+#| error: true
+$average = fn (array $values) => array_sum($values) / count($values);
+
+$average([]);
+```

@@ -1,0 +1,21 @@
+---
+title: "The explicit kernelspec form"
+jupyter:
+  kernelspec:
+    name: juphyter-render
+    language: php
+    display_name: "PHP (juphyter render tests)"
+---
+
+The second way of selecting a kernel states the name, the language, and the
+display name outright, which is the form Jupyter itself writes into a notebook.
+As it stands above it fails, because Quarto's jupyter engine also reads the
+directory the kernelspec was found in and only `jupyter: <name>` fills that in.
+A test renders this document twice, once as it is and once with `path` added, so
+that both the limitation and the fix for it stay true.
+
+```{php}
+$widths = ['name' => 7, 'language' => 3];
+
+sprintf('%d fields, %d characters', count($widths), array_sum($widths));
+```

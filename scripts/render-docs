@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+#
+# Render the documentation site, executing its PHP cells through the kernel.
+#
+# Every page under docs/ declares `jupyter: php` and holds live cells, so
+# building the site is also the broadest end-to-end exercise of the kernel
+# there is: a page that stops rendering is a kernel that stopped working. That
+# is the dogfooding this script exists for.
+#
+# It arranges three things first, because a documentation build should not need
+# a particular machine:
+#
+#   1. A sandbox holding phibble, phplyr, and phiz, under build/docs. juphyter
+#      depends on none of the three, and its own composer.json has to stay at
+#      the set a plain `composer install` produces, so the packages the examples
+#      use are installed somewhere else and the kernel is pointed at them.
+#   2. A kernelspec named "php" in a private JUPYTER_DATA_DIR, also under
+#      build/docs, carrying --autoload for that sandbox. The real Jupyter data
+#      directory is never written to, so this leaves nothing behind on the
+#      machine and cannot collide with a kernel installed for real.
+#   3. QUARTO_PYTHON, so Quarto's jupyter engine runs in the interpreter that
+#      has ipykernel rather than in whichever python3 it would otherwise pick.
+#
+# PHP 8.5 is the floor, set by phiz rather than by juphyter: phiz is written in
+# 8.5 syntax and its classes do not parse below it, so a page that plots cannot
+# render on an older PHP.
+#
+# Usage: scripts/render-docs [--refresh] [--to FORMAT] [quarto arguments...]
+#
+#   --refresh      Reinstall the sandbox and the kernelspec before rendering.
+#   --to FORMAT     A Quarto output format. Default: the site's html.
+#   -h, --help      Print this text.
+#
+# Environment:
+#
+#   JUPHYTER_DOCS_PHP      The PHP that runs the cells. Default: php85, php8.5,
+#                          or php, whichever is first and is 8.5 or newer.
+#   JUPHYTER_DOCS_PYTHON   The interpreter the kernel runs in. Default: the one
+#                          that owns the jupyter on PATH.
+#   JUPHYTER_DOCS_BUILD    Where the sandbox and the kernelspec go.
+#                          Default: build/docs.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+build="${JUPHYTER_DOCS_BUILD:-$root/build/docs}"
+refresh=0
+arguments=()
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --refresh)
+            refresh=1
+            shift
+            ;;
+        -h|--help)
+            # The comment block above, which is the help text: every comment
+            # line after the shebang, up to the first line that is not one.
+            awk 'NR > 2 { if ($0 !~ /^#/) exit; sub(/^# ?/, ""); print }' \
+                "${BASH_SOURCE[0]}"
+            exit 0
+            ;;
+        *)
+            arguments+=("$1")
+            shift
+            ;;
+    esac
+done
+
+fail() {
+    printf 'render-docs: %s\n' "$1" >&2
+    exit 1
+}
+
+# The PHP that will run the cells, which has to be 8.5 or newer for phiz.
+find_php() {
+    local candidate version major minor tried=""
+
+    for candidate in "${JUPHYTER_DOCS_PHP:-}" php85 php8.5 php; do
+        [ -n "$candidate" ] || continue
+        command -v "$candidate" >/dev/null 2>&1 || continue
+
+        version="$("$candidate" -r 'echo PHP_VERSION;' 2>/dev/null)" || continue
+        [ -n "$version" ] || continue
+
+        major="${version%%.*}"
+        minor="${version#*.}"
+        minor="${minor%%.*}"
+        tried="$tried $candidate ($version)"
+
+        if [ "$major" -gt 8 ] || { [ "$major" -eq 8 ] && [ "$minor" -ge 5 ]; }; then
+            command -v "$candidate"
+            return 0
+        fi
+
+        # An explicit choice is not silently passed over.
+        [ -z "${JUPHYTER_DOCS_PHP:-}" ] || break
+    done
+
+    fail "the docs plot with phiz, which needs PHP 8.5 or newer. Tried:${tried:- nothing on PATH}. Set JUPHYTER_DOCS_PHP to the binary to use."
+}
+
+# The interpreter a written kernelspec names, read back out of it.
+#
+# Which interpreter to use is `juphyter install`'s question rather than this
+# script's: it reads the shebang of the `jupyter` on PATH, which identifies the
+# environment that owns Jupyter, and refuses to write a kernelspec when
+# ipykernel does not import there. Reading argv[0] back afterwards is how this
+# script learns the answer, and QUARTO_PYTHON then points Quarto's own jupyter
+# engine at the same interpreter.
+kernelspec_python() {
+    "$php" -r '$spec = json_decode(file_get_contents($argv[1]), true);
+        echo is_array($spec["argv"] ?? null) ? $spec["argv"][0] : "";' "$1"
+}
+
+command -v quarto >/dev/null 2>&1 \
+    || fail "no quarto on PATH. Install it from https://quarto.org/docs/get-started/."
+
+php="$(find_php)"
+
+sandbox="$build/sandbox"
+jupyter_data="$build/jupyter"
+
+if [ "$refresh" -eq 1 ]; then
+    rm -rf "$sandbox" "$jupyter_data"
+fi
+
+# The sandbox's manifest is the render tests' fixture manifest, rather than a
+# second copy of the same three requirements and the same three repository
+# entries. The two want exactly the same packages for exactly the same reason.
+if [ ! -f "$sandbox/vendor/autoload.php" ]; then
+    command -v composer >/dev/null 2>&1 \
+        || fail "no composer on PATH, and the docs examples need phibble, phplyr, and phiz installed."
+
+    printf 'render-docs: installing phibble, phplyr, and phiz into %s\n' "$sandbox"
+    mkdir -p "$sandbox"
+    cp "$root/tests/Quarto/fixture/composer.json" "$sandbox/composer.json"
+
+    # no-api on the repository entries keeps Composer off api.github.com for
+    # metadata, and --prefer-source keeps it off the dist zipballs too, so
+    # neither needs a GitHub token.
+    ( cd "$sandbox" && "$php" "$(command -v composer)" install \
+        --no-interaction --no-progress --prefer-source ) \
+        || fail "Composer could not install phibble, phplyr, and phiz. None of the three is on Packagist, so this needs network access to GitHub."
+fi
+
+spec="$jupyter_data/kernels/php/kernel.json"
+
+if [ ! -f "$spec" ]; then
+    printf 'render-docs: installing the php kernelspec into %s\n' "$jupyter_data"
+    mkdir -p "$jupyter_data"
+
+    install_arguments=(install --name php --display-name "PHP (juphyter docs)"
+        --autoload "$sandbox/vendor/autoload.php")
+
+    if [ -n "${JUPHYTER_DOCS_PYTHON:-}" ]; then
+        install_arguments+=(--python "$JUPHYTER_DOCS_PYTHON")
+    fi
+
+    JUPYTER_DATA_DIR="$jupyter_data" "$php" "$root/bin/juphyter" \
+        "${install_arguments[@]}" \
+        || fail "juphyter install failed, so there is no kernel to render the docs with."
+fi
+
+python="$(kernelspec_python "$spec")"
+
+[ -n "$python" ] || fail "$spec names no interpreter. Remove $jupyter_data and run again with --refresh."
+
+# juphyter install already required ipykernel there. Quarto's jupyter engine
+# needs four more modules in the same interpreter, and says so before a render
+# rather than part way through one.
+"$python" -c 'import nbclient, nbformat, jupyter_client, yaml' 2>/dev/null \
+    || fail "$python is missing what Quarto's jupyter engine imports. Install them with: $python -m pip install nbclient nbformat jupyter_client pyyaml"
+
+# --no-execute-daemon rather than the default: a kept-alive kernel would carry
+# the classes get-started.qmd declares into a second render of the same page,
+# and PHP cannot redeclare a class.
+printf 'render-docs: rendering %s\n' "$root/docs"
+
+JUPYTER_DATA_DIR="$jupyter_data" \
+JUPYTER_PATH="$jupyter_data" \
+QUARTO_PYTHON="$python" \
+    quarto render "$root/docs" --no-execute-daemon "${arguments[@]+"${arguments[@]}"}"
+
+printf 'render-docs: the site is at %s\n' "$root/docs/_site/index.html"

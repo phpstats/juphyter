@@ -1,0 +1,120 @@
+name: quarto
+
+# The kernel under a real Quarto render.
+#
+# tests.yml covers PHP alone, protocol.yml the wrapper kernel against a Jupyter
+# client, and family.yml the display formatters against the packages they
+# format. This workflow is the only place all of that meets Quarto: a .qmd is
+# rendered to HTML, to ipynb, and to PDF, and the rendered files are read back.
+#
+# PHP 8.5 and ubuntu-latest only, and both for the same reason as family.yml.
+# The fixture plots with phiz, which is written in 8.5 syntax and does not parse
+# below it, so a job on an older PHP would skip every test in the directory. The
+# vl-convert asset below is the linux-64 build.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # The version phiz pins its bundled Vega-Lite against, as in family.yml.
+  VL_CONVERT_VERSION: 1.9.0
+
+  # The Quarto the render tests were written against. Bumping it is this line.
+  QUARTO_VERSION: 1.10.18
+
+jobs:
+  quarto:
+    runs-on: ubuntu-latest
+    name: quarto (PHP 8.5)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, pcntl, posix, sockets
+          coverage: none
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: ${{ env.QUARTO_VERSION }}
+
+      # The static SVG is what a PDF figure is made from, and the binary is the
+      # only thing that produces one. The guard step after it keeps the job from
+      # going green on a render whose figures were quietly missing.
+      - name: Install vl-convert
+        run: |
+          curl -fsSL -o vl-convert.zip \
+            "https://github.com/vega/vl-convert/releases/download/v${VL_CONVERT_VERSION}/vl-convert_linux-64.zip"
+          mkdir -p "$HOME/.local/bin"
+          unzip -q -j vl-convert.zip 'bin/vl-convert' -d "$HOME/.local/bin"
+          chmod +x "$HOME/.local/bin/vl-convert"
+          rm vl-convert.zip
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check vl-convert is on PATH at the pinned version
+        run: |
+          command -v vl-convert
+          vl-convert --version
+          if [ "$(vl-convert --version)" != "vl-convert ${VL_CONVERT_VERSION}" ]; then
+            echo "Expected vl-convert ${VL_CONVERT_VERSION} on PATH." >&2
+            exit 1
+          fi
+
+      # pdftotext reads the rendered PDF back. Without it the PDF is produced
+      # and checked for its header, and its contents go unread, so it is
+      # installed rather than left to the test's skip.
+      - name: Install poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
+
+      - run: composer install --no-interaction --no-progress
+
+      - name: Install the render tests' Python dependencies
+        run: python -m pip install -r tests/Quarto/requirements.txt
+
+      - name: Report the versions under test
+        run: |
+          php -v | head -1
+          quarto --version
+          vl-convert --version
+          python -c "import ipykernel, nbclient, nbformat, jupyter_client; \
+            print('ipykernel', ipykernel.__version__); \
+            print('nbclient', nbclient.__version__); \
+            print('nbformat', nbformat.__version__); \
+            print('jupyter_client', jupyter_client.__version__)"
+
+      # The tests build their own notebook project, holding phibble, phplyr and
+      # phiz, and install their own kernelspec into a temporary
+      # JUPYTER_DATA_DIR. Nothing here writes a kernelspec or touches the
+      # committed composer.json. no-api on the repository entries and
+      # --prefer-source together need no GitHub token.
+      - name: Run the render tests
+        run: python -m pytest tests/Quarto -v
+        env:
+          JUPHYTER_QUARTO_PHP: php
+
+      # The documentation is written in PHP cells, so building the site is an
+      # end-to-end render of four more documents. It installs its own sandbox
+      # and its own kernelspec, as the tests do.
+      - name: Render the documentation site
+        run: ./scripts/render-docs
+
+      - name: Keep the rendered output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered
+          if-no-files-found: warn
+          path: |
+            build/quarto/project/notebooks/report.html
+            build/quarto/project/notebooks/report.ipynb
+            build/quarto/project/notebooks/report.pdf
+            docs/_site

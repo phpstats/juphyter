@@ -1,0 +1,17 @@
+# The render tests' Python dependencies.
+#
+# Quarto's jupyter engine runs in whichever interpreter QUARTO_PYTHON names,
+# and these tests name the one running them, so the four modules Quarto's own
+# jupyter.py and notebook.py import have to be here rather than in some other
+# environment on the machine.
+nbclient>=0.10
+nbformat>=5.10
+jupyter_client>=8
+PyYAML>=6
+
+# The host the wrapper kernel runs inside. Version 7 is a floor rather than a
+# preference, for the reason tests/Protocol/requirements.txt gives.
+ipykernel>=7.0
+
+# The runner.
+pytest>=8

@@ -1,0 +1,198 @@
+---
+title: "Quarto"
+jupyter: php
+---
+
+A `.qmd` with PHP cells needs no Quarto extension and no configuration beyond
+naming the kernel. Quarto's jupyter engine starts the kernel, runs the cells in
+order, and puts each cell's output into the document.
+
+```yaml
+---
+title: "Highway mileage"
+jupyter: php
+---
+```
+
+A cell is a fenced block whose info string is `{php}`, holding PHP without an
+opening tag:
+
+```php
+use Phibble\DataFrame;
+
+$mpg = DataFrame::fromCsv('mpg.csv');
+$mpg;
+```
+
+## Naming the kernel
+
+`jupyter: <name>` is the form to use. Quarto resolves the name against the
+installed kernelspecs, so it is the `--name` that `juphyter install` was given.
+
+```yaml
+---
+jupyter: php85
+---
+```
+
+Jupyter also writes a fuller block into a notebook, and Quarto accepts it in a
+`.qmd`. For juphyter it needs one field more than the three Jupyter writes:
+
+```yaml
+---
+jupyter:
+  kernelspec:
+    name: php85
+    language: php
+    display_name: "PHP 8.5"
+    path: /Users/erik/Library/Jupyter/kernels/php85
+---
+```
+
+`path` is the directory holding `kernel.json`. Quarto's jupyter engine reads it
+when it looks beside a kernelspec for a `quarto_setup_cell`, which it does for
+any language it has no built-in support for, and `jupyter: <name>` is the only
+form that fills the field in by itself. Without `path` the render fails with
+`KeyError: 'path'`. Naming the kernel rather than describing it avoids the whole
+question.
+
+## Cell options
+
+Quarto's cell options are comments in the cell's own language, written with a
+`|` after the comment marker. Quarto has no `php` entry in its
+comment-character table and falls back to `#`, which PHP reads as a line
+comment, so `#|` is a Quarto cell option and a PHP comment at once.
+
+```{php}
+#| echo: false
+use Phibble\DataFrame;
+use Phiz\Datasets;
+use Phiz\Plot;
+```
+
+The options that matter most in a PHP document:
+
+- `#| echo: false` runs the cell and keeps its source out of the page.
+- `#| eval: false` shows the source and does not run it.
+- `#| output: false` runs the cell and shows no output.
+- `#| error: true` lets the render continue past a cell that throws, and keeps
+  the traceback in the output.
+- `#| fig-cap: "..."` captions the cell's figure.
+- `#| label: fig-mileage` gives the figure a cross-reference.
+
+A captioned plot:
+
+```{php}
+#| fig-cap: "City against highway mileage."
+Plot::of(Datasets::mpg())->aes(x: 'cty', y: 'hwy')->point(opacity: 0.5);
+```
+
+PHP cells come out syntax-highlighted. Pandoc's PHP syntax definition expects a
+`<?php` opening tag, which a notebook cell has no place for, and it highlights
+the cell regardless.
+
+## What each format carries
+
+A phiz plot publishes four representations and a phibble frame publishes two,
+and each output format takes one of them. Quarto's choice is the same in every
+case: for HTML it prefers `text/html`, for LaTeX and Typst it prefers
+`image/svg+xml`, and it falls back to `text/plain`.
+
+| Format | A phiz plot | A phibble frame |
+|---|---|---|
+| `html` | the interactive chart, drawn by Vega-Lite in the browser | the HTML table, with the dimensions and the type row |
+| `typst`, `pdf` | the static SVG, placed as a numbered figure | a typeset table; the dimension note and the truncation footer are dropped |
+| `ipynb` | the HTML embed | nothing: see below |
+
+Two consequences are worth knowing before you choose a format.
+
+A PDF figure comes from the static SVG, which phiz produces by running the
+`vl-convert` binary. Install it from
+[vl-convert's releases](https://github.com/vega/vl-convert/releases) and put it
+on `PATH`, or point `PHIZ_VL_CONVERT` at it. Without it a plot has no SVG and a
+PDF has no figure.
+
+`quarto render --to ipynb` is a conversion of the rendered document rather than
+the notebook that was executed. Quarto keeps one representation per output and
+reaches `ipynb` through Pandoc's Markdown reader, and an HTML `<table>` does not
+survive that trip: the output is dropped. Error outputs are dropped as well.
+This is Quarto's conversion rather than anything about the kernel, and a stock
+`python3` kernel loses an `IPython.display.HTML('<table>...')` output in exactly
+the same way. Render to HTML or to PDF when a document's tables matter.
+
+## PDF output
+
+Quarto produces a PDF through LaTeX or through Typst, and Typst is the easier
+of the two here. Typst ships inside Quarto and places an SVG as it is:
+
+```bash
+quarto render report.qmd --to typst
+```
+
+The LaTeX route needs one more tool. For LaTeX output Quarto also picks the
+SVG, and then has to convert it to a PDF, which it does with `rsvg-convert`
+from librsvg. Without that binary `quarto render --to pdf` stops with
+`Could not convert a SVG to a PDF for output`. Install librsvg, or render
+through Typst.
+
+## The kernel daemon
+
+Quarto can keep a kernel alive between renders, which saves starting PHP and
+loading the project's autoloader again. Two conditions have to hold, and for a
+PHP kernel today the second one does not:
+
+1. The daemon has to be asked for. Quarto turns it on by default only in an
+   interactive session outside CI, and `--execute-daemon <seconds>` or
+   `execute: daemon: <seconds>` asks for it explicitly.
+2. Quarto only keeps a kernel whose language it can write a setup or a cleanup
+   cell for. It looks for `lang/<language>` among its own resources and then
+   for a `quarto_setup_cell` or `quarto_cleanup_cell` file beside the
+   kernelspec. It ships neither for PHP, and `juphyter install` writes neither,
+   so the server exits after one render and the next render starts a new
+   kernel.
+
+The practical effect is that each render of a PHP document gets a fresh
+session, and nothing of a previous render is in scope. Setting
+
+```yaml
+execute:
+  daemon: false
+```
+
+makes that explicit, and is the setting to reach for if a future release starts
+daemonizing PHP kernels and a document turns out to depend on a fresh session.
+A document that declares a class or a function is such a document: PHP cannot
+redeclare either, so a second render against a kept-alive kernel would fail on
+the cell that declares it.
+
+When a kept-alive kernel does end, it takes the PHP engine and the watchdog
+process that guards it with it, leaving nothing running.
+
+## Freeze
+
+`freeze` works unchanged, because it is Quarto's own cache of a cell's output
+and the kernel is not involved in it.
+
+```yaml
+execute:
+  freeze: auto
+```
+
+With `freeze: auto` a document is re-executed only when its source changes,
+which is the setting a documentation site wants: a contributor without PHP 8.5
+and the phpstats packages installed can still build the site from the frozen
+output. The frozen output lives in `_freeze/` and is committed.
+
+## Projects
+
+In a Quarto project the kernel is named per document, in each document's front
+matter. A project with more than three documents to render turns the daemon off
+unless `--execute-daemon` was passed on the command line, which for PHP changes
+nothing.
+
+One thing is worth checking in a project: Quarto runs the kernel with the
+document's own directory as its working directory, and the engine finds the
+project to load by walking up from there looking for `vendor/autoload.php`. A
+document in a subdirectory of a Composer project therefore sees that project. A
+document outside any Composer project sees none, and `JUPHYTER_AUTOLOAD` or an
+`autoload` entry in a `juphyter.json` beside the document names one outright.
