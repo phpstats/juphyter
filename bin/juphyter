@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * The juphyter entry point.
+ *
+ * It loads juphyter's own autoloader and hands the arguments to the dispatcher.
+ * Commands are discovered from `src/Console/`, so this file does not change when
+ * one is added. See Juphyter\Console\Application for the discovery rule.
+ *
+ * Finding the notebook's project, which is a different autoloader from this
+ * one, belongs to the engine rather than here.
+ */
+$autoloaders = [
+    // juphyter checked out on its own.
+    __DIR__.'/../vendor/autoload.php',
+    // juphyter installed as a dependency, with bin/ linked into vendor/bin.
+    __DIR__.'/../../../autoload.php',
+];
+
+$loaded = false;
+
+foreach ($autoloaders as $autoloader) {
+    if (is_file($autoloader)) {
+        require $autoloader;
+        $loaded = true;
+        break;
+    }
+}
+
+if (! $loaded) {
+    fwrite(STDERR, "juphyter: no autoloader found. Run composer install.\n");
+    exit(1);
+}
+
+exit(Juphyter\Console\Application::default()->run($argv, STDOUT, STDERR));

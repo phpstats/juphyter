@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <!--
+        One recursive suite, so the directories the later milestone-1 tasks add
+        (tests/Unit, tests/Engine, tests/Quarto) are picked up by creating files
+        rather than by editing this file. tests/Protocol holds Python tests,
+        which the suffix leaves alone.
+    -->
+    <testsuites>
+        <testsuite name="juphyter">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

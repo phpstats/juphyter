@@ -1,0 +1,1 @@
+A file that is not PHP, so discovery must ignore it.

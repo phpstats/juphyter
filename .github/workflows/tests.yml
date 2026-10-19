@@ -1,0 +1,46 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        php: ['8.3', '8.4', '8.5']
+    name: test (PHP ${{ matrix.php }}, ${{ matrix.os }})
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # pcntl and posix carry the kernel's interrupt handling and child
+      # reaping; sockets carries the engine's channel to the transport.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pcntl, posix, sockets
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress
+
+      - run: vendor/bin/pest
+
+      # The dispatcher's two documented exit paths, checked against the real
+      # binary rather than only through the unit suite.
+      - name: juphyter lists its commands
+        run: |
+          php bin/juphyter
+          php bin/juphyter > /dev/null
+
+      - name: juphyter rejects an unknown command
+        run: |
+          if php bin/juphyter frobnicate 2>/dev/null; then
+            echo "expected a non-zero exit code" >&2
+            exit 1
+          fi
