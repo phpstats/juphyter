@@ -486,16 +486,29 @@ nightly.
 These came out of the review rounds and are written down here so they do not
 depend on anyone's memory.
 
-- **phiz's Composer name.** Group 1's website work renames `erikwestlund/phiz`
-  to `phpstats/phiz`, and it has to land in phiz and in phibble's `require-dev`
-  together. juphyter has six references to the old name: the `suggest` entry in
-  `composer.json`, the dev install line in `.github/workflows/family.yml`, two
-  skip messages in `tests/Unit/Display/ChartFormatterTest.php`, the require in
+- **Task 10: phiz's Composer name.** phiz is renamed from
+  `erikwestlund/phiz` to `phpstats/phiz`. juphyter names the old package in
+  eight places: the `suggest` entry in `composer.json`, the dev install line in
+  `.github/workflows/family.yml`, two skip messages in
+  `tests/Unit/Display/ChartFormatterTest.php`, the require in
   `tests/Quarto/fixture/composer.json`, the `FAMILY` tuple in
-  `tests/Quarto/conftest.py`, and the install guide and README. Nothing of ours
-  requires phiz, so no install breaks; what breaks is the family CI job and the
-  render fixture, which install it by name. Cleanest as one commit once main is
-  whole, sequenced with group 1 through the shared integrator.
+  `tests/Quarto/conftest.py`, the vendor-path loop in
+  `tests/Quarto/test_render.py`, the README link, and `docs/install.qmd`. The
+  `Phiz\` namespace does not change, so no formatter or test logic moves.
+
+  Nothing in juphyter requires phiz, so no install breaks either way. What
+  breaks is the family CI job and the Quarto render fixture, which install it by
+  name, so the commit must land close to phiz's own.
+
+  **The gate is a push, not a release.** Composer's VCS driver takes the package
+  name from the default branch and applies it to the tags, which is measured
+  rather than assumed: against a repository whose `main` carries the new name
+  while its `v0.3.0` tag still carries the old one, `composer require
+  phpstats/phiz:^0.3` resolves and locks v0.3.0. Against GitHub today the new
+  name is simply not found, because the rename sits on an unpushed local commit.
+  So once phiz pushes `main`, the existing v0.3.0 tag answers `^0.3` and no new
+  tag or release is needed. The only thing that would invalidate the `^0.3`
+  constraints is phiz choosing to publish the rename at 0.4 or later.
 - **A `quarto_cleanup_cell` in the kernelspec.** Quarto does not daemonize PHP
   kernels today, because it has no entry for the language, so the key has
   nothing to act on. Worth adding when Quarto learns about PHP, alongside the
@@ -527,7 +540,7 @@ classes by name, and a CI workflow.
 adding a class under `src/Console/`, never by editing the dispatcher, so tasks
 5 and 7 do not collide. Require `nikic/php-parser: ^5.0` and nothing else in
 `require`. Put `pestphp/pest: ^4.0` in `require-dev`, with `phpstats/phibble`,
-`phpstats/phplyr`, and `erikwestlund/phiz` as optional dev dependencies behind
+`phpstats/phplyr`, and `phpstats/phiz` as optional dev dependencies behind
 the same `repositories` entries the siblings use.
 
 **Acceptance.** `composer install` succeeds on all three PHP versions.
