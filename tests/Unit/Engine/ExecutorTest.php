@@ -67,6 +67,15 @@ function typesOf(array $events): array
     return array_map(fn (array $e) => $e['type'], $events);
 }
 
+/** Everything a run printed to stdout, as one string. */
+function stream_text(array $events): string
+{
+    return implode('', array_map(
+        fn (array $e) => $e['text'],
+        array_filter(ofType($events, 'stream'), fn (array $e) => $e['name'] === 'stdout'),
+    ));
+}
+
 /**
  * The error events of a child run, or a failure saying what the child did.
  *
@@ -857,9 +866,11 @@ describe('a cell that ends the process', function () {
         // event, and waited on a process that had already gone.
         //
         // The output is what makes it reproducible: it leaves the allocator
-        // with less to spare at the moment the limit is hit. Whether the
-        // unfixed handler survived came down to that layout, which is why this
-        // passed on PHP 8.3.33 and 8.4.25 and failed on 8.3.35 and on CI.
+        // with less to spare at the moment the limit is hit. How much less
+        // decides which builds notice, so this case and the one below it print
+        // very different volumes. One line is enough on 8.3.35; 8.5.10 only
+        // notices at the larger volume, and between them the two cover every
+        // build here.
         $run = inChild(
             ['echo "printed\n"; $held = []; while (true) { $held[] = str_repeat("x", 1024 * 64); }'],
             ['memory_limit=24M'],
@@ -871,6 +882,49 @@ describe('a cell that ends the process', function () {
             ->and($errors[0]['ename'])->toBe('FatalError')
             ->and($errors[0]['evalue'])->toContain('memory')
             ->and(ofType($run['events'], 'stream')[0]['text'])->toBe("printed\n");
+    });
+
+    it('reports a fatal after a cell has printed megabytes', function () {
+        // The same regression at a volume that starves the handler on builds
+        // the case above leaves enough room on. Two megabytes in kilobyte
+        // writes makes the final flush's own allocation the one that cannot be
+        // met, rather than the much smaller one that reads the error.
+        $run = inChild(
+            [
+                'for ($i = 0; $i < 2048; $i++) { echo str_repeat("z", 1024); }'
+                ."\n".'$a = []; while (true) { $a[] = str_repeat("x", 65536); }',
+            ],
+            ['memory_limit=24M'],
+        );
+
+        $errors = errorsFrom($run);
+
+        expect($errors)->toHaveCount(1)
+            ->and($errors[0]['ename'])->toBe('FatalError')
+            ->and($errors[0]['evalue'])->toContain('memory')
+            ->and(stream_text($run['events']))->toHaveLength(2048 * 1024);
+    });
+
+    it('reports a fatal whose own allocation was a small one', function () {
+        // The third shape, and the one that starves the handler most widely.
+        // The array is grown before it is filled, so each append is a plain
+        // 4KB string allocation rather than a rehash, and the request that
+        // finally fails is 8KB. What a failed request leaves free is bounded
+        // by its own size, so a small one leaves the handler almost nothing,
+        // where the 64KB shapes above leave it enough on most builds.
+        $run = inChild(
+            [
+                '$held = array_fill(0, 400000, null); $i = 0;'
+                ."\n".'while (true) { $held[$i++] = str_repeat("x", 4096); }',
+            ],
+            ['memory_limit=24M'],
+        );
+
+        $errors = errorsFrom($run);
+
+        expect($errors)->toHaveCount(1)
+            ->and($errors[0]['ename'])->toBe('FatalError')
+            ->and($errors[0]['evalue'])->toContain('memory');
     });
 
     it('still reports a fatal as a fatal rather than as an exit', function () {
