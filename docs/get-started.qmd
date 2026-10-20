@@ -90,8 +90,8 @@ $mean = fn (array $values) => array_sum($values) / count($values);
 $mean([]);
 ```
 
-Warnings, notices, and deprecations go to the cell's error stream and leave it
-running, because they did not end it.
+Warnings, notices, and deprecations go to the cell's error stream and leave the
+cell running.
 
 ```{php}
 $widths = ['narrow' => 4, 'wide' => 12];

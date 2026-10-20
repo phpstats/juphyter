@@ -1,15 +1,15 @@
 ---
 title: "juphyter"
-subtitle: "A Jupyter and Quarto kernel for PHP, for statistical work with the phpstats packages"
+subtitle: "A Jupyter and Quarto kernel for PHP, built for statistical work with the phpstats packages"
 jupyter: php
 ---
 
 juphyter runs PHP in a notebook cell. It installs a Jupyter kernel, so
 JupyterLab lists PHP in its launcher and Quarto executes `{php}` blocks in a
-`.qmd`, and it gives the values a cell returns the richest representation the
-front end can draw: a [phibble](https://github.com/phpstats/phibble) data frame
-becomes an HTML table, a [phiz](https://github.com/phpstats/phiz) plot becomes
-a chart or a static figure, and everything else gets a compact dump.
+`.qmd`. The value a cell returns gets the richest representation the front end
+can draw: a [phibble](https://github.com/phpstats/phibble) data frame becomes
+an HTML table, a [phiz](https://github.com/phpstats/phiz) plot becomes a chart
+or a static figure, and everything else gets a compact dump.
 
 A notebook sees the project it sits in. The engine walks up from the notebook's
 directory looking for `vendor/autoload.php`, so a notebook inside a Composer
@@ -54,10 +54,10 @@ vendor/bin/juphyter install
 ```
 
 The install command writes one kernelspec where Jupyter looks for them and
-prints where it went. It needs a Python with `ipykernel` in it, because the
-kernel is a Python transport in front of a PHP engine, and it reports the exact
-`pip` command when that is missing. Several PHP versions can be installed side
-by side, each under its own `--name`.
+prints where it went. It needs a Python installation that has `ipykernel`,
+because the kernel is a Python transport in front of a PHP engine, and it
+reports the exact `pip` command when that is missing. Several PHP versions can
+be installed side by side, each under its own `--name`.
 
 Static images from phiz plots need the
 [vl-convert](https://github.com/vega/vl-convert) binary on `PATH`. Without it a

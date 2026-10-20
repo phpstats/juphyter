@@ -6,7 +6,7 @@ project:
 
 website:
   title: "juphyter"
-  site-url: "https://phpstats.github.io/juphyter/"
+  site-url: "https://juphyter.phpstats.org"
   repo-url: https://github.com/phpstats/juphyter
   repo-actions: [source, issue]
   sidebar:

@@ -98,8 +98,8 @@ what is rendered.
 
 ## What each format carries
 
-A phiz plot publishes four representations and a phibble frame publishes two,
-and each output format takes one of them. Quarto's choice is the same in every
+A phiz plot publishes four representations and a phibble frame publishes two.
+Each output format takes one of them, and Quarto's choice is the same in every
 case: for HTML it prefers `text/html`, for LaTeX and Typst it prefers
 `image/svg+xml`, and it falls back to `text/plain`.
 
@@ -119,8 +119,9 @@ PDF has no figure.
 
 `quarto render --to ipynb` is a conversion of the rendered document rather than
 the notebook that was executed. Quarto keeps one representation per output and
-reaches `ipynb` through Pandoc's Markdown reader, and an HTML `<table>` does not
-survive that trip: the output is dropped. Error outputs are dropped as well.
+reaches `ipynb` through Pandoc's Markdown reader. An HTML `<table>` does not
+survive that trip, so the output is dropped, and error outputs are dropped as
+well.
 This is Quarto's conversion rather than anything about the kernel, and a stock
 `python3` kernel loses an `IPython.display.HTML('<table>...')` output in exactly
 the same way. Render to HTML or to PDF when a document's tables matter.

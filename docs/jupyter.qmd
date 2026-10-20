@@ -4,8 +4,8 @@ jupyter: php
 ---
 
 Once `juphyter install` has written a kernelspec, JupyterLab lists it in the
-launcher under the display name the install command chose or `--display-name`
-was given. A new notebook with that kernel runs PHP cells.
+launcher under the name `--display-name` gave it, or the name the install
+command chose by itself. A new notebook with that kernel runs PHP cells.
 
 ```bash
 vendor/bin/juphyter install --name php85 --display-name "PHP 8.5"

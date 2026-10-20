@@ -483,9 +483,8 @@ def test_pdf_renders_the_plot_as_a_figure_from_the_static_svg(
 
     # The whole string, which the PDF carries only if a font on the machine has
     # the Japanese characters in it. Typst falls back glyph by glyph and leaves
-    # out what it finds nowhere, so a machine with no CJK font renders
-    # `本語` and loses `日`. That is what the first CI run of this job
-    # produced, and the job installs fonts-noto-cjk for it.
+    # out what it finds nowhere, so the first CI run of this job rendered
+    # `本語` and lost `日`. The job installs fonts-noto-cjk for it.
     assert MULTIBYTE in collapsed_text
 
 
