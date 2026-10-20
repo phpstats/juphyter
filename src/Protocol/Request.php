@@ -20,7 +20,7 @@ use RuntimeException;
  *
  * ```json
  * {"id":"a1","type":"execute","code":"$x = 1;","silent":false,"store_history":true}
- * {"id":"a2","type":"complete","code":"$frame->fil","cursor_pos":11}
+ * {"id":"a2","type":"complete","code":"$df->fil","cursor_pos":11}
  * {"id":"a3","type":"is_complete","code":"if (true) {"}
  * {"id":"a4","type":"kernel_info"}
  * {"id":"a5","type":"shutdown","restart":false}

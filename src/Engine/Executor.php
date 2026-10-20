@@ -266,7 +266,7 @@ final class Executor
             $value = $collected[$cleaned->resultVariable];
 
             // A cell whose value is null publishes nothing, as a notebook
-            // expects: `var_dump($x);`, `Juphyter\display($frame);` and any
+            // expects: `var_dump($x);`, `Juphyter\display($df);` and any
             // other void call is written for its effect, and an `Out` of
             // "null" after it is noise. Python's notebooks never show None
             // this way either.

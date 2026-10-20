@@ -90,7 +90,7 @@ boundary.
 
 ## A cell whose value is null shows no output
 
-`var_dump($x);`, `Juphyter\display($frame)`, and any other call that returns
+`var_dump($x);`, `Juphyter\display($df)`, and any other call that returns
 nothing produce no `Out[N]`, the same way a Python notebook shows nothing for
 `None`. Every other value is shown, including `0`, `false`, `''`, `[]`, and
 `'null'`.

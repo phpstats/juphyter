@@ -46,14 +46,14 @@ final class TableFormatter implements Formatter
     public function format(mixed $value): MimeBundle
     {
         /** @var object $value */
-        $frame = $value->collect();
+        $df = $value->collect();
 
         $html = Reflect::declares($value, HtmlFormatter::METHOD)
             ? (string) $value->{HtmlFormatter::METHOD}()
-            : $this->renderer->render($frame);
+            : $this->renderer->render($df);
 
         return (new MimeBundle)
             ->with(MimeBundle::HTML, $html)
-            ->with(MimeBundle::PLAIN, (string) $frame->format());
+            ->with(MimeBundle::PLAIN, (string) $df->format());
     }
 }

@@ -47,7 +47,7 @@ final class Completer
     {
         $before = substr($code, 0, $cursor);
 
-        // A member of something the session holds: `$frame->col`, `$x::CONST`.
+        // A member of something the session holds: `$df->col`, `$x::CONST`.
         if (preg_match('/\$([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)\s*(->|::)\s*([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)?$/', $before, $match) === 1) {
             $partial = $match[3] ?? '';
 

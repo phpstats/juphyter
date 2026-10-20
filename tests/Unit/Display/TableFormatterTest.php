@@ -88,24 +88,24 @@ describe('a real phibble table', function () {
     });
 
     it('matches a DataFrame', function () {
-        $frame = Phibble\DataFrame::fromRows(penguinRows());
+        $df = Phibble\DataFrame::fromRows(penguinRows());
 
-        expect((new TableFormatter)->supports($frame))->toBeTrue();
+        expect((new TableFormatter)->supports($df))->toBeTrue();
     });
 
     it('prints a DataFrame exactly as phibble prints it', function () {
-        $frame = Phibble\DataFrame::fromRows(penguinRows());
-        $bundle = Registry::default()->format($frame);
+        $df = Phibble\DataFrame::fromRows(penguinRows());
+        $bundle = Registry::default()->format($df);
 
-        expect($bundle->get(MimeBundle::PLAIN))->toBe($frame->collect()->format());
+        expect($bundle->get(MimeBundle::PLAIN))->toBe($df->collect()->format());
     });
 
     it('renders a DataFrame as HTML, to its snapshot', function () {
-        $frame = Phibble\DataFrame::fromRows(penguinRows());
+        $df = Phibble\DataFrame::fromRows(penguinRows());
 
         Snapshot::assert(
             'phibble-dataframe.html',
-            (string) Registry::default()->format($frame)->get(MimeBundle::HTML),
+            (string) Registry::default()->format($df)->get(MimeBundle::HTML),
         );
     });
 

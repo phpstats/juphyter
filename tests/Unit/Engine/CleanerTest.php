@@ -156,10 +156,10 @@ describe('the forgiving semicolon', function () {
     });
 
     it('accepts a bare variable, which is how a notebook asks what something is', function () {
-        $cell = cleaned('$frame');
+        $cell = cleaned('$df');
 
         expect($cell->semicolonAppended)->toBeTrue()
-            ->and(body($cell))->toBe("\$__juphyter_result = \$frame\n;");
+            ->and(body($cell))->toBe("\$__juphyter_result = \$df\n;");
     });
 
     it('accepts a cell ending in a // comment, which the bare semicolon could not', function () {
