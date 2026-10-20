@@ -539,6 +539,69 @@ depend on anyone's memory.
   that do not exist is enough. A cache miss ends that, so editing a PHP cell
   needs the real kernel. This is what makes executable docs adoptable across
   packages whose contributors lack the full stack.
+
+  **Revised after group 1 raised it.** `docs/_quarto.yml` sets `freeze: false`
+  deliberately, because rendering the site executes every cell and so is the
+  broadest end-to-end exercise of the kernel there is. That value is real and I
+  have relied on it twice. The recommendation is now `freeze: auto` with
+  `_freeze/` committed, plus a CI step that removes the directory before
+  rendering: a contributor fixing prose then needs only a stub kernelspec, while
+  CI still executes every cell on every run. There is no `--no-freeze` flag;
+  the only freeze-related flag on Quarto 1.10.18 is `--use-freezer`, which
+  forces the opposite, so deleting the directory is the way to force execution.
+  This is Erik's to approve, as it is new scope.
+
+## What the first CI run found
+
+The first CI run after the push failed in both workflows. Neither failure was
+caught by the local suites, and both are recorded here because the reason each
+escaped matters more than the fix.
+
+- **Task 11: the quarto job.** Two render tests failed on Linux only.
+  `test_the_daemon_leaves_no_engine_or_watchdog_behind` found the engine and
+  reported no watchdog, and the watchdog was there: `ps` fits its command
+  column to the screen width, takes that width from `COLUMNS` when nothing is
+  attached to its output, and the watchdog's `python -c` script is several
+  hundred characters long with the pid it guards at the end. `ps -ww` asks for
+  the untruncated form. I verified it in an `ubuntu:24.04` container, where a
+  200-character marker is invisible without the flag and found with it, and
+  confirmed the flag changes nothing on macOS, which is why its absence was
+  invisible locally. The other failure was the PDF's Japanese characters: bare
+  `ubuntu:24.04` has no font covering U+65E5, U+672C, or U+8A9E, and
+  `fonts-noto-cjk` brings 30 that cover all three, so the workflow installs it
+  and the assertion stays.
+
+  A permanent test now holds the listing to the untruncated form. It cannot
+  fail on macOS, because macOS does not truncate when the output is piped, and
+  that is inherent rather than a gap.
+
+- **Task 12: a real kernel bug the tests had not reached.** Reporting an
+  uncatchable fatal allocates: `error_get_last()` builds an array, the final
+  flush copies what the cell printed, and the event is encoded into a string. A
+  cell that exhausts the memory limit leaves the process sitting at that limit,
+  so the first of those steps to ask for memory failed, and a fatal inside a
+  shutdown function abandons the rest of the handler. The front end was left
+  with the cell's output, no terminal event, and a process that had already
+  gone. The shutdown handler now raises the memory limit as its first act,
+  which is safe where it would not be elsewhere: the process is exiting, the
+  remaining work is bounded, and the limit is only ever raised.
+
+  **Whether the old handler survived depended on the build, not the version.**
+  That is the part worth keeping. With `self::reserve()` removed and nothing
+  else changed, the cell that prints two megabytes before exhausting the limit
+  fails five times out of five on Homebrew's PHP 8.5.10 and passes five out of
+  five on Herd's 8.5.10, the same version number built a month apart. The
+  worker and I disagreed about the 8.5 leg for exactly this reason and we were
+  both measuring correctly. Three guards now cover three mechanisms, and
+  between them they fail without the fix on 8.3.35, 8.4.26, and Homebrew's
+  8.5.10.
+
+  A floor this exposes and does not fix: at a 2M or 4M `memory_limit` the
+  kernel cannot report a fatal at all, because php-parser exhausts the limit
+  while parsing the cell and the cell never runs. The `memory_limit` key in
+  `juphyter.json` can be set that low, so the limitations page should say that
+  very low limits fail before a cell can run.
+
 ## Milestone 1 tasks
 
 Each task owns its files outright. Where two tasks touch the same area, the
