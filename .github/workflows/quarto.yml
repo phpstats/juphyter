@@ -72,8 +72,15 @@ jobs:
       # pdftotext reads the rendered PDF back. Without it the PDF is produced
       # and checked for its header, and its contents go unread, so it is
       # installed rather than left to the test's skip.
-      - name: Install poppler-utils
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
+      #
+      # The font is for the fixture's Japanese characters. Typst leaves out a
+      # glyph that no font on the machine has, and the runner image carries no
+      # CJK font, so the first run of this job produced a PDF with part of that
+      # string missing.
+      - name: Install poppler-utils and a CJK font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends poppler-utils fonts-noto-cjk
 
       - run: composer install --no-interaction --no-progress
 

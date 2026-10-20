@@ -21,6 +21,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -479,6 +480,12 @@ def test_pdf_renders_the_plot_as_a_figure_from_the_static_svg(
     assert "2seater" in collapsed_text
     assert "A tibble" not in collapsed_text
     assert "DivisionByZeroError" in text
+
+    # The whole string, which the PDF carries only if a font on the machine has
+    # the Japanese characters in it. Typst falls back glyph by glyph and leaves
+    # out what it finds nowhere, so a machine with no CJK font renders
+    # `本語` and loses `日`. That is what the first CI run of this job
+    # produced, and the job installs fonts-noto-cjk for it.
     assert MULTIBYTE in collapsed_text
 
 
@@ -665,9 +672,18 @@ def test_a_kept_alive_kernel_survives_a_long_idle_period(
 
 
 def processes() -> list[tuple[int, str]]:
-    """Every process on this machine, as a pid and a command line."""
+    """Every process on this machine, as a pid and a command line.
+
+    `-ww` asks for the command line in full. `ps` otherwise cuts that column to
+    the screen width, which it takes from `COLUMNS` when nothing is attached to
+    its output, and 80 columns is enough for the engine and nowhere near enough
+    for the watchdog: the watchdog is a `python -c` script several hundred
+    characters long, and the pid it guards is the second argument after it. A
+    run with a narrow width therefore reports the engine and no watchdog, which
+    is what the first CI run of this job did.
+    """
     result = subprocess.run(
-        ["ps", "-eo", "pid=,command="],
+        ["ps", "-ww", "-eo", "pid=,command="],
         capture_output=True,
         text=True,
         check=True,
@@ -713,6 +729,40 @@ def gone(pid: int, timeout: float = 20.0) -> bool:
         time.sleep(0.2)
 
     return False
+
+
+def test_the_process_listing_carries_a_long_command_line_whole(monkeypatch) -> None:
+    """What `processes()` reads has to hold a command line of any length.
+
+    The watchdog is the one process these tests find by a marker far along its
+    command line, and a listing cut to 80 columns keeps the engine and drops
+    the watchdog. That is what the first CI run of this job reported. The cut
+    is `ps` fitting its command column to the screen width, which it takes from
+    `COLUMNS` when nothing is attached to its output, so the width is set here
+    rather than waited for. macOS ignores it and Linux obeys it, which is why
+    the flag's absence was invisible until the job ran.
+    """
+    monkeypatch.setenv("COLUMNS", "80")
+
+    marker = "juphyter-listing-" + "x" * 200
+    child = subprocess.Popen(
+        [sys.executable, "-I", "-c", "import time; time.sleep(30)", marker],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    try:
+        listing = dict(processes())
+
+        assert marker in listing.get(child.pid, ""), (
+            "the listing cut this process's command line: {!r}".format(
+                listing.get(child.pid)
+            )
+        )
+    finally:
+        child.kill()
+        child.wait(timeout=10)
 
 
 # --------------------------------------------------------------------------
