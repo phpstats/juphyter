@@ -83,8 +83,8 @@ juphyter is the notebook of the phpstats family.
 [phibble](https://github.com/phpstats/phibble) provides data frames,
 [phplyr](https://github.com/phpstats/phplyr) the dplyr verbs over them,
 [phiz](https://github.com/phpstats/phiz) the plots, and
-[php-stats](https://github.com/erikwestlund/php-stats) and
-[CmdStanPHP](https://github.com/erikwestlund/cmdstanphp) the models. juphyter
+[phit](https://github.com/phpstats/phit) and
+[CmdStanPHP](https://github.com/phpstats/CmdStanPHP) the models. juphyter
 requires none of them and formats any of them that is installed.
 
 [Get started](get-started.qmd) walks through a first notebook.
