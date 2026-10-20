@@ -486,7 +486,7 @@ nightly.
 These came out of the review rounds and are written down here so they do not
 depend on anyone's memory.
 
-- **Task 10: phiz's Composer name.** phiz is renamed from
+- **Task 10: phiz's Composer name. Landed.** phiz is renamed from
   `erikwestlund/phiz` to `phpstats/phiz`. juphyter names the old package in
   eight places: the `suggest` entry in `composer.json`, the dev install line in
   `.github/workflows/family.yml`, two skip messages in
@@ -500,15 +500,34 @@ depend on anyone's memory.
   breaks is the family CI job and the Quarto render fixture, which install it by
   name, so the commit must land close to phiz's own.
 
-  **The gate is a push, not a release.** Composer's VCS driver takes the package
-  name from the default branch and applies it to the tags, which is measured
-  rather than assumed: against a repository whose `main` carries the new name
-  while its `v0.3.0` tag still carries the old one, `composer require
-  phpstats/phiz:^0.3` resolves and locks v0.3.0. Against GitHub today the new
-  name is simply not found, because the rename sits on an unpushed local commit.
-  So once phiz pushes `main`, the existing v0.3.0 tag answers `^0.3` and no new
-  tag or release is needed. The only thing that would invalidate the `^0.3`
-  constraints is phiz choosing to publish the rename at 0.4 or later.
+  **The gate was a push, not a release.** Composer's VCS driver takes the
+  package name from the default branch and applies it to the tags, which was
+  measured rather than assumed: against a repository whose `main` carried the
+  new name while its `v0.3.0` tag still carried the old one, `composer require
+  phpstats/phiz:^0.3` resolved and locked v0.3.0. So pushing phiz's `main` was
+  enough for the existing tag to answer `^0.3`, and no new tag or release was
+  needed. The only thing that would have invalidated the `^0.3` constraints was
+  phiz choosing to publish the rename at 0.4 or later, which it did not.
+
+  **What landed, on 2026-10-19.** `0-reconcile-royal-dingo` pushed `main` for
+  phibble, phplyr, phit, phpolars, cmdstanphp, and phiz, so `phpstats/phiz` and
+  `phpstats/cmdstanphp` are the names GitHub now answers to. phpstats.org was
+  the only `composer.json` in the family still naming old packages; it moved to
+  `phpstats/phiz: ^0.3` and `phpstats/cmdstanphp: dev-main` and pushed as
+  `8fcac91`, with its lock recording `phpstats/phiz v0.3.0` at source reference
+  `5d2f7a65c2`, the same commit the old name resolved to. Task 10's commit then
+  merged into juphyter's `main`, and `tests/Quarto` ran green against the
+  pushed remotes.
+
+  Two findings came out of it that the entry above did not anticipate. The
+  constraint `cmdstan/php: dev-phpstats-family` named a branch that did not
+  exist, so `composer update` in phpstats.org would have failed before any
+  rename; `composer install` kept working only because the lock pinned a
+  reachable commit. cmdstanphp has no tags at all, which is why its constraint
+  is `dev-main` rather than a version. A `dev` constraint is acceptable under
+  the site's `minimum-stability: stable` because an explicit root requirement
+  carries its own stability, which group 1's planner measured before the edit
+  was written.
 - **A `quarto_cleanup_cell` in the kernelspec.** Quarto does not daemonize PHP
   kernels today, because it has no entry for the language, so the key has
   nothing to act on. Worth adding when Quarto learns about PHP, alongside the
