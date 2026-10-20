@@ -93,6 +93,14 @@ final class Executor
      */
     public const ENDED = 'SystemExit';
 
+    /**
+     * The room the shutdown handler reserves for itself, in bytes.
+     *
+     * Enough for {@see error_get_last()}, the cell's remaining output and one
+     * encoded event, with margin. See {@see reserve()} for why it is needed.
+     */
+    private const FATAL_HEADROOM = 8 * 1024 * 1024;
+
     private readonly Cleaner $cleaner;
 
     private readonly Session $session;
@@ -418,6 +426,9 @@ final class Executor
         $this->watching = true;
 
         register_shutdown_function(function (): void {
+            // Before anything that allocates, which is everything below.
+            self::reserve();
+
             // A cell is still running at shutdown, so it never reached the
             // finally: either something fatal happened or the cell ended the
             // process itself. With no cell running this is an ordinary exit and
@@ -466,6 +477,64 @@ final class Executor
                 'traceback' => $traceback,
             ]);
         });
+    }
+
+    /**
+     * Give the shutdown handler room to work in.
+     *
+     * A cell that exhausts the memory limit leaves the process sitting at that
+     * limit, and every step of reporting the fatal needs to allocate:
+     * {@see error_get_last()} builds a fresh array holding the message, the
+     * final flush copies what the cell printed, and the event is encoded into
+     * a string. Whichever of those asks first fails, and a fatal inside a
+     * shutdown function abandons the rest of it, so the front end is left with
+     * no terminal event and waits on a process that has already gone.
+     *
+     * Whether there is enough left to get through is a matter of how the
+     * allocator happened to be laid out when the limit was hit, which is why
+     * the same cell reports correctly on one build and silently vanishes on
+     * the next.
+     *
+     * Raising the limit here is safe in a way it would not be anywhere else:
+     * the process is on its way out, the work left is bounded and small, and
+     * the limit is only ever raised, never lowered, so a cell that was given
+     * generous room does not end up with less of it.
+     */
+    private static function reserve(): void
+    {
+        $current = self::limitInBytes((string) ini_get('memory_limit'));
+
+        if ($current === null) {
+            return;
+        }
+
+        $wanted = memory_get_usage(true) + self::FATAL_HEADROOM;
+
+        if ($wanted > $current) {
+            ini_set('memory_limit', (string) $wanted);
+        }
+    }
+
+    /**
+     * A `memory_limit` value in bytes, or null when it is not limited.
+     *
+     * The ini value is an integer with an optional `K`, `M` or `G` suffix, and
+     * any negative value means unlimited.
+     */
+    private static function limitInBytes(string $limit): ?int
+    {
+        $limit = trim($limit);
+
+        if ($limit === '' || (int) $limit < 0) {
+            return null;
+        }
+
+        return (int) $limit * match (strtoupper(substr($limit, -1))) {
+            'G' => 1024 ** 3,
+            'M' => 1024 ** 2,
+            'K' => 1024,
+            default => 1,
+        };
     }
 
     /**

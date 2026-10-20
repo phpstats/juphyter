@@ -7,6 +7,7 @@ use Juphyter\Engine\Cleaner;
 use Juphyter\Engine\Executor;
 use Juphyter\Engine\Interrupt;
 use Juphyter\Engine\Session;
+use PHPUnit\Framework\Assert;
 
 /**
  * An executor that records every event it emits.
@@ -64,6 +65,32 @@ function ofType(array $events, string $type): array
 function typesOf(array $events): array
 {
     return array_map(fn (array $e) => $e['type'], $events);
+}
+
+/**
+ * The error events of a child run, or a failure saying what the child did.
+ *
+ * A fatal that goes unreported leaves no events at all, and the count alone
+ * does not say whether the handler stayed quiet, died of a second fatal, or
+ * never ran. The child's exit status and stderr distinguish those, and are
+ * worth having in a CI log for a failure that does not reproduce locally.
+ *
+ * @param  array{events: list<array<string, mixed>>, stdout: string, stderr: string, status: int}  $run
+ * @return list<array<string, mixed>>
+ */
+function errorsFrom(array $run): array
+{
+    $errors = ofType($run['events'], 'error');
+
+    if ($errors === []) {
+        Assert::fail(sprintf(
+            "The child emitted no error event. It exited %d, saying:\n%s",
+            $run['status'],
+            trim($run['stderr']) === '' ? '  (nothing on stderr)' : '  '.trim($run['stderr']),
+        ));
+    }
+
+    return $errors;
 }
 
 /**
@@ -661,7 +688,7 @@ describe('in a child process', function () {
             ['memory_limit=24M'],
         );
 
-        $errors = ofType($run['events'], 'error');
+        $errors = errorsFrom($run);
 
         expect($errors)->not->toBeEmpty()
             ->and($errors[0]['ename'])->toBe('FatalError')
@@ -815,10 +842,35 @@ describe('a cell that ends the process', function () {
             ['memory_limit=24M'],
         );
 
-        $errors = ofType($run['events'], 'error');
+        $errors = errorsFrom($run);
 
         expect($errors)->toHaveCount(1)
             ->and($errors[0]['ename'])->toBe('FatalError');
+    });
+
+    it('reports a fatal from a cell that had already printed something', function () {
+        // The regression this guards. Reporting a fatal allocates — reading the
+        // error, flushing what the cell printed, encoding the event — and a
+        // cell that exhausts the limit leaves the process sitting at it, so
+        // whichever step asks first used to fail and take the whole handler
+        // with it. The front end then saw the cell's output and no terminal
+        // event, and waited on a process that had already gone.
+        //
+        // The output is what makes it reproducible: it leaves the allocator
+        // with less to spare at the moment the limit is hit. Whether the
+        // unfixed handler survived came down to that layout, which is why this
+        // passed on PHP 8.3.33 and 8.4.25 and failed on 8.3.35 and on CI.
+        $run = inChild(
+            ['echo "printed\n"; $held = []; while (true) { $held[] = str_repeat("x", 1024 * 64); }'],
+            ['memory_limit=24M'],
+        );
+
+        $errors = errorsFrom($run);
+
+        expect($errors)->toHaveCount(1)
+            ->and($errors[0]['ename'])->toBe('FatalError')
+            ->and($errors[0]['evalue'])->toContain('memory')
+            ->and(ofType($run['events'], 'stream')[0]['text'])->toBe("printed\n");
     });
 
     it('still reports a fatal as a fatal rather than as an exit', function () {
@@ -827,7 +879,7 @@ describe('a cell that ends the process', function () {
             ['memory_limit=24M'],
         );
 
-        $errors = ofType($run['events'], 'error');
+        $errors = errorsFrom($run);
 
         expect($errors)->toHaveCount(1)
             ->and($errors[0]['ename'])->toBe('FatalError')
