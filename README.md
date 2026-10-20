@@ -1,10 +1,10 @@
 # juphyter
 
-A Jupyter kernel for PHP, for statistical work with the
-[phpstats](https://phpstats.org) packages. It runs PHP cells in JupyterLab and
-in Quarto documents, and renders [phibble](https://github.com/phpstats/phibble)
-tables and [phiz](https://github.com/phpstats/phiz) plots as notebook
-output rather than as text.
+juphyter runs PHP cells in JupyterLab and in Quarto documents. It is built
+for statistical work with the [phpstats](https://phpstats.org) packages, so
+[phibble](https://github.com/phpstats/phibble) tables and
+[phiz](https://github.com/phpstats/phiz) plots arrive as notebook output rather
+than as text.
 
 ## Install
 
@@ -13,12 +13,12 @@ composer require --dev phpstats/juphyter
 vendor/bin/juphyter install
 ```
 
-juphyter needs PHP 8.3 or later and a Python with Jupyter in it, because the
-kernel's wrapper runs inside `ipykernel`. Both JupyterLab and Quarto's jupyter
-engine already require that Python, so there is nothing extra to install for
-either. See the [installation guide](https://phpstats.github.io/juphyter/install.html)
-for several PHP versions side by side, the standalone PHAR, and static image
-export.
+juphyter needs PHP 8.3 or later and a Python installation that has Jupyter,
+because the kernel's wrapper runs inside `ipykernel`. Both JupyterLab and
+Quarto's jupyter engine already require that Python, so neither needs anything
+extra. The [installation guide](https://juphyter.phpstats.org/install.html)
+covers running several PHP versions side by side, the standalone PHAR, and
+static image export.
 
 ## Example
 
@@ -41,7 +41,7 @@ $penguins
 3 Gentoo      123 5076.
 ```
 
-In a notebook that table arrives as HTML with its column types, and a
+In a notebook, that table arrives as HTML with its column types, and a
 `Phiz\Plot` arrives as a chart. To show several things from one cell, call
 `Juphyter\display()`.
 
@@ -62,6 +62,7 @@ $penguins = Phibble\DataFrame::fromCsv('penguins.csv');
 
 ```{php}
 Phiz\Plot::of($penguins)->aes(x: 'species', y: 'body_mass')->boxplot()
+```
 ````
 
 `quarto render` executes the cells and puts the figures and tables in the
@@ -87,8 +88,9 @@ output. Cell options work as they do for any other engine, because PHP accepts
 
 PHP cannot redeclare a class or a function, so re-running a cell that declares
 one needs a kernel restart, and a cell cannot declare a `namespace`. The kernel
-runs on macOS and Linux. The [limitations page](https://phpstats.github.io/juphyter/limitations.html)
-explains each one and why.
+runs on macOS and Linux. The
+[limitations page](https://juphyter.phpstats.org/limitations.html) explains each
+limitation and the reason for it.
 
 ## Development
 
