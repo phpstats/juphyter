@@ -34,5 +34,17 @@
         <exclude-pattern>bench/*</exclude-pattern>
         <exclude-pattern>benchmarks/*</exclude-pattern>
     </rule>
-    <rule ref="./tools/phpcs/Phpstats/Sniffs/NamingConventions/CamelCapsParameterAndPropertySniff.php"></rule>
+    <rule ref="./tools/phpcs/Phpstats/Sniffs/NamingConventions/CamelCapsParameterAndPropertySniff.php">
+        <!-- The private evaluate() runs a user's cell. Its own parameters carry
+             the reserved prefix so that extract() of a user variable cannot
+             shadow them and so that they can be stripped by name from what is
+             collected. Renaming them would change what the method returns. -->
+        <properties>
+            <property name="allowed" type="array">
+                <element value="__juphyter_source"/>
+                <element value="__juphyter_before"/>
+                <element value="__juphyter_collected"/>
+            </property>
+        </properties>
+    </rule>
 </ruleset>
