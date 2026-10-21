@@ -50,7 +50,11 @@
     ],
     "scripts": {
         "test": "pest",
-        "lint": "phpcs"
+        "lint": [
+            "phpcs",
+            "@test:sniffs"
+        ],
+        "test:sniffs": "php tools/phpcs/selftest/run.php"
     },
     "config": {
         "sort-packages": true,

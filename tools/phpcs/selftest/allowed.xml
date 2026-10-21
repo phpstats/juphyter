@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Exercises the sniff's `allowed` property, which each package uses to carry
+     the exception names its own conventions document. -->
+<ruleset name="allowed-probe">
+    <rule ref="../Phpstats/Sniffs/NamingConventions/CamelCapsParameterAndPropertySniff.php">
+        <properties>
+            <property name="allowed" type="array">
+                <element value="_by"/>
+                <element value="_keepAll"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>
