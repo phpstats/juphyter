@@ -21,7 +21,8 @@
         "nikic/php-parser": "^5.0"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0"
+        "pestphp/pest": "^4.0",
+        "squizlabs/php_codesniffer": "^3.13"
     },
     "suggest": {
         "phpstats/phibble": "Data frames rendered as notebook tables. Not on Packagist: add the VCS repository https://github.com/phpstats/phibble, then composer require --dev phpstats/phibble",
