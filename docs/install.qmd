@@ -239,7 +239,9 @@ Quarto: not ready.
 
 The `PATH` entry it suggests comes from an interpreter it has just confirmed
 has `ipykernel`, which is a kernel's own interpreter when the one a fresh
-install would pick no longer works. `--prefix` looks under a prefix rather than
+install would pick no longer works. It is printed twice, as an `export` for the
+shell you are in and as the append that keeps it, because the first alone lasts
+only until that shell closes. `--prefix` looks under a prefix rather than
 the per-user directory, and the exit code is 1 when anything is broken, so a
 script can ask.
 

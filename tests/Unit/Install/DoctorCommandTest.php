@@ -225,7 +225,11 @@ describe('Quarto', function () {
             ->and($run['stdout'])
             ->toContain('which has no Jupyter in it')
             ->toContain('Quarto: not ready.')
-            ->toContain('export PATH="/opt/venv/bin:$PATH"');
+            ->toContain('export PATH="/opt/venv/bin:$PATH"')
+            // The export alone lasts until the shell closes, so the append has
+            // to be there too.
+            ->toContain('lasts until the shell closes')
+            ->toContain('echo \'export PATH="/opt/venv/bin:$PATH"\' >> ~/.zshrc');
     });
 
     it('takes the PATH entry from a working kernel when no interpreter is usable now', function () {

@@ -457,8 +457,15 @@ final class DoctorCommand extends Command
         };
 
         if ($quartoState === self::QUARTO_BROKEN && $fix !== '') {
+            // Both halves, because the export alone lasts until the shell
+            // closes and a reader who pastes only that is back here in the next
+            // terminal.
             $out .= "\nQuarto runs an interpreter of its own choosing, and that one needs Jupyter\n"
-                ."in it. Put the kernel's interpreter in front of it:\n\n    ".$fix."\n";
+                ."in it. Put the kernel's interpreter in front of it for this shell:\n\n"
+                ."    ".$fix."\n\n"
+                ."That lasts until the shell closes. To keep it, add the line to ~/.zshrc, or\n"
+                ."~/.bashrc on bash:\n\n"
+                ."    echo '".$fix."' >> ~/.zshrc\n";
         }
 
         return $out;
