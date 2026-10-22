@@ -26,11 +26,9 @@ A kernelspec belongs to the machine rather than to a project, so install
 juphyter once for your user. Copy the whole block:
 
 ```bash
-# Jupyter, in a virtual environment, and on PATH so that Quarto finds it.
-python3 -m venv ~/.venvs/juphyter
-~/.venvs/juphyter/bin/pip install jupyterlab
-echo 'export PATH="$HOME/.venvs/juphyter/bin:$PATH"' >> ~/.zshrc
-export PATH="$HOME/.venvs/juphyter/bin:$PATH"
+# Does the Python that Quarto will use already have Jupyter?
+py="$(command -v python3)"
+"$py" -c 'import jupyter_client' 2>/dev/null || py=''
 
 # juphyter. It is not on Packagist yet, so Composer reads the repository
 # directly, which "no-api" does over git and without a GitHub token.
@@ -38,20 +36,66 @@ composer global config repositories.juphyter \
   '{"type":"vcs","url":"https://github.com/phpstats/juphyter","no-api":true}'
 composer global require phpstats/juphyter:dev-main
 
-# Composer's global bin directory, on PATH, for the juphyter command itself.
+# The juphyter command on PATH.
 bin="$(composer global config bin-dir --absolute 2>/dev/null)"
-echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
 export PATH="$bin:$PATH"
+grep -qF "$bin" ~/.zshrc 2>/dev/null \
+  || echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
 
-# The kernelspec, naming the PHP and the Python found above.
-juphyter install
+# Jupyter, in a virtual environment, only when that Python has none. Quarto
+# picks it up as the python3 on PATH.
+if [ -z "$py" ]; then
+  python3 -m venv ~/.venvs/juphyter
+  ~/.venvs/juphyter/bin/pip install jupyterlab
+  export PATH="$HOME/.venvs/juphyter/bin:$PATH"
+  grep -qF '.venvs/juphyter/bin' ~/.zshrc 2>/dev/null \
+    || echo 'export PATH="$HOME/.venvs/juphyter/bin:$PATH"' >> ~/.zshrc
+  py="$HOME/.venvs/juphyter/bin/python"
+fi
+
+# The kernelspec, naming that Python and the PHP on PATH.
+juphyter install --python "$py"
+
+# Check: a Jupyter version, and php among the kernels.
+quarto check jupyter
 ```
 
 On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
 
-Putting the virtual environment on `PATH` is what makes `quarto render` work.
-Quarto chooses its own Python, and a Python with no Jupyter in it cannot see
-the kernel, so a render otherwise fails with `Jupyter kernel 'php' not found`.
+The block changes as little as it can. When the `python3` that Quarto will use
+already has Jupyter, it installs the kernel against that interpreter and adds
+nothing to `PATH` beyond Composer's bin directory. It builds a virtual
+environment only when that interpreter has no Jupyter, which is the usual case
+on macOS, where `python3` is a Homebrew build.
+
+`quarto check jupyter` is the check that catches a half-working install. It has
+to report a Jupyter version and `php` among the kernels:
+
+```
+Path: /Users/you/.venvs/juphyter/bin/python
+Jupyter: 5.9.1
+Kernels: php, python3
+```
+
+A terminal that was already open when you ran the block still carries the old
+`PATH`, so run the check in the terminal you pasted into, or in a new one.
+
+### If a render says the kernel is not found
+
+```
+ERROR: Jupyter kernel 'php' not found. Known kernels: python3
+```
+
+Quarto is running a Python that has no Jupyter in it, so it can see no kernel
+at all. The kernel itself is fine, as `jupyter kernelspec list` will show.
+`quarto check jupyter` prints the interpreter Quarto chose, and a
+`Jupyter: (None)` line there is this failure. Put a Python that has Jupyter
+first on `PATH`, as the block above does.
+
+`QUARTO_PYTHON` names an interpreter outright, for one shell or one project.
+Exporting it from a shell startup file is worth avoiding, because it takes
+precedence over an activated virtual environment and would change the
+interpreter for every Quarto project on the machine.
 
 ## Your first document
 

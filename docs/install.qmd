@@ -37,11 +37,9 @@ name and says so rather than refusing to install.
 Copy the whole block:
 
 ```bash
-# Jupyter, in a virtual environment, and on PATH so that Quarto finds it.
-python3 -m venv ~/.venvs/juphyter
-~/.venvs/juphyter/bin/pip install jupyterlab
-echo 'export PATH="$HOME/.venvs/juphyter/bin:$PATH"' >> ~/.zshrc
-export PATH="$HOME/.venvs/juphyter/bin:$PATH"
+# Does the Python that Quarto will use already have Jupyter?
+py="$(command -v python3)"
+"$py" -c 'import jupyter_client' 2>/dev/null || py=''
 
 # juphyter. It is not on Packagist yet, so Composer reads the repository
 # directly, which "no-api" does over git and without a GitHub token.
@@ -49,13 +47,28 @@ composer global config repositories.juphyter \
   '{"type":"vcs","url":"https://github.com/phpstats/juphyter","no-api":true}'
 composer global require phpstats/juphyter:dev-main
 
-# Composer's global bin directory, on PATH, for the juphyter command itself.
+# The juphyter command on PATH.
 bin="$(composer global config bin-dir --absolute 2>/dev/null)"
-echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
 export PATH="$bin:$PATH"
+grep -qF "$bin" ~/.zshrc 2>/dev/null \
+  || echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
 
-# The kernelspec, naming the PHP and the Python found above.
-juphyter install
+# Jupyter, in a virtual environment, only when that Python has none. Quarto
+# picks it up as the python3 on PATH.
+if [ -z "$py" ]; then
+  python3 -m venv ~/.venvs/juphyter
+  ~/.venvs/juphyter/bin/pip install jupyterlab
+  export PATH="$HOME/.venvs/juphyter/bin:$PATH"
+  grep -qF '.venvs/juphyter/bin' ~/.zshrc 2>/dev/null \
+    || echo 'export PATH="$HOME/.venvs/juphyter/bin:$PATH"' >> ~/.zshrc
+  py="$HOME/.venvs/juphyter/bin/python"
+fi
+
+# The kernelspec, naming that Python and the PHP on PATH.
+juphyter install --python "$py"
+
+# Check: a Jupyter version, and php among the kernels.
+quarto check jupyter
 ```
 
 On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
@@ -77,21 +90,47 @@ that owns the `jupyter` on your `PATH`, read from that script's shebang, because
 that is the environment your Jupyter actually runs in. Use `--python` to name a
 different one.
 
-### Why the virtual environment goes on PATH
+### Why the kernel is installed against Quarto's Python
 
-Quarto chooses its own Python, independently of the one you installed the kernel
-with. On a typical macOS machine that is a Homebrew interpreter with no Jupyter
-in it, and `quarto render` then fails on a document whose kernel is installed
-and working:
+Quarto chooses its own Python, independently of the one that installed the
+kernel, and the interpreter it chooses is the one that has to have Jupyter,
+because Jupyter is what starts the kernel and collects its output. On a typical
+macOS machine the `python3` on `PATH` is a Homebrew build with no Jupyter in it,
+and `quarto render` then fails on a document whose kernel is installed and
+working:
 
 ```
 ERROR: Jupyter kernel 'php' not found. Known kernels: python3
 ```
 
-Putting the virtual environment first on `PATH` is what prevents that, because
-Quarto then finds the same Python that holds the kernel. `quarto check jupyter`
-reports which interpreter it chose. Setting `QUARTO_PYTHON` to the virtual
-environment's `python` does the same thing for one project or one shell.
+The install block asks that interpreter for `jupyter_client` before anything
+else and names it in `--python` when it has it, so Quarto and the kernelspec
+agree on one Python and nothing needs overriding. When it has no Jupyter, the
+block builds a virtual environment and puts it first on `PATH`, where Quarto
+finds it as `python3`.
+
+`quarto check jupyter` reports the interpreter Quarto chose, whether it has
+Jupyter, and the kernels it can see through it:
+
+```
+Path: /Users/you/.venvs/juphyter/bin/python
+Jupyter: 5.9.1
+Kernels: php, python3
+```
+
+A `Jupyter: (None)` line there is this failure, whatever `jupyter kernelspec
+list` reports. The kernel is not the problem in that case, and the kernelspec
+needs no reinstall. `quarto check` writes its report to standard error, so pipe
+it through `2>&1` before a `grep`.
+
+A terminal opened before the shell startup file was edited still carries the
+old `PATH`, which is the usual reason this error outlives an install that went
+correctly otherwise.
+
+`QUARTO_PYTHON` names an interpreter outright, for one shell or one project.
+Exporting it from a shell startup file is worth avoiding, because it takes
+precedence over an activated virtual environment and would therefore change the
+interpreter for every Quarto project on the machine.
 
 ## Your first Quarto document
 
