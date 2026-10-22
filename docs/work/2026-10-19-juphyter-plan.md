@@ -889,3 +889,61 @@ MIME type or needs the static SVG.
 the same document rendered to PDF. What to check: figures and tables appear in
 both, `#| echo: false` suppressed the source, and PHP cells are
 syntax-highlighted or are not.
+
+## Task 13: publish the docs site, and what it settled
+
+Added after the plan's tasks were done, when Erik asked for the install
+instructions to be copy-paste and then for the site to be online. It is
+recorded here because it changed two things the plan had assumed.
+
+**The install guide could not work as written.** `juphyter install` succeeds
+and `quarto render` then fails with `Jupyter kernel 'php' not found`, because
+Quarto chooses its own Python independently of the one the kernel was installed
+with, and on a stock macOS machine that interpreter has no Jupyter in it.
+`scripts/render-docs` had always set `QUARTO_PYTHON` for exactly this reason,
+so the project had solved the problem for itself and never written it down. The
+README and `docs/install.qmd` now lead with a global `composer global require`
+install, because a kernelspec belongs to the machine rather than to a project:
+installing from a second project replaces the first kernelspec, and deleting
+that project's `vendor` directory breaks every notebook on the machine.
+
+**What the site requires, which the plan never specified.** phpstats.org reads
+a package's pages out of its repository rather than rendering them.
+`SyncSiteContent` throws without `site/site.json`, and `DocsImporter::discover()`
+takes a page only where `docs/<page>.html` and `docs/<page>.qmd` sit together,
+skipping any path that starts with `_`. So the rendered HTML is committed beside
+its sources, and `docs/_site/` is invisible to the importer. The omission of
+`site/site.json` from the plan was mine; group 1 raised it.
+
+**Decisions task 13 made, all of which stand.**
+
+1. `freeze: auto` with `_freeze/` committed. The reason is sharper than
+   staleness: Quarto gives each executed cell a random id, so two renders of
+   unchanged sources differ. From the freeze the render is byte-reproducible,
+   and "is the committed HTML current" becomes a diff.
+2. No scheduled trigger. A nightly clear would execute what every push already
+   executes.
+3. `_site` is copied into `docs/` with pruning, following phibble, rather than
+   rendering with `--output-dir .`.
+4. `--frozen` needs only Quarto and a python3 that can import `jupyter_client`.
+   Quarto resolves a document's kernel by name while building the site
+   navigation, before it reads anything frozen, so a kernelspec of that name
+   must exist even though nothing starts it.
+5. `docs/sitemap.xml` is excluded from the CI comparison, because its `lastmod`
+   values come from source mtimes and a fresh checkout resets those.
+
+**A limitation to carry.** The executing CI job cannot verify the committed
+HTML, because the random ids in decision 1 make a byte comparison permanently
+red. It catches a kernel that crashes, not output that drifts: if the kernel
+starts producing different but valid output, CI stays green until someone runs
+`--execute` and commits. The fix is a normalized comparison, stripping cell ids
+and execution counts from both sides before diffing. Related: the guard that
+refuses to publish an unexecuted render is a floor rather than a tally, so a
+page coming out with some of its cells executed still publishes.
+
+**A process note, recorded because it happened four times.** A branch of this
+workspace was positioned to revert landed work on four separate occasions: the
+idle-socket fix, task 10, task 12, and the phpcs naming sniffs. Each was caught
+by `git diff --stat origin/main HEAD` and fixed by rebasing, and each would have
+been invisible in a diff against the branch's own base. Run that comparison
+before every handoff, not only after a conflict.
