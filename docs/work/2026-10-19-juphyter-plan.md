@@ -932,6 +932,26 @@ its sources, and `docs/_site/` is invisible to the importer. The omission of
 5. `docs/sitemap.xml` is excluded from the CI comparison, because its `lastmod`
    values come from source mtimes and a fresh checkout resets those.
 
+**A trap worth keeping written down.** `--execute` does not override `freeze:
+auto`. It sets `execute: enabled`, which turns execution on for a document that
+asked for none, and leaves the freeze to answer whether an unchanged page runs
+at all. Quarto has no flag that overrides the freeze for a project render, so
+the only way to make every page run is to delete `docs/_freeze` before the
+render. Task 13's first round had `--execute` and believed it was executing
+everything; it was serving five of six pages back out of the freeze. The task
+worker found this, after I had reviewed and accepted the claim without
+measuring it. The check that catches it is cheap: a real render logs
+`Executing` once per page it executes, so counting those lines against the
+pages that hold cells settles it.
+
+One consequence to expect rather than debug. Because the freeze is deleted and
+rewritten on every executing render, and Quarto gives each executed cell a new
+random id, `scripts/render-docs` changes eleven committed files even when no
+source changed: the five frozen results, their five pages, and `search.json`,
+plus `sitemap.xml` whose `lastmod` comes from source mtimes. Byte
+reproducibility belongs to `--frozen` alone, which is why the CI job that
+compares against the committed pages is the frozen one.
+
 **A limitation to carry.** The executing CI job cannot verify the committed
 HTML, because the random ids in decision 1 make a byte comparison permanently
 red. It catches a kernel that crashes, not output that drifts: if the kernel
