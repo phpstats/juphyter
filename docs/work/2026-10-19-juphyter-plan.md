@@ -1169,3 +1169,59 @@ Then the whole chain: with that environment first on `PATH` and `JUPYTER_PATH`
 pointed at the sandbox prefix, a standalone `.qmd` rendered and the PHP ran.
 That is a machine that started with no Jupyter and ended rendering PHP in
 Quarto, which is the claim the two tasks exist to make.
+
+### Task 17: juphyter doctor, and writing the PATH entry on request
+
+**Delivered.** A `doctor` subcommand that checks an install and changes nothing,
+and `juphyter install --path-file PATH`, which appends the kernel interpreter's
+`PATH` entry to a named shell startup file.
+
+**Why a separate command rather than more install output.** `install` reports
+what it recorded at the moment it recorded it. Everything it names can move
+afterwards, and none of those moves changes the kernelspec: `brew upgrade`
+replaces the PHP binary, a deleted project takes the engine inside its `vendor`
+directory, a removed virtual environment takes the interpreter, and a new
+terminal can carry a `PATH` that no longer reaches the Jupyter the kernel was
+installed against. Task 15 catches the last of those at install time; nothing
+caught any of them later, and the reader's alternative was `quarto check
+jupyter`, `jupyter kernelspec list`, and a reading of old install output.
+
+**What doctor checks.** The wrapper this package ships; this PHP's version and
+`pcntl`; the interpreter a fresh install would pick and its `ipykernel`; whether
+Quarto is installed and what its interpreter has; and then every juphyter
+kernelspec, reading each one's recorded Python, PHP, engine, and wrapper and
+asking whether they are still there. It ends with a verdict per front end.
+
+**Three decisions worth keeping.**
+
+- The suggested `PATH` entry comes from an interpreter already confirmed to have
+  `ipykernel`. When the interpreter a fresh install would pick no longer works,
+  that is a working kernel's own interpreter, read out of its kernelspec. The
+  first draft took it only from the probe and printed no fix in exactly the case
+  a reader most needs one.
+- Quarto has three states, not two. A machine without Quarto is not a machine
+  where Quarto is broken, and the verdict says "not installed" rather than "not
+  ready". The first draft said "not ready", which reads as a defect.
+- A kernel juphyter did not write is left out, as `uninstall` refuses to remove
+  one.
+
+**On `--path-file`.** This is the one thing a reader cannot have the command do
+any other way, because a child process cannot change its parent's `PATH`. It
+stays opt-in by name, which is the same judgment that kept `QUARTO_PYTHON` out
+of a startup file in 9e5aafb and kept task 16 from editing one: changing a
+reader's environment behind their back is the harm, and the installer doing it
+is no better. The append is idempotent by directory rather than by line, so a
+file that already reaches the interpreter is left alone however the entry was
+spelled. Appendability is checked before the write rather than after, because a
+failed write raises a diagnostic of its own and the caller wants the report.
+
+**Two bugs the tests caught, both worth recording.** `$failed` was left
+uninitialized after a refactor, so a healthy machine exited 0 by accident rather
+than by decision, on an undefined variable. And `@file_put_contents` does not
+hide the warning from PHPUnit, which is what turned a suppressed failure path
+into a visible one and led to checking appendability up front.
+
+**One sequencing consequence.** The README's check line is now `juphyter
+doctor`, and the README's own install block installs `dev-main` from GitHub. The
+line therefore works only once this is pushed. Verified against the local build
+in both of the install block's branches rather than against the published one.

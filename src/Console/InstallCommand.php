@@ -63,6 +63,7 @@ final class InstallCommand extends Command
     /** @var list<string> */
     private const OPTIONS = [
         'name', 'display-name', 'php', 'python', 'prefix', 'autoload', 'create-venv',
+        'path-file',
     ];
 
     /** @var resource */
@@ -232,7 +233,7 @@ final class InstallCommand extends Command
             $ipykernel,
             $php,
             $this->enginePath(),
-        ).$quartoLine);
+        ).$quartoLine.$this->pathFile($options['path-file'] ?? null, $python));
 
         return 0;
     }
@@ -563,6 +564,79 @@ final class InstallCommand extends Command
         );
     }
 
+    /**
+     * Add the `PATH` entry to a shell startup file, when asked by name.
+     *
+     * The command will not touch a startup file on its own, because changing a
+     * reader's environment behind their back is the harm that kept
+     * `QUARTO_PYTHON` out of one. Naming the file is the consent, and it is the
+     * one thing the reader cannot have the command do any other way: a child
+     * process cannot put a directory on its parent's `PATH`, so without this
+     * the line has to be copied by hand.
+     *
+     * The write is idempotent by the directory rather than by the whole line,
+     * so a file that already reaches this interpreter is left alone however the
+     * entry there was spelled. A failure is reported and does not fail the
+     * install, which has already written the kernelspec by this point.
+     *
+     * @param  string|null  $file  A `--path-file` value.
+     * @param  string  $python  The interpreter the kernelspec names.
+     * @return string The line for the install report, empty when not asked.
+     */
+    private function pathFile(?string $file, string $python): string
+    {
+        $file = trim($file ?? '');
+
+        if ($file === '') {
+            return '';
+        }
+
+        $bin = dirname($python);
+        $existing = is_file($file) ? (string) @file_get_contents($file) : '';
+        $line = self::exportPathCommand($python);
+
+        if (str_contains($existing, $bin)) {
+            return sprintf("  path-file    %s already reaches %s\n", $file, $bin);
+        }
+
+        $refused = sprintf(
+            "  path-file    could not write %s, so add this line yourself: %s\n",
+            $file,
+            $line,
+        );
+
+        // Asked before writing rather than after, because a failed write raises
+        // a diagnostic of its own and the caller wants the report, not the
+        // notice.
+        if (! self::appendable($file)) {
+            return $refused;
+        }
+
+        $separator = $existing !== '' && ! str_ends_with($existing, "\n") ? "\n" : '';
+
+        if (@file_put_contents($file, $separator.$line."\n", FILE_APPEND) === false) {
+            return $refused;
+        }
+
+        return sprintf("  path-file    added to %s: %s\n", $file, $line);
+    }
+
+    /** Whether a path is a file that can be appended to, or can become one. */
+    private static function appendable(string $file): bool
+    {
+        if (is_dir($file)) {
+            return false;
+        }
+
+        if (file_exists($file)) {
+            return is_writable($file);
+        }
+
+        $directory = dirname($file);
+
+        return is_dir($directory) && is_writable($directory);
+    }
+
     /** The `PATH` entry that puts an interpreter's own `bin` directory first. */
     private static function exportPathCommand(string $python): string
     {
@@ -751,6 +825,9 @@ final class InstallCommand extends Command
                                     and install the kernel into it. For a machine whose
                                     only Python cannot host the kernel, which is asked
                                     about when this is absent.
+              --path-file PATH      Append the kernel interpreter's PATH entry to this
+                                    shell startup file, such as ~/.zshrc. Nothing is
+                                    written to a startup file without this.
               -h, --help            Print this text.
 
             Several PHP versions can be installed side by side by giving each one its own

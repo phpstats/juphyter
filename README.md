@@ -56,8 +56,8 @@ fi
 # The kernelspec, naming that Python and the PHP on PATH.
 juphyter install --python "$py"
 
-# Check: a Jupyter version, and php among the kernels.
-quarto check jupyter
+# Check. It reports what it found and fails if anything is broken.
+juphyter doctor
 ```
 
 On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
@@ -74,17 +74,18 @@ into it, and `--create-venv PATH` answers that offer without being asked. The
 block above does the same work a step at a time, which is what makes it safe to
 paste.
 
-`quarto check jupyter` is the check that catches a half-working install. It has
-to report a Jupyter version and `php` among the kernels:
+`juphyter doctor` is the check that catches a half-working install. It reports
+the Python it found, the interpreter Quarto will run, every installed kernel,
+and then which front ends work:
 
 ```
-Path: /Users/you/.venvs/juphyter/bin/python
-Jupyter: 5.9.1
-Kernels: php, python3
+JupyterLab: ready, with php.
+Quarto: ready.
 ```
 
+It exits non-zero when something is broken and names the command that fixes it.
 A terminal that was already open when you ran the block still carries the old
-`PATH`, so run the check in the terminal you pasted into, or in a new one.
+`PATH`, so run it in the terminal you pasted into, or in a new one.
 
 ### If a render says the kernel is not found
 
@@ -93,10 +94,12 @@ ERROR: Jupyter kernel 'php' not found. Known kernels: python3
 ```
 
 Quarto is running a Python that has no Jupyter in it, so it can see no kernel
-at all. The kernel itself is fine, as `jupyter kernelspec list` will show.
-`quarto check jupyter` prints the interpreter Quarto chose, and a
-`Jupyter: (None)` line there is this failure. Put a Python that has Jupyter
-first on `PATH`, as the block above does.
+at all. The kernel itself is fine. Run `juphyter doctor`: it names the
+interpreter Quarto chose, confirms whether the kernel is complete, and prints
+the `PATH` entry that puts a Jupyter-bearing Python in front of it.
+
+`juphyter install --path-file ~/.zshrc` appends that entry for you. Nothing is
+written to a shell startup file without that option.
 
 `QUARTO_PYTHON` names an interpreter outright, for one shell or one project.
 Exporting it from a shell startup file is worth avoiding, because it takes
