@@ -1015,3 +1015,90 @@ reader would paste.
 One consequence for task 13: editing `docs/install.qmd` changes its freeze hash,
 so the committed `install.html`, its `_freeze` entry, and `search.json` go stale
 and the `docs` job fails on the merged result until they are re-rendered.
+
+### Task 15: report the interpreter Quarto will use
+
+**Deliverable.** `juphyter install` resolves the Python that Quarto will run,
+reports it beside the one it records, and when that interpreter cannot start a
+kernel, prints the exact command that fixes it.
+
+**Why.** The installer validates the interpreter it names and knows nothing
+about the interpreter Quarto chooses, so it can report a correct install that
+cannot render. That is the failure the install guide was rewritten for: the
+kernelspec was right, `jupyter kernelspec list` showed it, and `quarto render`
+failed with `Jupyter kernel 'php' not found`. The installer is where that is
+cheapest to catch, because it already knows a Python that has Jupyter.
+
+**The rule to replicate, measured on Quarto 1.10.18.** Quarto takes
+`QUARTO_PYTHON` when it is set, and otherwise the first `python3` on `PATH`. It
+does not honor `VIRTUAL_ENV`: with a virtual environment's variable set but its
+`bin` absent from `PATH`, Quarto used the `PATH` interpreter. An activated
+environment works through `PATH` alone. `QUARTO_PYTHON` beats an environment
+activated both ways. Whether Quarto falls back to `python` when no `python3`
+exists is unverified; implement the fallback and verify it, or leave it out and
+say so.
+
+**What to check.** Only that the resolved interpreter can `import
+jupyter_client`. The kernelspec's own Python needs `ipykernel`, and Quarto's
+needs the client that starts it; they are allowed to differ, and a mismatch is
+not by itself a problem. Do not change which interpreter the kernelspec names.
+The present default, the owner of the `jupyter` on `PATH`, is right for
+JupyterLab and usually identical to Quarto's choice. Preferring Quarto's choice
+would move a JupyterLab user's kernel onto a different interpreter to fix a
+problem they do not have.
+
+**Behavior.** Skip the whole check when `quarto` is not on `PATH`, so a user
+with no Quarto sees nothing about it. Otherwise add one line to the install
+report:
+
+```
+  quarto       /Users/you/.venvs/juphyter/bin/python (jupyter_client 8.6.3)
+  quarto       /opt/homebrew/opt/python@3.14/bin/python3.14 (no Jupyter)
+```
+
+The second case also prints a warning naming the interpreter, saying Quarto can
+start no kernel at all through it, and giving the command to fix it, built from
+the `bin` directory of the interpreter the kernelspec names:
+
+```
+    export PATH="/Users/you/.venvs/juphyter/bin:$PATH"
+```
+
+Suggest that only when the recorded interpreter has `jupyter_client` itself.
+When it does not, say that Quarto needs a Python with Jupyter and leave the
+choice of one to the reader. Point at `quarto check jupyter` as the authority
+in both cases.
+
+**The exit code stays 0 and the kernelspec is still written.** This differs
+from the missing-`ipykernel` path in task 7, which writes nothing and exits
+non-zero, and the difference is deliberate: a kernel that Quarto cannot reach
+is still a working JupyterLab kernel, and failing the install would break a
+JupyterLab user who has no Quarto problem to fix.
+
+**Files owned.** `src/Install/QuartoProbe.php` (new),
+`src/Console/InstallCommand.php`, `tests/Unit/Install/QuartoProbeTest.php`
+(new), the install-command tests under `tests/Unit/`, and the install report
+sample and its surrounding paragraph in `docs/install.qmd`.
+
+**Depends on** 9e5aafb, which rewrote the install guide. Rebase on it and keep
+its paragraphs; only the sample output and the sentences describing it change.
+
+**Acceptance.** `QUARTO_PYTHON` wins when set. The first `python3` on `PATH` is
+used when it is not. A `QUARTO_PYTHON` naming a path that is missing or not
+executable is reported as such rather than crashing. The check is skipped with
+no output when `quarto` is absent from `PATH`. Each of the three outcomes
+produces its documented line, and all three exit 0 and leave a kernelspec
+behind.
+
+**Focused tests.** The acceptance list, driven through the injected command
+runner and `PATH` that `PythonProbe` already uses, so the unit suite still
+needs neither Python nor Quarto. One end-to-end check that installs with a
+Jupyter-less `python3` first on `PATH` and asserts the warning names that
+interpreter.
+
+**Risk.** The resolution order is Quarto's and could change in a later release.
+The check is advisory and the install succeeds either way, so a wrong guess
+misleads rather than breaks. Word the line as the interpreter Quarto appears to
+use, and name `quarto check jupyter` as the authority.
+
+**Model.** Mid.
