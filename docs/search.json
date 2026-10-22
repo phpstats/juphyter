@@ -294,7 +294,7 @@
     "href": "install.html#your-first-quarto-document",
     "title": "Installation",
     "section": "Your first Quarto document",
-    "text": "Your first Quarto document\nWrite a document in any directory, with no project around it:\n---\ntitle: \"PHP in Quarto\"\njupyter: php\n---\n\n::: {#0bf71d47 .cell execution_count=1}\n``` {.php .cell-code}\necho \"sum: \", array_sum(range(1, 10)), \"\\n\";\nPHP_VERSION;\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nsum: 55\n```\n:::\n\n::: {.cell-output .cell-output-display execution_count=1}\n```\n'8.5.10'\n```\n:::\n:::\n\nquarto render hello.qmd runs the cell and puts its output in the HTML. Cell options work as they do for any other engine, because PHP accepts # comments.\nIn JupyterLab, started with jupyter lab, the same kernel appears in the launcher under the PHP version it found.",
+    "text": "Your first Quarto document\nWrite a document in any directory, with no project around it:\n---\ntitle: \"PHP in Quarto\"\njupyter: php\n---\n\n::: {#93daa1c2 .cell execution_count=1}\n``` {.php .cell-code}\necho \"sum: \", array_sum(range(1, 10)), \"\\n\";\nPHP_VERSION;\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nsum: 55\n```\n:::\n\n::: {.cell-output .cell-output-display execution_count=1}\n```\n'8.5.10'\n```\n:::\n:::\n\nquarto render hello.qmd runs the cell and puts its output in the HTML. Cell options work as they do for any other engine, because PHP accepts # comments.\nIn JupyterLab, started with jupyter lab, the same kernel appears in the launcher under the PHP version it found.",
     "crumbs": [
       "Installation"
     ]
@@ -304,7 +304,7 @@
     "href": "install.html#checking-it-worked",
     "title": "Installation",
     "section": "Checking it worked",
-    "text": "Checking it worked\njupyter kernelspec list\nThe kernel should appear under the name you gave it.",
+    "text": "Checking it worked\njuphyter doctor\nIt names what it found and says which front ends work. Checking an install later covers the report and what each finding means. jupyter kernelspec list is the narrower question of whether Jupyter can see the kernelspec at all.",
     "crumbs": [
       "Installation"
     ]

@@ -271,10 +271,13 @@ launcher under the PHP version it found.
 ## Checking it worked
 
 ```bash
-jupyter kernelspec list
+juphyter doctor
 ```
 
-The kernel should appear under the name you gave it.
+It names what it found and says which front ends work.
+[Checking an install later](#checking-an-install-later) covers the report and
+what each finding means. `jupyter kernelspec list` is the narrower question of
+whether Jupyter can see the kernelspec at all.
 
 ## The phpstats packages
 
