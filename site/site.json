@@ -1,0 +1,63 @@
+{
+    "package": "juphyter",
+    "title": "juphyter",
+    "tagline": "A Jupyter and Quarto kernel for PHP, built for statistical work with the phpstats packages.",
+    "summary": [
+        "juphyter runs PHP cells in JupyterLab and in Quarto documents. It installs a Jupyter kernelspec, so JupyterLab lists PHP in its launcher and Quarto executes {php} blocks in a .qmd. It corresponds to IRkernel, which runs R in Jupyter, and to knitr, which executes R in Quarto and R Markdown.",
+        "A cell's last expression is its result, and that value is published in every representation the front end might draw. A phibble data frame arrives as an HTML table carrying its dimensions and its column types, a phiz plot as a Vega-Lite chart in a notebook and as a static SVG in a PDF, and any class can opt in with a toHtml() or a toMimeBundle() method. Juphyter\\display() publishes a value part way through a cell, so one cell can show several tables or plots.",
+        "Session state carries from one cell to the next, including use statements and declared functions and classes, and a traceback names the cell and the line a stack frame came from rather than eval()'d code. The engine finds the nearest vendor/autoload.php by walking up from the notebook's own directory, so a notebook inside a Composer project sees that project's packages with nothing to configure, and --autoload or a juphyter.json entry names an autoloader for a notebook kept outside a project.",
+        "The kernel is a Python transport in front of a PHP engine. ipykernel speaks the Jupyter protocol and a PHP process runs the cells over a unix socket, which is why the install needs a Python with ipykernel in it as well as PHP. The engine runs on macOS and Linux, because interrupting a running cell uses POSIX signals. PHP can redeclare neither a class nor a function, so re-running a cell that declares one needs a kernel restart, and a cell cannot declare a namespace."
+    ],
+    "install": [
+        "python3 -m venv ~/.venvs/juphyter",
+        "~/.venvs/juphyter/bin/pip install jupyterlab",
+        "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
+        "composer global config repositories.juphyter '{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/juphyter\",\"no-api\":true}'",
+        "composer global require phpstats/juphyter:dev-main",
+        "export PATH=\"$(composer global config bin-dir --absolute):$PATH\"",
+        "juphyter install"
+    ],
+    "requires": [
+        "PHP 8.3, 8.4, or 8.5, with the pcntl, posix, and sockets extensions; a phiz plot needs 8.5",
+        "Composer",
+        "Python 3 with ipykernel, which the kernel's transport runs inside",
+        "Quarto, to render Quarto documents; JupyterLab needs none of it",
+        "macOS or Linux, because a cell is interrupted with POSIX signals",
+        "The vl-convert binary, optional, for the static images a PDF or Word figure is made from"
+    ],
+    "repository": "https://github.com/phpstats/juphyter",
+    "example": {
+        "chain": "$penguins = Phibble\\DataFrame::fromCsv('penguins.csv');\n\n$penguins\n    ->groupBy(['species'])\n    ->summarise(['n' => Phibble\\Expr\\n(), 'mass' => Phibble\\Expr\\mean(Phibble\\Expr\\col('body_mass'))])",
+        "output": "# A tibble: 3 × 3\n  species       n  mass\n  <chr>     <int> <dbl>\n1 Adelie      151 3701.\n2 Chinstrap    68 3733.\n3 Gentoo      123 5076."
+    },
+    "docs": {
+        "root": "docs",
+        "format": "quarto",
+        "nav": [
+            {
+                "title": "Overview",
+                "path": "index.qmd"
+            },
+            {
+                "title": "Get started",
+                "path": "get-started.qmd"
+            },
+            {
+                "title": "Installation",
+                "path": "install.qmd"
+            },
+            {
+                "title": "Quarto",
+                "path": "quarto.qmd"
+            },
+            {
+                "title": "JupyterLab",
+                "path": "jupyter.qmd"
+            },
+            {
+                "title": "Limitations",
+                "path": "limitations.qmd"
+            }
+        ]
+    }
+}
