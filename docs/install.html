@@ -351,7 +351,7 @@ Kernels in /Users/you/Library/Jupyter/kernels
 
 JupyterLab: ready, with php.
 Quarto: not ready.</code></pre>
-<p>The <code>PATH</code> entry it suggests comes from an interpreter it has just confirmed has <code>ipykernel</code>, which is a kernel’s own interpreter when the one a fresh install would pick no longer works. <code>--prefix</code> looks under a prefix rather than the per-user directory, and the exit code is 1 when anything is broken, so a script can ask.</p>
+<p>The <code>PATH</code> entry it suggests comes from an interpreter it has just confirmed has <code>ipykernel</code>, which is a kernel’s own interpreter when the one a fresh install would pick no longer works. It is printed twice, as an <code>export</code> for the shell you are in and as the append that keeps it, because the first alone lasts only until that shell closes. <code>--prefix</code> looks under a prefix rather than the per-user directory, and the exit code is 1 when anything is broken, so a script can ask.</p>
 <p>A kernel juphyter did not write is left out of the report, as <code>juphyter uninstall</code> refuses to remove one.</p>
 </section>
 <section id="your-first-quarto-document" class="level2">
@@ -362,7 +362,7 @@ Quarto: not ready.</code></pre>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> php</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#93daa1c2 .cell execution_count=1}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#ae301394 .cell execution_count=1}</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="in">``` {.php .cell-code}</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="st">"sum: "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="fu">range</span>(<span class="dv">1</span><span class="ot">,</span> <span class="dv">10</span>))<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="cn">PHP_VERSION</span><span class="ot">;</span></span>
