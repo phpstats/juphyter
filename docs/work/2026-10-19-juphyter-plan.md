@@ -967,3 +967,51 @@ idle-socket fix, task 10, task 12, and the phpcs naming sniffs. Each was caught
 by `git diff --stat origin/main HEAD` and fixed by rebasing, and each would have
 been invisible in a diff against the branch's own base. Run that comparison
 before every handoff, not only after a conflict.
+
+## The install guide, round two: whose Python Quarto uses
+
+The guide's first fix put a virtual environment first on `PATH` and left the
+reason implicit. That was not enough. Following it still produced
+`ERROR: Jupyter kernel 'php' not found. Known kernels: python3` on a machine
+where `juphyter install` had just succeeded and `jupyter kernelspec list` showed
+the kernel, because the single step the whole install rested on was an
+`echo >> ~/.zshrc`, which reaches only shells started afterward, and nothing in
+the guide asked the reader to check.
+
+Two facts settled the rewrite, both measured rather than reasoned about.
+
+**Quarto's interpreter is the one that needs Jupyter.** The kernelspec names the
+Python that runs the wrapper, and Quarto separately chooses the Python that
+starts the kernel and collects its output. They need not be the same
+interpreter, and only the second one needs Jupyter. On macOS the `python3` on
+`PATH` is usually a Homebrew build with no Jupyter, which is the whole failure.
+`quarto check jupyter` names the interpreter it chose and writes its report to
+standard error, so a `grep` without `2>&1` silently drops it and exits 1. The
+first draft of this fix shipped that bug into the README and a sandbox run
+caught it.
+
+**`QUARTO_PYTHON` is not safe to export from a shell startup file.** It takes
+precedence over an activated virtual environment, measured by activating one
+environment and pointing the variable at another: Quarto reported the variable's
+interpreter. Exporting it would therefore change the interpreter for every
+Quarto project on the machine, including a project whose own environment is
+active. The draft that did this was never committed.
+
+The block now asks Quarto's interpreter for `jupyter_client` and names it in
+`--python` when it has it, so the kernelspec and Quarto agree on one Python with
+nothing overridden. A machine that already has Jupyter gains no virtual
+environment and one `PATH` entry, for Composer's bin directory. A machine
+without one gains the environment, first on `PATH`.
+
+**The test that was missing.** The earlier verification ran the block and
+asserted it worked in that same shell, which it always did. The failure lives in
+the next shell. Verification now runs the block under `zsh -e` in a clean `HOME`
+and `COMPOSER_HOME`, then renders a standalone document from a separately
+started shell that sources only the new startup file, for both branches, and
+re-runs the block to confirm the startup file does not grow. Extract the block
+from the published file by regex rather than retyping it, so what runs is what a
+reader would paste.
+
+One consequence for task 13: editing `docs/install.qmd` changes its freeze hash,
+so the committed `install.html`, its `_freeze` entry, and `search.json` go stale
+and the `docs` job fails on the merged result until they are re-rendered.
