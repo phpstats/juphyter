@@ -9,6 +9,7 @@ use Juphyter\Engine\Interrupt;
 use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
+use Juphyter\Install\QuartoProbe;
 use Phar;
 use RuntimeException;
 
@@ -30,6 +31,10 @@ use RuntimeException;
  *   `JUPYTER_DATA_DIR` and `--prefix`.
  * - The engine path is this package's `bin/juphyter`, or the PHAR itself when
  *   the command is running from one.
+ * - {@see QuartoProbe} resolves the interpreter Quarto will run, which is a
+ *   different question from the one above and is reported beside it. That
+ *   check is advisory: see {@see quarto()} for what it does and does not
+ *   change.
  *
  * ## Running from a PHAR
  *
@@ -66,6 +71,7 @@ final class InstallCommand extends Command
     /**
      * @param  JupyterPaths  $paths  Where kernelspecs live.
      * @param  PythonProbe  $probe  Which interpreter to name, and whether it can host the kernel.
+     * @param  QuartoProbe  $quarto  Which interpreter Quarto will run, for the advisory report.
      * @param  Closure(list<string>): array{code: int, stdout: string, stderr: string}  $runner  How to run a subprocess, used to validate `--php`.
      * @param  string  $packageRoot  This package's root, which is a `phar://` path inside a PHAR.
      * @param  resource|null  $stdout
@@ -74,6 +80,7 @@ final class InstallCommand extends Command
     public function __construct(
         private readonly JupyterPaths $paths,
         private readonly PythonProbe $probe,
+        private readonly QuartoProbe $quarto,
         private readonly Closure $runner,
         private readonly string $packageRoot,
         $stdout = null,
@@ -95,6 +102,7 @@ final class InstallCommand extends Command
         return new self(
             JupyterPaths::fromEnvironment(),
             new PythonProbe($runner),
+            new QuartoProbe($runner),
             $runner,
             self::packageRoot(),
         );
@@ -191,6 +199,14 @@ final class InstallCommand extends Command
             ));
         }
 
+        // Last, and advisory: the kernelspec above is written whatever Quarto
+        // can or cannot do with it.
+        [$quartoLine, $quartoWarning] = $this->quarto($python);
+
+        if ($quartoWarning !== '') {
+            fwrite($this->stderr, $quartoWarning);
+        }
+
         fwrite($this->stdout, sprintf(
             "%s the juphyter kernel \"%s\" for PHP %s.\n"
             ."  kernel.json  %s\n"
@@ -205,7 +221,7 @@ final class InstallCommand extends Command
             $ipykernel,
             $php,
             $this->enginePath(),
-        ));
+        ).$quartoLine);
 
         return 0;
     }
@@ -290,6 +306,132 @@ final class InstallCommand extends Command
     private static function isAbsoluteExecutable(string $php): bool
     {
         return str_starts_with($php, '/') && is_file($php) && is_executable($php);
+    }
+
+    /**
+     * The `quarto` line for the install report, and the warning that goes with it.
+     *
+     * Quarto runs an interpreter of its own choosing, and that one is the one
+     * that needs Jupyter in it, so a kernelspec can be correct and complete and
+     * still be unreachable from `quarto render`. {@see QuartoProbe} resolves
+     * the interpreter and documents the order it replicates.
+     *
+     * Nothing here changes which interpreter the kernelspec names. The two are
+     * allowed to differ, the recorded one is right for JupyterLab, and moving
+     * it to Quarto's choice would rearrange the kernel of a JupyterLab user who
+     * has no Quarto problem to solve. The exit code stays 0 and the kernelspec
+     * is still written for the same reason: a kernel Quarto cannot reach is
+     * still a working JupyterLab kernel.
+     *
+     * The whole check is skipped when Quarto is not installed, so a user
+     * without it reads nothing about it.
+     *
+     * @param  string  $python  The interpreter the kernelspec names.
+     * @return array{string, string} The report line and the warning, either of
+     *                               which is empty when there is none.
+     */
+    private function quarto(string $python): array
+    {
+        if (! $this->quarto->installed()) {
+            return ['', ''];
+        }
+
+        $resolution = $this->quarto->resolve();
+
+        if ($resolution === null) {
+            return [
+                "  quarto       no python3 on PATH\n",
+                $this->quartoWarning(
+                    "Quarto is installed and has no python3 on PATH to run, so `quarto render`\n"
+                    .'  will not start this kernel, or any other.',
+                    $python,
+                ),
+            ];
+        }
+
+        $interpreter = $resolution['interpreter'];
+
+        // Naming the variable matters when it is the thing that is wrong: a
+        // QUARTO_PYTHON left over from another project explains an interpreter
+        // the reader cannot otherwise account for.
+        $where = $resolution['source'] === QuartoProbe::OVERRIDE
+            ? sprintf('%s names %s', QuartoProbe::OVERRIDE, $interpreter)
+            : sprintf('Quarto appears to use %s', $interpreter);
+
+        if ($resolution['problem'] !== null) {
+            return [
+                sprintf("  quarto       %s (did not run)\n", $interpreter),
+                $this->quartoWarning(sprintf(
+                    "%s, which did not run: %s.\n"
+                    ."  Quarto starts a kernel through the Jupyter in that interpreter, so\n"
+                    .'  `quarto render` will not start this kernel, or any other, until that is'
+                    ."\n  fixed.",
+                    $where,
+                    $resolution['problem'],
+                ), $python),
+            ];
+        }
+
+        if ($resolution['jupyterClient'] !== null) {
+            return [
+                sprintf(
+                    "  quarto       %s (jupyter_client %s)\n",
+                    $interpreter,
+                    $resolution['jupyterClient'],
+                ),
+                '',
+            ];
+        }
+
+        return [
+            sprintf("  quarto       %s (no Jupyter)\n", $interpreter),
+            $this->quartoWarning(sprintf(
+                "%s, which has no Jupyter in it.\n"
+                ."  Jupyter is what starts a kernel and collects its output, so `quarto render`\n"
+                .'  will not start this kernel, or any other, through that interpreter.',
+                $where,
+            ), $python),
+        ];
+    }
+
+    /**
+     * A warning about Quarto's interpreter, with the way out of it.
+     *
+     * The remedy is a `PATH` entry built from the recorded interpreter, which
+     * is worth suggesting only when that interpreter has Jupyter itself.
+     * Otherwise there is no interpreter here to point at and the choice of one
+     * belongs to the reader. `quarto check jupyter` is the authority in both
+     * cases, because the resolution order replicated here is Quarto's and could
+     * change under it.
+     *
+     * @param  string  $problem  The opening paragraph, already wrapped.
+     * @param  string  $python  The interpreter the kernelspec names.
+     */
+    private function quartoWarning(string $problem, string $python): string
+    {
+        $remedy = $this->quarto->jupyterClientVersion($python) !== null
+            ? sprintf(
+                "  Put the interpreter this kernelspec names first on your PATH, where Quarto\n"
+                ."  finds it as python3:\n\n    %s\n",
+                self::exportPathCommand($python),
+            )
+            : sprintf(
+                "  Quarto needs a Python with Jupyter in it. The interpreter this kernelspec\n"
+                ."  names, %s, has none either, so there is no PATH entry to suggest here.\n",
+                $python,
+            );
+
+        return sprintf(
+            "juphyter: %s\n%s\n  `quarto check jupyter` reports the interpreter Quarto chose.\n",
+            $problem,
+            $remedy,
+        );
+    }
+
+    /** The `PATH` entry that puts an interpreter's own `bin` directory first. */
+    private static function exportPathCommand(string $python): string
+    {
+        return sprintf('export PATH="%s:$PATH"', dirname($python));
     }
 
     /** `8.4` from `8.4.25`, for the default display name. */

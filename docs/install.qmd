@@ -73,8 +73,8 @@ quarto check jupyter
 
 On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
 
-`juphyter install` prints where the kernelspec went and which Python, PHP, and
-engine it recorded:
+`juphyter install` prints where the kernelspec went, which Python, PHP, and
+engine it recorded, and which Python Quarto appears to use:
 
 ```
 Installed the juphyter kernel "php" for PHP 8.5.10.
@@ -82,6 +82,7 @@ Installed the juphyter kernel "php" for PHP 8.5.10.
   python       /Users/you/.venvs/juphyter/bin/python (ipykernel 7.4.0)
   php          /opt/homebrew/bin/php
   engine       /Users/you/.composer/vendor/phpstats/juphyter/bin/juphyter
+  quarto       /Users/you/.venvs/juphyter/bin/python (jupyter_client 8.10.0)
 ```
 
 If `ipykernel` is missing from that interpreter the command writes nothing and
@@ -89,6 +90,21 @@ prints the `pip install` line that fixes it. The interpreter it picks is the one
 that owns the `jupyter` on your `PATH`, read from that script's shebang, because
 that is the environment your Jupyter actually runs in. Use `--python` to name a
 different one.
+
+The `quarto` line is a different question from the `python` line above, and the
+command reports it rather than acting on it. The line is absent when `quarto` is
+not on your `PATH`. When the interpreter Quarto will run has no Jupyter in it,
+the line says so and the command prints a warning naming the `PATH` entry that
+fixes it:
+
+```
+  quarto       /opt/homebrew/opt/python@3.14/bin/python3.14 (no Jupyter)
+```
+
+The kernelspec is still written and the command still exits 0, because a kernel
+Quarto cannot reach is a working JupyterLab kernel. `quarto check jupyter` is
+the authority on which interpreter Quarto chose, and the section below explains
+the failure the warning is about.
 
 ### Why the kernel is installed against Quarto's Python
 

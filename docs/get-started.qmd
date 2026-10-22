@@ -5,21 +5,26 @@ jupyter: php
 
 ## Install the kernel
 
-juphyter is a development dependency of the project whose notebooks it runs.
+A kernelspec belongs to the machine, so the usual choice is to install juphyter
+once for your user, as [Installation](install.qmd) describes. Installing it as a
+development dependency of one project pins the kernel's version with that
+project, at the cost of a kernelspec that names that project's copy of the
+engine:
 
 ```bash
 composer require --dev phpstats/juphyter
 vendor/bin/juphyter install
 ```
 
-The command prints the four things the kernel is made of.
+The command prints what the kernel is made of.
 
 ```
 Installed the juphyter kernel "php" for PHP 8.5.10.
-  kernel.json  /Users/erik/Library/Jupyter/kernels/php/kernel.json
+  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json
   python       /opt/homebrew/bin/python3 (ipykernel 7.4.0)
   php          /opt/homebrew/bin/php
   engine       /path/to/vendor/phpstats/juphyter/bin/juphyter
+  quarto       /opt/homebrew/bin/python3 (jupyter_client 8.10.0)
 ```
 
 The Python is the interpreter that owns the `jupyter` on `PATH`, because the
@@ -34,6 +39,12 @@ vendor/bin/juphyter install --name php85 --php /opt/homebrew/opt/php@8.5/bin/php
 
 `juphyter uninstall --name php83` removes a kernelspec juphyter wrote, and
 refuses to remove one it did not.
+
+The `quarto` line appears when Quarto is installed. Quarto runs an interpreter
+of its own choosing, and that one is the one that needs Jupyter in it, so the
+line reports which interpreter that is and what was found there. When it says
+`(no Jupyter)`, the kernelspec is still correct and `quarto render` cannot reach
+it; [Installation](install.qmd) covers the fix.
 
 ## A first cell
 

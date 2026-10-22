@@ -7,6 +7,7 @@ use Juphyter\Engine\Interrupt;
 use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
+use Juphyter\Install\QuartoProbe;
 
 /**
  * A temporary directory, removed after the test.
@@ -127,18 +128,47 @@ function installPackageRoot(): string
 }
 
 afterAll(function () {
-    $temporary = glob(sys_get_temp_dir().'/juphyter-probe-path-*') ?: [];
+    $patterns = ['juphyter-probe-path-*', 'juphyter-package-root-*', 'juphyter-quarto-path-*'];
 
-    foreach ([...$temporary, ...(glob(sys_get_temp_dir().'/juphyter-package-root-*') ?: [])] as $directory) {
-        installRemoveTree($directory);
+    foreach ($patterns as $pattern) {
+        foreach (glob(sys_get_temp_dir().'/'.$pattern) ?: [] as $directory) {
+            installRemoveTree($directory);
+        }
     }
 });
+
+/**
+ * A directory holding a fake `quarto` and a fake `python3`, for the Quarto check.
+ *
+ * {@see QuartoProbe} only asks `PATH` whether `quarto` is there and which
+ * `python3` comes first on it, so an empty file of each name is enough; the
+ * runner answers for whatever it picks. The default {@see runInstall()} leaves
+ * this `PATH` empty, which is a machine with no Quarto on it and the case where
+ * the whole check is skipped.
+ */
+function installQuartoPath(): string
+{
+    static $directory = null;
+
+    if ($directory === null) {
+        $directory = sys_get_temp_dir().'/juphyter-quarto-path-'.bin2hex(random_bytes(6));
+        mkdir($directory, 0o777, true);
+
+        foreach (['quarto', 'python3'] as $name) {
+            file_put_contents($directory.'/'.$name, "#!/bin/sh\n");
+            chmod($directory.'/'.$name, 0o755);
+        }
+    }
+
+    return $directory;
+}
 
 /**
  * Run `juphyter install` with fakes, and return the exit code and both streams.
  *
  * @param  list<string>  $arguments
- * @param  array<string, string>  $environment  What {@see JupyterPaths} reads.
+ * @param  array<string, string>  $environment  What {@see JupyterPaths} reads, and where `QUARTO_PYTHON` comes from.
+ * @param  string|null  $quartoPath  The `PATH` {@see QuartoProbe} searches. Empty by default, so Quarto is absent.
  * @return array{result: int, stdout: string, stderr: string}
  */
 function runInstall(
@@ -147,6 +177,7 @@ function runInstall(
     ?Closure $runner = null,
     ?string $packageRoot = null,
     string $osFamily = 'Darwin',
+    ?string $quartoPath = null,
 ): array {
     $runner ??= installRunner();
     $packageRoot ??= installPackageRoot();
@@ -154,6 +185,7 @@ function runInstall(
     return captured(fn ($stdout, $stderr) => (new InstallCommand(
         new JupyterPaths($environment, $osFamily),
         new PythonProbe($runner, installPythonPath()),
+        new QuartoProbe($runner, $quartoPath ?? '', $environment),
         $runner,
         $packageRoot,
         $stdout,
@@ -736,5 +768,248 @@ describe('the stop button', function () {
         // than from a subprocess that was never run.
         expect($result['result'])->toBe(0)
             ->and($result['stderr'])->toContain(Interrupt::available() ? '' : 'stop button');
+    });
+});
+
+describe('the interpreter Quarto will use', function () {
+    // Quarto runs a Python of its own choosing and that one is the one that
+    // needs Jupyter in it, so a kernelspec can be correct and complete and
+    // still be unreachable from `quarto render`. The recorded interpreter is
+    // never moved to match: see InstallCommand::quarto().
+    //
+    // The runner answers for two interpreters here. /opt/venv/bin/python is
+    // what --python names and the kernelspec records, and /usr/bin/python3 is
+    // the one on Quarto's PATH, so a test can give them different modules.
+    $recorded = '/opt/venv/bin/python';
+
+    it('says nothing about Quarto when quarto is not on PATH', function () {
+        $prefix = installWorkspace();
+        $run = runInstall(['--prefix', $prefix]);
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->not->toContain('quarto')
+            ->and($run['stderr'])->toBe('');
+    });
+
+    it('names the interpreter and its jupyter_client when it has one', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $run = runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: installQuartoPath(), runner: installRunner([
+            installQuartoPath().'/python3 -c import sys' => ['stdout' => "/usr/bin/python3.12\n"],
+            'jupyter_client' => ['stdout' => "8.6.3\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       /usr/bin/python3.12 (jupyter_client 8.6.3)')
+            ->and($run['stderr'])->toBe('')
+            ->and($prefix.'/share/jupyter/kernels/php/kernel.json')->toBeFile();
+    });
+
+    it('reports no Jupyter, warns, and installs anyway', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $run = runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: installQuartoPath(), runner: installRunner([
+            installQuartoPath().'/python3 -c import sys' => ['stdout' => "/usr/bin/python3.12\n"],
+            // Only the recorded interpreter has the client. Quarto's does not,
+            // which is the Homebrew python3 on a typical macOS machine.
+            '/opt/venv/bin/python3 -c import jupyter_client' => ['stdout' => "8.6.3\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       /usr/bin/python3.12 (no Jupyter)')
+            ->and($run['stderr'])->toContain('/usr/bin/python3.12')
+            ->and($run['stderr'])->toContain('no Jupyter in it')
+            ->and($run['stderr'])->toContain('quarto check jupyter')
+            // The way out is the recorded interpreter's own bin directory.
+            ->and($run['stderr'])->toContain('export PATH="/opt/venv/bin:$PATH"')
+            ->and($prefix.'/share/jupyter/kernels/php/kernel.json')->toBeFile();
+    });
+
+    it('leaves the kernelspec naming the recorded interpreter, not Quarto\'s', function () use ($recorded) {
+        $prefix = installWorkspace();
+        runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: installQuartoPath(), runner: installRunner([
+            installQuartoPath().'/python3 -c import sys' => ['stdout' => "/usr/bin/python3.12\n"],
+            '/usr/bin/python3.12 -c import jupyter_client' => ['stdout' => "8.6.3\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ]));
+
+        $spec = readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json');
+
+        expect($spec['argv'][0])->toBe('/opt/venv/bin/python3');
+    });
+
+    it('takes QUARTO_PYTHON over the python3 on PATH', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $run = runInstall(
+            ['--prefix', $prefix, '--python', $recorded],
+            ['QUARTO_PYTHON' => '/other/venv/bin/python'],
+            quartoPath: installQuartoPath(),
+            runner: installRunner([
+                '/other/venv/bin/python -c import sys' => ['stdout' => "/other/venv/bin/python\n"],
+                'jupyter_client' => ['stdout' => "8.6.3\n"],
+                'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+            ]),
+        );
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       /other/venv/bin/python (jupyter_client 8.6.3)')
+            ->and($run['stdout'])->not->toContain('/usr/bin/python3');
+    });
+
+    it('reports a QUARTO_PYTHON that does not run, and still installs', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $run = runInstall(
+            ['--prefix', $prefix, '--python', $recorded],
+            ['QUARTO_PYTHON' => '/gone/bin/python'],
+            quartoPath: installQuartoPath(),
+            runner: installRunner([
+                '/gone/bin/python -c import sys' => [
+                    'code' => 127,
+                    'stderr' => '/gone/bin/python is not an executable file',
+                ],
+                'jupyter_client' => ['stdout' => "8.6.3\n"],
+                'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+            ]),
+        );
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       /gone/bin/python (did not run)')
+            // Naming the variable is the point: an interpreter the reader
+            // cannot otherwise account for came from somewhere.
+            ->and($run['stderr'])->toContain('QUARTO_PYTHON names /gone/bin/python')
+            ->and($run['stderr'])->toContain('is not an executable file')
+            ->and($prefix.'/share/jupyter/kernels/php/kernel.json')->toBeFile();
+    });
+
+    it('reports that there is no python3 on PATH for Quarto to use', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $quarto = installWorkspace();
+        file_put_contents($quarto.'/quarto', "#!/bin/sh\n");
+        chmod($quarto.'/quarto', 0o755);
+
+        $run = runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: $quarto, runner: installRunner([
+            'jupyter_client' => ['stdout' => "8.6.3\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       no python3 on PATH')
+            ->and($run['stderr'])->toContain('no python3 on PATH')
+            ->and($prefix.'/share/jupyter/kernels/php/kernel.json')->toBeFile();
+    });
+
+    it('suggests no PATH entry when the recorded interpreter has no Jupyter either', function () use ($recorded) {
+        // ipykernel 7 depends on jupyter_client, so this is a broken
+        // environment rather than an ordinary one. There is still no
+        // interpreter here to point the reader at, so the command says what
+        // Quarto needs and leaves the choice of one to them.
+        $prefix = installWorkspace();
+        $run = runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: installQuartoPath(), runner: installRunner([
+            installQuartoPath().'/python3 -c import sys' => ['stdout' => "/usr/bin/python3.12\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ]));
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('  quarto       /usr/bin/python3.12 (no Jupyter)')
+            ->and($run['stderr'])->toContain('Quarto needs a Python with Jupyter in it')
+            ->and($run['stderr'])->not->toContain('export PATH=')
+            ->and($run['stderr'])->toContain('quarto check jupyter');
+    });
+
+    it('asks the resolved interpreter for jupyter_client and nothing else', function () use ($recorded) {
+        $prefix = installWorkspace();
+        $calls = [];
+        runInstall(['--prefix', $prefix, '--python', $recorded], quartoPath: installQuartoPath(), runner: installRunner([
+            installQuartoPath().'/python3 -c import sys' => ['stdout' => "/usr/bin/python3.12\n"],
+            'jupyter_client' => ['stdout' => "8.6.3\n"],
+            'sys.executable' => ['stdout' => "/opt/venv/bin/python3\n"],
+        ], $calls));
+
+        $asked = array_values(array_filter(
+            $calls,
+            fn (array $argv) => str_contains($argv[2] ?? '', 'jupyter_client'),
+        ));
+
+        // The resolved path, not the python3 on PATH that led to it: the
+        // install report and `quarto check jupyter` then name the same file.
+        expect($asked[0][0])->toBe('/usr/bin/python3.12')
+            ->and($asked[0][2])->toBe('import jupyter_client; print(jupyter_client.__version__)');
+    });
+});
+
+describe('the Quarto check against a real interpreter', function () {
+    // Everything above answers from a table. This one runs the probe's own
+    // process runner against a Python that is really on this machine and
+    // really has no jupyter_client, which is the macOS default and the whole
+    // reason the check exists.
+    it('warns and names the Jupyter-less python3 that is first on PATH', function () {
+        $python3 = null;
+
+        foreach (explode(PATH_SEPARATOR, (string) getenv('PATH')) as $directory) {
+            $candidate = rtrim($directory, '/').'/python3';
+
+            if ($directory !== '' && is_file($candidate) && is_executable($candidate)) {
+                $python3 = $candidate;
+
+                break;
+            }
+        }
+
+        if ($python3 === null) {
+            $this->markTestSkipped('No python3 on PATH to probe.');
+        }
+
+        $runner = PythonProbe::processRunner();
+        $imports = $runner([$python3, '-c', 'import jupyter_client']);
+
+        if ($imports['code'] === 0) {
+            $this->markTestSkipped(sprintf(
+                '%s has jupyter_client, so the no-Jupyter branch cannot be exercised here.',
+                $python3,
+            ));
+        }
+
+        $workspace = installWorkspace();
+
+        // Quarto's PATH: a quarto that is only ever located, and the real
+        // python3 under the name the probe looks for.
+        $quarto = $workspace.'/quarto-bin';
+        mkdir($quarto, 0o777, true);
+        file_put_contents($quarto.'/quarto', "#!/bin/sh\nexit 0\n");
+        chmod($quarto.'/quarto', 0o755);
+        symlink($python3, $quarto.'/python3');
+
+        // The recorded interpreter, which has to answer for ipykernel and for
+        // jupyter_client. A stub keeps the test from needing an environment
+        // with ipykernel 7 in it.
+        $recorded = $workspace.'/venv/bin';
+        mkdir($recorded, 0o777, true);
+        file_put_contents($recorded.'/python', <<<'SH'
+            #!/bin/sh
+            case "$2" in
+              *ipykernel*) echo 7.4.0 ;;
+              *jupyter_client*) echo 8.6.3 ;;
+              *) echo "$0" ;;
+            esac
+            SH);
+        chmod($recorded.'/python', 0o755);
+
+        $run = runInstall(
+            ['--prefix', $workspace.'/prefix', '--python', $recorded.'/python'],
+            quartoPath: $quarto,
+            runner: $runner,
+        );
+
+        // What the interpreter calls itself is what Quarto reports, and so is
+        // what the install report has to name.
+        $executable = trim($runner([$python3, '-c', 'import sys; print(sys.executable)'])['stdout']);
+
+        expect($run['result'])->toBe(0)
+            ->and($workspace.'/prefix/share/jupyter/kernels/php/kernel.json')->toBeFile()
+            ->and($run['stdout'])->toContain(sprintf('  quarto       %s (no Jupyter)', $executable))
+            ->and($run['stderr'])->toContain($executable)
+            ->and($run['stderr'])->toContain('no Jupyter in it')
+            ->and($run['stderr'])->toContain(sprintf('export PATH="%s:$PATH"', $recorded))
+            ->and($run['stderr'])->toContain('quarto check jupyter');
     });
 });
