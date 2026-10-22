@@ -194,6 +194,13 @@ which is the setting a documentation site wants: a contributor without PHP 8.5
 and the phpstats packages installed can still build the site from the frozen
 output. The frozen output lives in `_freeze/` and is committed.
 
+Quarto resolves a document's kernel by name while it builds the site
+navigation, which happens before it reads anything frozen, so a kernelspec of
+that name has to exist even though nothing starts it. `scripts/render-docs
+--frozen` writes one whose command exits as soon as it is started, so a cell
+that did reach execution fails the render rather than coming out unexecuted.
+That is how this repository rebuilds its own site with no PHP on the machine.
+
 ## Projects
 
 In a Quarto project the kernel is named per document, in each document's front

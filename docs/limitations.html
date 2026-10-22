@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Limitations – juphyter</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5a69534754b34dc075d7f980428dccec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./limitations.html">Limitations</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">juphyter</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">juphyter</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./install.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quarto</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jupyter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JupyterLab</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./limitations.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Limitations</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a-cell-cannot-redeclare-a-class-or-a-function" id="toc-a-cell-cannot-redeclare-a-class-or-a-function" class="nav-link active" data-scroll-target="#a-cell-cannot-redeclare-a-class-or-a-function">A cell cannot redeclare a class or a function</a></li>
+  <li><a href="#a-cell-cannot-declare-a-namespace" id="toc-a-cell-cannot-declare-a-namespace" class="nav-link" data-scroll-target="#a-cell-cannot-declare-a-namespace">A cell cannot declare a namespace</a></li>
+  <li><a href="#every-cell-runs-under-strict-types" id="toc-every-cell-runs-under-strict-types" class="nav-link" data-scroll-target="#every-cell-runs-under-strict-types">Every cell runs under strict types</a></li>
+  <li><a href="#references-and-this-do-not-survive-between-cells" id="toc-references-and-this-do-not-survive-between-cells" class="nav-link" data-scroll-target="#references-and-this-do-not-survive-between-cells">References and <code>$this</code> do not survive between cells</a></li>
+  <li><a href="#a-closure-called-from-another-cell-has-no-line-in-its-traceback" id="toc-a-closure-called-from-another-cell-has-no-line-in-its-traceback" class="nav-link" data-scroll-target="#a-closure-called-from-another-cell-has-no-line-in-its-traceback">A closure called from another cell has no line in its traceback</a></li>
+  <li><a href="#a-cell-whose-value-is-null-shows-no-output" id="toc-a-cell-whose-value-is-null-shows-no-output" class="nav-link" data-scroll-target="#a-cell-whose-value-is-null-shows-no-output">A cell whose value is null shows no output</a></li>
+  <li><a href="#a-cell-that-calls-exit-or-die-ends-the-kernel" id="toc-a-cell-that-calls-exit-or-die-ends-the-kernel" class="nav-link" data-scroll-target="#a-cell-that-calls-exit-or-die-ends-the-kernel">A cell that calls <code>exit</code> or <code>die</code> ends the kernel</a></li>
+  <li><a href="#interrupting-needs-pcntl-and-a-cell-can-still-swallow-it" id="toc-interrupting-needs-pcntl-and-a-cell-can-still-swallow-it" class="nav-link" data-scroll-target="#interrupting-needs-pcntl-and-a-cell-can-still-swallow-it">Interrupting needs pcntl, and a cell can still swallow it</a></li>
+  <li><a href="#a-data-frames-numbers-in-an-html-table-are-not-pillars" id="toc-a-data-frames-numbers-in-an-html-table-are-not-pillars" class="nav-link" data-scroll-target="#a-data-frames-numbers-in-an-html-table-are-not-pillars">A data frame’s numbers in an HTML table are not pillar’s</a></li>
+  <li><a href="#macos-and-linux-only" id="toc-macos-and-linux-only" class="nav-link" data-scroll-target="#macos-and-linux-only">macOS and Linux only</a></li>
+  <li><a href="#not-yet-implemented" id="toc-not-yet-implemented" class="nav-link" data-scroll-target="#not-yet-implemented">Not yet implemented</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/limitations.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Limitations</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Some of these follow from PHP itself and will not change. Others are milestone boundaries and will. Each one says which.</p>
+<section id="a-cell-cannot-redeclare-a-class-or-a-function" class="level2">
+<h2 class="anchored" data-anchor-id="a-cell-cannot-redeclare-a-class-or-a-function">A cell cannot redeclare a class or a function</h2>
+<p>PHP has no way to replace a class, interface, trait, enum, or function once it is declared, so re-running a cell that declares one cannot work. The kernel refuses such a cell before executing anything, naming the collision:</p>
+<pre><code>RedeclarationError: The class, interface, trait or enum "Widget" was already
+declared in this session, and PHP cannot redeclare it. Restart the kernel to
+redefine it.</code></pre>
+<p>Refusing is deliberate. Letting it reach <code>eval()</code> would be an uncatchable fatal error that ends the kernel rather than an error the notebook can show.</p>
+<p>The session records a name only once PHP really holds it, so a cell that failed to declare anything leaves the name free. <code>class Widget extends Typo {}</code> throws and declares nothing, and the corrected cell runs. The common case this serves is running cells out of order: define a base class after its subclass, run the subclass cell first, then run them in the right order, and it works.</p>
+<p>A conditional declaration is not affected, because PHP does not bind one at compile time:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span> <span class="fu">function_exists</span>(<span class="st">'helper'</span>)) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">function</span> helper() { <span class="co">/* ... */</span> }</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This follows from PHP and will not change.</p>
+</section>
+<section id="a-cell-cannot-declare-a-namespace" class="level2">
+<h2 class="anchored" data-anchor-id="a-cell-cannot-declare-a-namespace">A cell cannot declare a namespace</h2>
+<p>A <code>namespace</code> declaration is refused. Changing namespace part way through a session breaks name resolution for everything already defined, and the kernel would have no honest way to decide which namespace a later cell belongs to. Use fully qualified names, or <code>use</code> statements, which do carry from one cell to the next.</p>
+<p>This is a deliberate refusal and is not planned to change.</p>
+</section>
+<section id="every-cell-runs-under-strict-types" class="level2">
+<h2 class="anchored" data-anchor-id="every-cell-runs-under-strict-types">Every cell runs under strict types</h2>
+<p>The kernel prepends <code>declare(strict_types=1);</code> to each cell, because PHP accepts that declaration nowhere but the first statement. A cell writing it for itself is fine and the kernel removes the duplicate. <code>declare(strict_types=0)</code> is refused, since the kernel cannot honor it, and so is <code>declare(encoding=...)</code>, which has the same first-statement rule. <code>declare(ticks=...)</code> is left alone.</p>
+</section>
+<section id="references-and-this-do-not-survive-between-cells" class="level2">
+<h2 class="anchored" data-anchor-id="references-and-this-do-not-survive-between-cells">References and <code>$this</code> do not survive between cells</h2>
+<p>Variables are carried across cells by value. A reference taken in one cell is an ordinary copy in the next, and <code>$this</code> has no meaning at a notebook’s top level. Objects, arrays, scalars, and resources all persist normally. Every PHP REPL behaves this way.</p>
+</section>
+<section id="a-closure-called-from-another-cell-has-no-line-in-its-traceback" class="level2">
+<h2 class="anchored" data-anchor-id="a-closure-called-from-another-cell-has-no-line-in-its-traceback">A closure called from another cell has no line in its traceback</h2>
+<p>A traceback names the cell and the line for ordinary functions and methods, across cells:</p>
+<pre><code>RuntimeException: from the function
+  at Cell 1, line 3, in boom()
+  at Cell 2, line 2</code></pre>
+<p>A closure is different. PHP’s trace does not say where a closure was declared, and every cell’s <code>eval()</code> shares one file name, so a closure declared in one cell and called from another cannot be placed. The kernel reports the stack frame without a location rather than guessing:</p>
+<pre><code>LogicException: from the closure
+  in a closure
+  at Cell 4, line 4</code></pre>
+<p>Naming a line it could not know would send you to the wrong place, which is worse than naming none. The call site is still reported. This is a milestone boundary.</p>
+</section>
+<section id="a-cell-whose-value-is-null-shows-no-output" class="level2">
+<h2 class="anchored" data-anchor-id="a-cell-whose-value-is-null-shows-no-output">A cell whose value is null shows no output</h2>
+<p><code>var_dump($x);</code>, <code>Juphyter\display($df)</code>, and any other call that returns nothing produce no <code>Out[N]</code>, the same way a Python notebook shows nothing for <code>None</code>. Every other value is shown, including <code>0</code>, <code>false</code>, <code>''</code>, <code>[]</code>, and <code>'null'</code>.</p>
+</section>
+<section id="a-cell-that-calls-exit-or-die-ends-the-kernel" class="level2">
+<h2 class="anchored" data-anchor-id="a-cell-that-calls-exit-or-die-ends-the-kernel">A cell that calls <code>exit</code> or <code>die</code> ends the kernel</h2>
+<p>PHP cannot catch either, so the process goes. The kernel reports it rather than disappearing silently:</p>
+<pre><code>SystemExit: The cell ended the kernel process with exit or die, so nothing
+further can run. Restart the kernel to carry on.</code></pre>
+<p>Anything the cell printed first is still shown. This follows from PHP.</p>
+</section>
+<section id="interrupting-needs-pcntl-and-a-cell-can-still-swallow-it" class="level2">
+<h2 class="anchored" data-anchor-id="interrupting-needs-pcntl-and-a-cell-can-still-swallow-it">Interrupting needs pcntl, and a cell can still swallow it</h2>
+<p>The stop button sends a signal, so the PHP binary running cells needs the <code>pcntl</code> extension with its functions callable. <code>juphyter install</code> checks the binary it names and warns when it cannot signal, including the case where the extension is loaded but its functions sit in <code>disable_functions</code>.</p>
+<p>An interrupt arrives as <code>Juphyter\Engine\Interrupt</code>, which extends <code>Error</code> rather than <code>Exception</code> so that ordinary defensive code does not absorb it. A cell that catches <code>Throwable</code> in a loop can still swallow it, which is the same trade Python makes by putting <code>KeyboardInterrupt</code> outside <code>Exception</code>.</p>
+</section>
+<section id="a-data-frames-numbers-in-an-html-table-are-not-pillars" class="level2">
+<h2 class="anchored" data-anchor-id="a-data-frames-numbers-in-an-html-table-are-not-pillars">A data frame’s numbers in an HTML table are not pillar’s</h2>
+<p>A data frame’s <code>text/plain</code> output is phibble’s own, character for character. The HTML table is the kernel’s, and it formats a float with PHP’s own string conversion rather than reproducing pillar’s significant-figure logic, so a wide <code>dbl</code> column can read differently in the two. The HTML header also omits the group count that the text output carries. Both are milestone boundaries.</p>
+</section>
+<section id="macos-and-linux-only" class="level2">
+<h2 class="anchored" data-anchor-id="macos-and-linux-only">macOS and Linux only</h2>
+<p>The kernel interrupts a cell with POSIX signals and reaps a child process, which the Windows PHP build does not support. This matches the platforms the phit and phpolars extensions declare.</p>
+</section>
+<section id="not-yet-implemented" class="level2">
+<h2 class="anchored" data-anchor-id="not-yet-implemented">Not yet implemented</h2>
+<p>These are milestone boundaries with nothing in the design against them:</p>
+<ul>
+<li><strong>Documentation on hover.</strong> Jupyter’s <code>inspect_request</code> is not answered, so shift-tab shows nothing.</li>
+<li><strong>Reading input.</strong> A cell cannot prompt, so <code>readline()</code> and <code>fgets(STDIN)</code> have nothing to read.</li>
+<li><strong>Magics.</strong> There are no <code>%</code>-prefixed commands.</li>
+<li><strong>Widgets.</strong> <code>ipywidgets</code> is not supported.</li>
+<li><strong>The debugger.</strong> Jupyter’s debug protocol is not implemented, so JupyterLab’s debugger does not attach.</li>
+<li><strong>A Vega-Lite 6 renderer.</strong> phiz emits Vega-Lite 6 and JupyterLab’s bundled renderer reads version 5, so plots are published under the version 5 MIME type. Everything phiz currently produces compiles under the renderer JupyterLab ships, and the static SVG covers anything that does not.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/juphyter\.phpstats\.org");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/limitations.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

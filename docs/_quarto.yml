@@ -30,5 +30,24 @@ format:
 # is the point of the site as much as its contents: the documentation for a PHP
 # kernel should be written in PHP cells. `scripts/render-docs` arranges the
 # kernel and the packages the examples use, so that is how the site is built.
+#
+# The rendered HTML is committed beside each source, because phpstats.org reads
+# the pages out of this repository rather than rendering them itself, and every
+# page's executed output is committed under `_freeze/` with it.
+#
+# The frozen output is not a cache here. `scripts/render-docs` deletes it
+# before a render so that every page's cells run, and the render writes it
+# again, which is why an executing render moves the bytes of a page whose
+# source nobody touched: Quarto gives every executed cell a new random id.
+# What the frozen output buys is the other render. `render-docs --frozen`
+# produces the same bytes from the same sources every time, with no kernel
+# involved, and a page whose source changed since its output was frozen cannot
+# be rendered that way at all.
+#
+# `.github/workflows/quarto.yml` uses both. One job renders through the kernel,
+# and one renders from the frozen output with no kernel installed and fails if
+# the committed HTML is not what comes out. The second check needs a render
+# that repeats itself, so it is the frozen one, and the first needs a kernel,
+# so it is the executing one.
 execute:
-  freeze: false
+  freeze: auto

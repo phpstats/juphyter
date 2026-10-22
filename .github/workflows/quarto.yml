@@ -125,3 +125,59 @@ jobs:
             build/quarto/project/notebooks/report.ipynb
             build/quarto/project/notebooks/report.pdf
             docs/_site
+
+  # The site this repository carries. The job above renders the documentation
+  # for real, through the kernel; this one renders it from the output frozen
+  # under docs/_freeze and checks that the result is what is committed beside
+  # the sources, which is what phpstats.org imports.
+  #
+  # There is no PHP here, and no ipykernel, so nothing in this job can execute
+  # a cell. render-docs --frozen writes a kernelspec whose argv is /bin/false
+  # for Quarto to resolve the documents' kernel name against, which means a
+  # page that reached execution would fail the render rather than come out
+  # unexecuted. A page whose source changed since its output was frozen is
+  # exactly that page, and a page rendered again from an unchanged source
+  # produces the same bytes, so what is left for this to catch is a render
+  # whose output was never committed.
+  #
+  # Nothing clears docs/_freeze on a schedule. The job above executes every
+  # page through the kernel on every push and pull request, so a scheduled
+  # trigger would add no execution that has not already happened.
+  docs:
+    runs-on: ubuntu-latest
+    name: the committed docs site
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: ${{ env.QUARTO_VERSION }}
+
+      # Quarto reads the installed kernelspecs through Python rather than from
+      # the Jupyter directories itself, so this one module has to import there
+      # even though nothing is executed. It is unpinned because what is asked
+      # of it is one directory listing, and tests/Quarto/requirements.txt pins
+      # the versions that matter to a render.
+      - name: Install what Quarto lists kernelspecs with
+        run: python -m pip install jupyter_client
+
+      - name: Render the site from the frozen output
+        run: ./scripts/render-docs --frozen
+
+      # --intent-to-add so that a rendered file the commit left out is a diff
+      # rather than an untracked file git diff would not look at.
+      #
+      # sitemap.xml is left out of the comparison. Quarto takes each page's
+      # <lastmod> from the mtime of its source, and a fresh checkout gives
+      # every source the time it was checked out, so those timestamps cannot
+      # match what was committed. Nothing else a render produces carries a
+      # date.
+      - name: The committed pages are what that render produces
+        run: |
+          git add --intent-to-add --all docs
+          git diff --exit-code -- docs ':!docs/sitemap.xml'

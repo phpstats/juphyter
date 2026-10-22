@@ -1,0 +1,492 @@
+[
+  {
+    "objectID": "quarto.html",
+    "href": "quarto.html",
+    "title": "Quarto",
+    "section": "",
+    "text": "A .qmd with PHP cells needs no Quarto extension and no configuration beyond naming the kernel. Quarto’s jupyter engine starts the kernel, runs the cells in order, and puts each cell’s output into the document.\nA cell is a fenced block whose info string is {php}, holding PHP without an opening tag:",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#naming-the-kernel",
+    "href": "quarto.html#naming-the-kernel",
+    "title": "Quarto",
+    "section": "Naming the kernel",
+    "text": "Naming the kernel\njupyter: &lt;name&gt; is the form to use. Quarto resolves the name against the installed kernelspecs, so it is the --name that juphyter install was given.\n---\njupyter: php85\n---\nJupyter also writes a fuller block into a notebook, and Quarto accepts it in a .qmd. For juphyter it needs one field more than the three Jupyter writes:\n---\njupyter:\n  kernelspec:\n    name: php85\n    language: php\n    display_name: \"PHP 8.5\"\n    path: /Users/erik/Library/Jupyter/kernels/php85\n---\npath is the directory holding kernel.json. Quarto’s jupyter engine reads it when it looks beside a kernelspec for a quarto_setup_cell, which it does for any language it has no built-in support for, and jupyter: &lt;name&gt; is the only form that fills the field in by itself. Without path the render fails with KeyError: 'path'. Naming the kernel rather than describing it avoids the whole question.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#cell-options",
+    "href": "quarto.html#cell-options",
+    "title": "Quarto",
+    "section": "Cell options",
+    "text": "Cell options\nQuarto’s cell options are comments in the cell’s own language, written with a | after the comment marker. Quarto has no php entry in its comment-character table and falls back to #, which PHP reads as a line comment, so #| is a Quarto cell option and a PHP comment at once.\nThe options that matter most in a PHP document:\n\n#| echo: false runs the cell and keeps its source out of the page.\n#| eval: false shows the source and does not run it.\n#| output: false runs the cell and shows no output.\n#| error: true lets the render continue past a cell that throws, and keeps the traceback in the output.\n#| fig-cap: \"...\" captions the cell’s figure.\n#| label: fig-mileage gives the figure a cross-reference.\n\nA captioned plot:\n\nPlot::of(Datasets::mpg())-&gt;aes(x: 'cty', y: 'hwy')-&gt;point(opacity: 0.5);\n\n\n\n\n\n\nCity against highway mileage.\n\n\nPHP cells come out syntax-highlighted. Pandoc’s PHP syntax definition expects a &lt;?php opening tag, which a notebook cell has no place for, and it highlights the cell regardless.\nEvery render prints Unknown message type: 'comm_open' once, from ipykernel rather than from Quarto. The kernel installs no comm manager, which is the same absence that leaves ipywidgets unsupported, and the message has no effect on what is rendered.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#what-each-format-carries",
+    "href": "quarto.html#what-each-format-carries",
+    "title": "Quarto",
+    "section": "What each format carries",
+    "text": "What each format carries\nA phiz plot publishes four representations and a phibble data frame publishes two. Each output format takes one of them, and Quarto’s choice is the same in every case: for HTML it prefers text/html, for LaTeX and Typst it prefers image/svg+xml, and it falls back to text/plain.\n\n\n\n\n\n\n\n\nFormat\nA phiz plot\nA phibble data frame\n\n\n\n\nhtml\nthe interactive chart, drawn by Vega-Lite in the browser\nthe HTML table, with the dimensions and the type row\n\n\ntypst, pdf\nthe static SVG, placed as a numbered figure\na typeset table; the dimension note and the truncation footer are dropped\n\n\nipynb\nthe HTML embed\nnothing: see below\n\n\n\nTwo consequences are worth knowing before you choose a format.\nA PDF figure comes from the static SVG, which phiz produces by running the vl-convert binary. Install it from vl-convert’s releases and put it on PATH, or point PHIZ_VL_CONVERT at it. Without it a plot has no SVG and a PDF has no figure.\nquarto render --to ipynb is a conversion of the rendered document rather than the notebook that was executed. Quarto keeps one representation per output and reaches ipynb through Pandoc’s Markdown reader. An HTML &lt;table&gt; does not survive that trip, so the output is dropped, and error outputs are dropped as well. This is Quarto’s conversion rather than anything about the kernel, and a stock python3 kernel loses an IPython.display.HTML('&lt;table&gt;...') output in exactly the same way. Render to HTML or to PDF when a document’s tables matter.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#pdf-output",
+    "href": "quarto.html#pdf-output",
+    "title": "Quarto",
+    "section": "PDF output",
+    "text": "PDF output\nQuarto produces a PDF through LaTeX or through Typst, and Typst is the easier of the two here. Typst ships inside Quarto and places an SVG as it is:\nquarto render report.qmd --to typst\nThe LaTeX route needs one more tool. For LaTeX output Quarto also picks the SVG, and then has to convert it to a PDF, which it does with rsvg-convert from librsvg. Without that binary quarto render --to pdf stops with Could not convert a SVG to a PDF for output. Install librsvg, or render through Typst.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#the-kernel-daemon",
+    "href": "quarto.html#the-kernel-daemon",
+    "title": "Quarto",
+    "section": "The kernel daemon",
+    "text": "The kernel daemon\nQuarto can keep a kernel alive between renders, which saves starting PHP and loading the project’s autoloader again. Two conditions have to hold, and for a PHP kernel today the second one does not:\n\nThe daemon has to be asked for. Quarto turns it on by default only in an interactive session outside CI, and --execute-daemon &lt;seconds&gt; or execute: daemon: &lt;seconds&gt; asks for it explicitly.\nQuarto only keeps a kernel whose language it can write a setup or a cleanup cell for. It looks for lang/&lt;language&gt; among its own resources and then for a quarto_setup_cell or quarto_cleanup_cell file beside the kernelspec. It ships neither for PHP, and juphyter install writes neither, so the server exits after one render and the next render starts a new kernel.\n\nThe practical effect is that each render of a PHP document gets a fresh session, and nothing of a previous render is in scope. Setting\nexecute:\n  daemon: false\nmakes that explicit, and is the setting to reach for if a future release starts daemonizing PHP kernels and a document turns out to depend on a fresh session. A document that declares a class or a function is such a document: PHP cannot redeclare either, so a second render against a kept-alive kernel would fail on the cell that declares it.\nThe engine is ready for the daemon whenever Quarto starts using it. It has no read timeout on its end of the socket, so it waits between requests for as long as the front end leaves it. A kernel made daemonizable on purpose and then left idle for three minutes between two renders answered the second one from the same session. When a kept-alive kernel does end, it takes the PHP engine and the watchdog process that guards it with it, leaving nothing running.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#freeze",
+    "href": "quarto.html#freeze",
+    "title": "Quarto",
+    "section": "Freeze",
+    "text": "Freeze\nfreeze works unchanged, because it is Quarto’s own cache of a cell’s output and the kernel is not involved in it.\nexecute:\n  freeze: auto\nWith freeze: auto a document is re-executed only when its source changes, which is the setting a documentation site wants: a contributor without PHP 8.5 and the phpstats packages installed can still build the site from the frozen output. The frozen output lives in _freeze/ and is committed.\nQuarto resolves a document’s kernel by name while it builds the site navigation, which happens before it reads anything frozen, so a kernelspec of that name has to exist even though nothing starts it. scripts/render-docs --frozen writes one whose command exits as soon as it is started, so a cell that did reach execution fails the render rather than coming out unexecuted. That is how this repository rebuilds its own site with no PHP on the machine.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "quarto.html#projects",
+    "href": "quarto.html#projects",
+    "title": "Quarto",
+    "section": "Projects",
+    "text": "Projects\nIn a Quarto project the kernel is named per document, in each document’s front matter. A project with more than three documents to render turns the daemon off unless --execute-daemon was passed on the command line, which for PHP changes nothing.\nOne thing is worth checking in a project: Quarto runs the kernel with the document’s own directory as its working directory, and the engine finds the project to load by walking up from there looking for vendor/autoload.php. A document in a subdirectory of a Composer project therefore sees that project. A document outside any Composer project sees none, and JUPHYTER_AUTOLOAD or an autoload entry in a juphyter.json beside the document names one outright.",
+    "crumbs": [
+      "Quarto"
+    ]
+  },
+  {
+    "objectID": "jupyter.html",
+    "href": "jupyter.html",
+    "title": "JupyterLab",
+    "section": "",
+    "text": "Once juphyter install has written a kernelspec, JupyterLab lists it in the launcher under the name --display-name gave it, or the name the install command chose by itself. A new notebook with that kernel runs PHP cells.\nThe kernel has to be installed where the running JupyterLab looks. juphyter install writes to JUPYTER_DATA_DIR when it is set, and otherwise to the per-user data directory, which is ~/Library/Jupyter on macOS and ~/.local/share/jupyter on Linux. jupyter kernelspec list shows what a JupyterLab will find.",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "jupyter.html#what-a-notebook-shows",
+    "href": "jupyter.html#what-a-notebook-shows",
+    "title": "JupyterLab",
+    "section": "What a notebook shows",
+    "text": "What a notebook shows\nA cell’s result appears under it as an Out[n]. State carries from one cell to the next, the stop button interrupts a running cell, and restarting the kernel starts a new PHP session with nothing bound.\nTab completion covers three things: the session’s variables after a $, the declared functions and classes for a bare prefix, and a value’s public members after -&gt; or ::. The continuation prompt works as well, so an unterminated block or string leaves the cell open rather than running it.",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "jupyter.html#plots",
+    "href": "jupyter.html#plots",
+    "title": "JupyterLab",
+    "section": "Plots",
+    "text": "Plots\nJupyterLab draws a phiz plot from the Vega-Lite specification. juphyter publishes the specification under application/vnd.vegalite.v5+json, which is the newest Vega-Lite MIME type JupyterLab’s bundled renderer defines, and the specification itself is Vega-Lite 6.\nPublishing a version 6 specification under the version 5 MIME type was the one display risk worth checking before relying on it, because the renderer could reject a construct it does not know. It does not: JupyterLab’s bundled Vega-Lite 5.6.1 compiled sixteen phiz-generated specifications without complaint. No mime-renderer extension is needed, and phiz needs no change.\nThe static SVG that juphyter also publishes is not JupyterLab’s path. It is there for Quarto’s PDF and docx output and for any front end without JavaScript, and it is the fallback if a later Vega-Lite construct does turn out to be rejected.\nThe HTML representation is not JupyterLab’s path either. JupyterLab does not execute scripts in text/html output, and phiz’s embed() output is a container plus a script tag, so it would render as an empty box. Quarto’s HTML output is what that representation is for.",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "jupyter.html#tables",
+    "href": "jupyter.html#tables",
+    "title": "JupyterLab",
+    "section": "Tables",
+    "text": "Tables\nA phibble data frame renders as an HTML table. The table’s own style block uses JupyterLab’s CSS variables for its fonts and colors, with plain fallbacks, so it follows the light and dark themes rather than fighting them.\n\nDataFrame::fromRows([\n    ['front end' =&gt; 'JupyterLab', 'plot from' =&gt; 'the Vega-Lite spec', 'table from' =&gt; 'text/html'],\n    ['front end' =&gt; 'Quarto HTML', 'plot from' =&gt; 'the HTML embed', 'table from' =&gt; 'text/html'],\n    ['front end' =&gt; 'Quarto PDF', 'plot from' =&gt; 'the static SVG', 'table from' =&gt; 'the parsed table'],\n]);\n\n\n\nA tibble: 3 × 3\n\n\n\n\n\nfront end &lt;chr&gt;\nplot from &lt;chr&gt;\ntable from &lt;chr&gt;\n\n\n\n\n1\nJupyterLab\nthe Vega-Lite spec\ntext/html\n\n\n2\nQuarto HTML\nthe HTML embed\ntext/html\n\n\n3\nQuarto PDF\nthe static SVG\nthe parsed table",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "jupyter.html#notebooks-and-projects",
+    "href": "jupyter.html#notebooks-and-projects",
+    "title": "JupyterLab",
+    "section": "Notebooks and projects",
+    "text": "Notebooks and projects\nJupyter starts a kernel with the notebook’s own directory as its working directory, and the engine walks up from there looking for vendor/autoload.php. A notebook saved inside a Composer project therefore has that project’s classes in scope, including its phibble and phiz, with nothing to configure.\nA notebook kept outside the project it works on needs the autoloader named. JUPHYTER_AUTOLOAD names one for a launch, juphyter install --autoload names one for a kernelspec, and an autoload entry in a juphyter.json beside the notebook names one for a project. A juphyter.json can also set the memory limit and add to the include path:\n{\n  \"autoload\": \"../app/vendor/autoload.php\",\n  \"memory_limit\": \"512M\",\n  \"include_path\": \"lib\"\n}",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "jupyter.html#converting-a-notebook",
+    "href": "jupyter.html#converting-a-notebook",
+    "title": "JupyterLab",
+    "section": "Converting a notebook",
+    "text": "Converting a notebook\nquarto convert turns a .ipynb into a .qmd and back, and nbconvert exports a notebook to HTML or PDF from Python. Both work on a PHP notebook without knowing anything about PHP, because what they read is the notebook format rather than the language. Quarto covers rendering a document directly.",
+    "crumbs": [
+      "JupyterLab"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "juphyter",
+    "section": "",
+    "text": "juphyter runs PHP in a notebook cell. It installs a Jupyter kernel, so JupyterLab lists PHP in its launcher and Quarto executes {php} blocks in a .qmd. The value a cell returns gets the richest representation the front end can draw: a phibble data frame becomes an HTML table, a phiz plot becomes a chart or a static figure, and everything else gets a compact dump.\nA notebook sees the project it sits in. The engine walks up from the notebook’s directory looking for vendor/autoload.php, so a notebook inside a Composer project has that project’s packages and its own classes in scope with no configuration.\n$mpg = DataFrame::fromRows(Datasets::mpg());\n\n$mpg\n    |&gt; group_by('class')\n    |&gt; summarise(models: n(), hwy: mean('hwy'))\n    |&gt; arrange(desc('hwy'));\n\n\n\nA tibble: 7 × 3\n\n\n\n\n\nclass &lt;chr&gt;\nmodels &lt;int&gt;\nhwy &lt;dbl&gt;\n\n\n\n\n1\ncompact\n47\n28.297872340426\n\n\n2\nsubcompact\n35\n28.142857142857\n\n\n3\nmidsize\n41\n27.292682926829\n\n\n4\n2seater\n5\n24.8\n\n\n5\nminivan\n11\n22.363636363636\n\n\n6\nsuv\n62\n18.129032258065\n\n\n7\npickup\n33\n16.878787878788\nPlot::of(Datasets::mpg())\n    -&gt;aes(x: 'displ', y: 'hwy', color: 'drv')\n    -&gt;point(opacity: 0.7)\n    -&gt;smooth(method: 'lm')\n    -&gt;labs(x: 'Displacement (L)', y: 'Highway mpg', color: 'Drive');\n\n\n\n\n\n\nHighway mileage falls as engine displacement rises.\nBoth outputs above were produced by running the code above them in this page. The site is rendered by scripts/render-docs, which executes every PHP cell through the kernel.",
+    "crumbs": [
+      "juphyter"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "juphyter",
+    "section": "Install",
+    "text": "Install\ncomposer require --dev phpstats/juphyter\nvendor/bin/juphyter install\nThe install command writes one kernelspec where Jupyter looks for them and prints where it went. It needs a Python installation that has ipykernel, because the kernel is a Python transport in front of a PHP engine, and it reports the exact pip command when that is missing. Several PHP versions can be installed side by side, each under its own --name.\nStatic images from phiz plots need the vl-convert binary on PATH. Without it a plot still draws in HTML output and in JupyterLab, and a PDF has no figure to place.",
+    "crumbs": [
+      "juphyter"
+    ]
+  },
+  {
+    "objectID": "index.html#what-it-covers",
+    "href": "index.html#what-it-covers",
+    "title": "juphyter",
+    "section": "What it covers",
+    "text": "What it covers\n\nA Jupyter kernel for PHP 8.3 and later, on macOS and Linux.\nState across cells, so a variable bound in one cell is in scope in the next.\nTracebacks that name the cell and the line a stack frame came from, rather than eval()'d code.\nRich display for phibble tables and phiz plots, with toMimeBundle() and toHtml() hooks for any other class.\nCompletion, is_complete for a front end’s continuation prompt, and interruption through the stop button.\nQuarto’s .qmd and JupyterLab, with cell options, figure captions, and HTML, ipynb, and PDF output.",
+    "crumbs": [
+      "juphyter"
+    ]
+  },
+  {
+    "objectID": "index.html#the-phpstats-family",
+    "href": "index.html#the-phpstats-family",
+    "title": "juphyter",
+    "section": "The phpstats family",
+    "text": "The phpstats family\njuphyter is the notebook of the phpstats family. phibble provides data frames, phplyr the dplyr verbs over them, phiz the plots, and phit and CmdStanPHP the models. juphyter requires none of them and formats any of them that is installed.\nGet started walks through a first notebook. Quarto covers rendering a document, and JupyterLab covers the notebook interface.",
+    "crumbs": [
+      "juphyter"
+    ]
+  },
+  {
+    "objectID": "get-started.html",
+    "href": "get-started.html",
+    "title": "Get started",
+    "section": "",
+    "text": "juphyter is a development dependency of the project whose notebooks it runs.\ncomposer require --dev phpstats/juphyter\nvendor/bin/juphyter install\nThe command prints the four things the kernel is made of.\nInstalled the juphyter kernel \"php\" for PHP 8.5.10.\n  kernel.json  /Users/erik/Library/Jupyter/kernels/php/kernel.json\n  python       /opt/homebrew/bin/python3 (ipykernel 7.4.0)\n  php          /opt/homebrew/bin/php\n  engine       /path/to/vendor/phpstats/juphyter/bin/juphyter\nThe Python is the interpreter that owns the jupyter on PATH, because the kernel runs inside it. --python names a different one. The PHP is the binary that runs the cells, and --php names a different one, which is how several versions coexist:\nvendor/bin/juphyter install --name php83 --php /opt/homebrew/opt/php@8.3/bin/php\nvendor/bin/juphyter install --name php85 --php /opt/homebrew/opt/php@8.5/bin/php\njuphyter uninstall --name php83 removes a kernelspec juphyter wrote, and refuses to remove one it did not.",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#install-the-kernel",
+    "href": "get-started.html#install-the-kernel",
+    "title": "Get started",
+    "section": "",
+    "text": "juphyter is a development dependency of the project whose notebooks it runs.\ncomposer require --dev phpstats/juphyter\nvendor/bin/juphyter install\nThe command prints the four things the kernel is made of.\nInstalled the juphyter kernel \"php\" for PHP 8.5.10.\n  kernel.json  /Users/erik/Library/Jupyter/kernels/php/kernel.json\n  python       /opt/homebrew/bin/python3 (ipykernel 7.4.0)\n  php          /opt/homebrew/bin/php\n  engine       /path/to/vendor/phpstats/juphyter/bin/juphyter\nThe Python is the interpreter that owns the jupyter on PATH, because the kernel runs inside it. --python names a different one. The PHP is the binary that runs the cells, and --php names a different one, which is how several versions coexist:\nvendor/bin/juphyter install --name php83 --php /opt/homebrew/opt/php@8.3/bin/php\nvendor/bin/juphyter install --name php85 --php /opt/homebrew/opt/php@8.5/bin/php\njuphyter uninstall --name php83 removes a kernelspec juphyter wrote, and refuses to remove one it did not.",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#a-first-cell",
+    "href": "get-started.html#a-first-cell",
+    "title": "Get started",
+    "section": "A first cell",
+    "text": "A first cell\nA cell is PHP without an opening tag. The value of the last expression is the cell’s result, and echo goes to the cell’s output stream.\n\n$primes = [2, 3, 5, 7, 11, 13];\n\necho count($primes), \" primes, summing to \", array_sum($primes), \"\\n\";\n\narray_sum($primes) / count($primes);\n\n6 primes, summing to 41\n\n\n6.833333333333333\n\n\nState carries between cells, so the next cell sees what this one bound.\n\n$primes[] = 17;\n\n$primes;\n\n[2, 3, 5, 7, 11, 13, 17]",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#imports",
+    "href": "get-started.html#imports",
+    "title": "Get started",
+    "section": "Imports",
+    "text": "Imports\nA use statement applies to the cells after it as well as to its own. The session accumulates them, so a notebook can put its imports in a first cell and use short class names from then on.\n\nuse DateTimeImmutable;\n\n$released = new DateTimeImmutable('2026-11-20');\n\n$released-&gt;format('F Y');\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 3, line 0\n\n\n'November 2026'\n\n\nnamespace is not supported in a cell, and a cell cannot redeclare a class or a function that another cell already declared. PHP has no way to undefine either, so a second run of a cell that declares one reports what it would have redeclared rather than failing in the middle.",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#errors",
+    "href": "get-started.html#errors",
+    "title": "Get started",
+    "section": "Errors",
+    "text": "Errors\nA cell that throws reports the exception, its message, and the stack frames that raised it, with each stack frame naming the cell and the line rather than eval()'d code.\n\n$widths = ['narrow' =&gt; 4, 'wide' =&gt; 12];\n\n$mean = fn (array $values) =&gt; array_sum($values) / count($values);\n\n$mean([]);\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 4, line 0\n\n\nDivisionByZeroError: Division by zero\nDivisionByZeroError: Division by zero\n  in a closure\n  at Cell 4, line 5\n\n\nWarnings, notices, and deprecations go to the cell’s error stream and leave the cell running.\n\n$widths = ['narrow' =&gt; 4, 'wide' =&gt; 12];\n\n$widths['narrow'] + $widths['medium'];\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 5, line 0\nWarning: Undefined array key \"medium\" in Cell 5, line 3\n\n\n4",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#rich-display",
+    "href": "get-started.html#rich-display",
+    "title": "Get started",
+    "section": "Rich display",
+    "text": "Rich display\nA value is published in every representation the front end might draw. A phibble data frame comes with an HTML table and the tibble-style text phibble prints at a terminal, and a phiz plot comes with a Vega-Lite specification, an HTML embed, a static SVG when vl-convert is installed, and a one-line description.\n\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 6, line -1\n\n\n\nDataFrame::fromRows([\n    ['package' =&gt; 'phibble', 'purpose' =&gt; 'data frames', 'version' =&gt; 0.3],\n    ['package' =&gt; 'phplyr', 'purpose' =&gt; 'dplyr verbs', 'version' =&gt; 0.3],\n    ['package' =&gt; 'phiz', 'purpose' =&gt; 'plots', 'version' =&gt; 0.3],\n]);\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 7, line -1\n\n\n\n\nA tibble: 3 × 3\n\n\n\n\n\npackage &lt;chr&gt;\npurpose &lt;chr&gt;\nversion &lt;dbl&gt;\n\n\n\n\n1\nphibble\ndata frames\n0.3\n\n\n2\nphplyr\ndplyr verbs\n0.3\n\n\n3\nphiz\nplots\n0.3\n\n\n\n\n\n\n\nAny class can opt in. A toHtml(): string method supplies the text/html representation, and a toMimeBundle(): array method supplies the whole bundle.\n\nfinal class Progress\n{\n    public function __construct(private readonly int $done, private readonly int $total) {}\n\n    public function toHtml(): string\n    {\n        return sprintf(\n            '&lt;progress value=\"%d\" max=\"%d\"&gt;&lt;/progress&gt; %d of %d',\n            $this-&gt;done,\n            $this-&gt;total,\n            $this-&gt;done,\n            $this-&gt;total,\n        );\n    }\n\n    public function __toString(): string\n    {\n        return sprintf('%d of %d', $this-&gt;done, $this-&gt;total);\n    }\n}\n\nnew Progress(7, 9);\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 8, line -1\n\n\n 7 of 9\n\n\nJuphyter\\display() publishes a value part way through a cell, so one cell can show several data frames or plots.\n\nJuphyter\\display(new Progress(3, 9));\nJuphyter\\display(new Progress(9, 9));\n\nWarning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 9, line -1\n\n\n 3 of 9\n\n\n 9 of 9",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "get-started.html#where-to-go-next",
+    "href": "get-started.html#where-to-go-next",
+    "title": "Get started",
+    "section": "Where to go next",
+    "text": "Where to go next\nQuarto covers rendering a .qmd to HTML, ipynb, and PDF. JupyterLab covers the notebook interface and what it draws.",
+    "crumbs": [
+      "Get started"
+    ]
+  },
+  {
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "Installation",
+    "section": "",
+    "text": "juphyter has two halves. The engine that runs your cells is PHP, and the transport that speaks the Jupyter protocol is a small Python module that runs inside ipykernel. Installing juphyter means putting a kernelspec where Jupyter looks for one, pointing at both.\nA kernelspec belongs to the machine rather than to a project. There is one php kernel per user, whatever directory you installed from, so installing juphyter once for your user is the usual choice. The engine does not need to live in a project either: it starts in the document’s own directory and walks up for a vendor/autoload.php, so a document anywhere on disk gets a working PHP kernel.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#requirements",
+    "href": "install.html#requirements",
+    "title": "Installation",
+    "section": "Requirements",
+    "text": "Requirements\n\nPHP 8.3 or later, from Homebrew, Herd, or a distribution package. That floor matches phibble and phplyr. phiz needs PHP 8.5, so plots are available only on a kernel running 8.5 or newer.\nComposer.\nPython 3 with jupyter and ipykernel 7.0 or later. The wrapper subclasses ipykernel.kernelbase.Kernel, which changed in version 7. This costs nothing extra in practice: JupyterLab is a Python application, and Quarto’s jupyter engine requires a Python Jupyter whatever kernel it drives.\nQuarto, to render Quarto documents.\nmacOS or Linux. The kernel interrupts a running cell with POSIX signals, which the Windows PHP build does not provide.\n\npcntl is wanted rather than required. Without it the kernel runs and the stop button does nothing, so juphyter install checks the PHP binary it is about to name and says so rather than refusing to install.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#install",
+    "href": "install.html#install",
+    "title": "Installation",
+    "section": "Install",
+    "text": "Install\nCopy the whole block:\n# Jupyter, in a virtual environment, and on PATH so that Quarto finds it.\npython3 -m venv ~/.venvs/juphyter\n~/.venvs/juphyter/bin/pip install jupyterlab\necho 'export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"' &gt;&gt; ~/.zshrc\nexport PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"\n\n# juphyter. It is not on Packagist yet, so Composer reads the repository\n# directly, which \"no-api\" does over git and without a GitHub token.\ncomposer global config repositories.juphyter \\\n  '{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/juphyter\",\"no-api\":true}'\ncomposer global require phpstats/juphyter:dev-main\n\n# Composer's global bin directory, on PATH, for the juphyter command itself.\nbin=\"$(composer global config bin-dir --absolute 2&gt;/dev/null)\"\necho \"export PATH=\\\"$bin:\\$PATH\\\"\" &gt;&gt; ~/.zshrc\nexport PATH=\"$bin:$PATH\"\n\n# The kernelspec, naming the PHP and the Python found above.\njuphyter install\nOn a machine running bash, write ~/.bashrc in place of ~/.zshrc.\njuphyter install prints where the kernelspec went and which Python, PHP, and engine it recorded:\nInstalled the juphyter kernel \"php\" for PHP 8.5.10.\n  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json\n  python       /Users/you/.venvs/juphyter/bin/python (ipykernel 7.4.0)\n  php          /opt/homebrew/bin/php\n  engine       /Users/you/.composer/vendor/phpstats/juphyter/bin/juphyter\nIf ipykernel is missing from that interpreter the command writes nothing and prints the pip install line that fixes it. The interpreter it picks is the one that owns the jupyter on your PATH, read from that script’s shebang, because that is the environment your Jupyter actually runs in. Use --python to name a different one.\n\nWhy the virtual environment goes on PATH\nQuarto chooses its own Python, independently of the one you installed the kernel with. On a typical macOS machine that is a Homebrew interpreter with no Jupyter in it, and quarto render then fails on a document whose kernel is installed and working:\nERROR: Jupyter kernel 'php' not found. Known kernels: python3\nPutting the virtual environment first on PATH is what prevents that, because Quarto then finds the same Python that holds the kernel. quarto check jupyter reports which interpreter it chose. Setting QUARTO_PYTHON to the virtual environment’s python does the same thing for one project or one shell.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#your-first-quarto-document",
+    "href": "install.html#your-first-quarto-document",
+    "title": "Installation",
+    "section": "Your first Quarto document",
+    "text": "Your first Quarto document\nWrite a document in any directory, with no project around it:\n---\ntitle: \"PHP in Quarto\"\njupyter: php\n---\n\n::: {#63552e4b .cell execution_count=1}\n``` {.php .cell-code}\necho \"sum: \", array_sum(range(1, 10)), \"\\n\";\nPHP_VERSION;\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nsum: 55\n```\n:::\n\n::: {.cell-output .cell-output-display execution_count=1}\n```\n'8.5.10'\n```\n:::\n:::\n\nquarto render hello.qmd runs the cell and puts its output in the HTML. Cell options work as they do for any other engine, because PHP accepts # comments.\nIn JupyterLab, started with jupyter lab, the same kernel appears in the launcher under the PHP version it found.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#checking-it-worked",
+    "href": "install.html#checking-it-worked",
+    "title": "Installation",
+    "section": "Checking it worked",
+    "text": "Checking it worked\njupyter kernelspec list\nThe kernel should appear under the name you gave it.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#the-phpstats-packages",
+    "href": "install.html#the-phpstats-packages",
+    "title": "Installation",
+    "section": "The phpstats packages",
+    "text": "The phpstats packages\nNone of them is a dependency of juphyter, which installs and runs with any subset of the family present, including none of it. The install above therefore runs plain PHP, and phibble tables and phiz plots need the packages added.\nA second kernel gives them to a document in any directory:\nfor r in phibble phplyr; do\n  composer global config \"repositories.$r\" \\\n    \"{\\\"type\\\":\\\"vcs\\\",\\\"url\\\":\\\"https://github.com/phpstats/$r\\\",\\\"no-api\\\":true}\"\ndone\ncomposer global require --prefer-source \"phpstats/phibble:^0.3\" \"phpstats/phplyr:^0.3\"\n\njuphyter install --name phpstats --display-name \"PHP (phpstats)\" \\\n  --autoload \"$(composer global config home 2&gt;/dev/null)/vendor/autoload.php\"\nName that kernel in the front matter as jupyter: phpstats.\nIt is a second kernel rather than a change to the first because --autoload fixes one autoloader for every document it runs, which suits a document outside any project and breaks one inside a project. The php kernel keeps the default search described under Which dependencies a notebook sees, so a document inside a Composer project sees that project’s own packages.\nThe packages are not on Packagist, so each needs a repositories entry with \"no-api\": true, which makes Composer read the repository with git rather than through the GitHub API and so needs no token. --prefer-source is needed for the same reason, because a dist zipball still comes from the API.\nUse the released ^0.3 tags rather than dev-main for these. phplyr requires phpstats/phibble ^0.3, which a dev-main phibble does not satisfy, so asking for dev-main on both fails to resolve.\nphiz requires PHP 8.5 and has to be left out below that. On 8.5 or newer, add it with composer global require --prefer-source \"phpstats/phiz:^0.3\".",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#inside-a-single-project",
+    "href": "install.html#inside-a-single-project",
+    "title": "Installation",
+    "section": "Inside a single project",
+    "text": "Inside a single project\nInstalling juphyter as a project dependency pins the kernel’s version with the project:\ncomposer require --dev phpstats/juphyter\nvendor/bin/juphyter install\nThe kernelspec it writes is still the machine’s, and it names that project’s copy of the engine. Two consequences follow. Running the same command from a second project replaces the first kernelspec, which juphyter install reports as Replaced, and deleting the project’s vendor directory leaves every notebook on the machine pointing at an engine that is gone. Give each project’s kernel its own --name to keep them apart.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#without-composer-the-standalone-phar",
+    "href": "install.html#without-composer-the-standalone-phar",
+    "title": "Installation",
+    "section": "Without Composer: the standalone PHAR",
+    "text": "Without Composer: the standalone PHAR\nA standalone PHAR gives you a kernel on a machine with no Composer:\nphp juphyter.phar install\nThe kernelspec then names the PHAR as its engine, and the engine finds a project’s dependencies at run time by walking up from the notebook’s own directory. A PHAR install also copies the Python wrapper out of the archive and beside the kernelspec, because Python cannot import from inside a phar:// path.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#several-php-versions-at-once",
+    "href": "install.html#several-php-versions-at-once",
+    "title": "Installation",
+    "section": "Several PHP versions at once",
+    "text": "Several PHP versions at once\nEach kernel needs its own name, and the display name follows the version it finds:\njuphyter install --name php83 --php /path/to/php83\njuphyter install --name php85 --php /path/to/php85\nThat produces two kernels in the launcher, “PHP 8.3” and “PHP 8.5”. Pass --display-name to label them yourself.\nAn absolute --php path is recorded as you wrote it. That matters with Homebrew, where resolving the symlink would pin the kernelspec to a versioned path such as /opt/homebrew/Cellar/php/8.5.10/bin/php that brew upgrade removes. A bare name such as php8.4 is still resolved to an absolute path, since a kernelspec cannot rely on your PATH.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#where-the-kernelspec-goes",
+    "href": "install.html#where-the-kernelspec-goes",
+    "title": "Installation",
+    "section": "Where the kernelspec goes",
+    "text": "Where the kernelspec goes\njuphyter install writes to the per-user Jupyter data directory, which is ~/Library/Jupyter/kernels on macOS and $XDG_DATA_HOME/jupyter/kernels or ~/.local/share/jupyter/kernels on Linux. JUPYTER_DATA_DIR and JUPYTER_PLATFORM_DIRS are both honored, as jupyter --paths reports them. --prefix PATH writes under PATH/share/jupyter instead, which is the layout jupyter kernelspec install --prefix produces.\njuphyter uninstall removes a kernelspec, and only one that juphyter wrote. It refuses to delete somebody else’s kernel of the same name, as does a reinstall.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#which-dependencies-a-notebook-sees",
+    "href": "install.html#which-dependencies-a-notebook-sees",
+    "title": "Installation",
+    "section": "Which dependencies a notebook sees",
+    "text": "Which dependencies a notebook sees\nThe engine starts in the notebook’s own directory, walks up looking for vendor/autoload.php, and loads the first one it finds. A notebook anywhere inside a Composer project therefore sees that project’s packages with no configuration.\nTwo ways to override that search, and the most explicit one wins. JUPHYTER_AUTOLOAD in the environment comes first, which is what --autoload at install time records in the kernelspec. A juphyter.json beside the notebook, or anywhere above it, comes second, and can set the same thing along with two run-time settings:\n{\n  \"autoload\": \"vendor/autoload.php\",\n  \"memory_limit\": \"512M\",\n  \"include_path\": \"lib\"\n}\nRelative paths in that file resolve against the file’s own directory, so one juphyter.json at a project’s root serves every notebook beneath it.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "install.html#static-images",
+    "href": "install.html#static-images",
+    "title": "Installation",
+    "section": "Static images",
+    "text": "Static images\nPlots render as interactive charts in JupyterLab and in Quarto’s HTML output with nothing else installed. Rendering a Quarto document to PDF or Word needs a static image, which phiz produces with the vl-convert binary. Put it on your PATH, or name it in PHIZ_VL_CONVERT. Without it, a plot in a PDF falls back to its text description.\nThe Python package vl-convert-python is not a substitute: it ships a library and no executable, and phiz runs the binary.\nEither override replaces the search rather than extending it. A kernel installed with --autoload loads that one autoloader for every notebook it runs, including a notebook that sits inside a Composer project of its own, so keep such a kernel under its own --name as The phpstats packages does.",
+    "crumbs": [
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "limitations.html",
+    "href": "limitations.html",
+    "title": "Limitations",
+    "section": "",
+    "text": "Some of these follow from PHP itself and will not change. Others are milestone boundaries and will. Each one says which.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-cell-cannot-redeclare-a-class-or-a-function",
+    "href": "limitations.html#a-cell-cannot-redeclare-a-class-or-a-function",
+    "title": "Limitations",
+    "section": "A cell cannot redeclare a class or a function",
+    "text": "A cell cannot redeclare a class or a function\nPHP has no way to replace a class, interface, trait, enum, or function once it is declared, so re-running a cell that declares one cannot work. The kernel refuses such a cell before executing anything, naming the collision:\nRedeclarationError: The class, interface, trait or enum \"Widget\" was already\ndeclared in this session, and PHP cannot redeclare it. Restart the kernel to\nredefine it.\nRefusing is deliberate. Letting it reach eval() would be an uncatchable fatal error that ends the kernel rather than an error the notebook can show.\nThe session records a name only once PHP really holds it, so a cell that failed to declare anything leaves the name free. class Widget extends Typo {} throws and declares nothing, and the corrected cell runs. The common case this serves is running cells out of order: define a base class after its subclass, run the subclass cell first, then run them in the right order, and it works.\nA conditional declaration is not affected, because PHP does not bind one at compile time:\nif (! function_exists('helper')) {\n    function helper() { /* ... */ }\n}\nThis follows from PHP and will not change.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-cell-cannot-declare-a-namespace",
+    "href": "limitations.html#a-cell-cannot-declare-a-namespace",
+    "title": "Limitations",
+    "section": "A cell cannot declare a namespace",
+    "text": "A cell cannot declare a namespace\nA namespace declaration is refused. Changing namespace part way through a session breaks name resolution for everything already defined, and the kernel would have no honest way to decide which namespace a later cell belongs to. Use fully qualified names, or use statements, which do carry from one cell to the next.\nThis is a deliberate refusal and is not planned to change.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#every-cell-runs-under-strict-types",
+    "href": "limitations.html#every-cell-runs-under-strict-types",
+    "title": "Limitations",
+    "section": "Every cell runs under strict types",
+    "text": "Every cell runs under strict types\nThe kernel prepends declare(strict_types=1); to each cell, because PHP accepts that declaration nowhere but the first statement. A cell writing it for itself is fine and the kernel removes the duplicate. declare(strict_types=0) is refused, since the kernel cannot honor it, and so is declare(encoding=...), which has the same first-statement rule. declare(ticks=...) is left alone.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#references-and-this-do-not-survive-between-cells",
+    "href": "limitations.html#references-and-this-do-not-survive-between-cells",
+    "title": "Limitations",
+    "section": "References and $this do not survive between cells",
+    "text": "References and $this do not survive between cells\nVariables are carried across cells by value. A reference taken in one cell is an ordinary copy in the next, and $this has no meaning at a notebook’s top level. Objects, arrays, scalars, and resources all persist normally. Every PHP REPL behaves this way.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-closure-called-from-another-cell-has-no-line-in-its-traceback",
+    "href": "limitations.html#a-closure-called-from-another-cell-has-no-line-in-its-traceback",
+    "title": "Limitations",
+    "section": "A closure called from another cell has no line in its traceback",
+    "text": "A closure called from another cell has no line in its traceback\nA traceback names the cell and the line for ordinary functions and methods, across cells:\nRuntimeException: from the function\n  at Cell 1, line 3, in boom()\n  at Cell 2, line 2\nA closure is different. PHP’s trace does not say where a closure was declared, and every cell’s eval() shares one file name, so a closure declared in one cell and called from another cannot be placed. The kernel reports the stack frame without a location rather than guessing:\nLogicException: from the closure\n  in a closure\n  at Cell 4, line 4\nNaming a line it could not know would send you to the wrong place, which is worse than naming none. The call site is still reported. This is a milestone boundary.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-cell-whose-value-is-null-shows-no-output",
+    "href": "limitations.html#a-cell-whose-value-is-null-shows-no-output",
+    "title": "Limitations",
+    "section": "A cell whose value is null shows no output",
+    "text": "A cell whose value is null shows no output\nvar_dump($x);, Juphyter\\display($df), and any other call that returns nothing produce no Out[N], the same way a Python notebook shows nothing for None. Every other value is shown, including 0, false, '', [], and 'null'.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-cell-that-calls-exit-or-die-ends-the-kernel",
+    "href": "limitations.html#a-cell-that-calls-exit-or-die-ends-the-kernel",
+    "title": "Limitations",
+    "section": "A cell that calls exit or die ends the kernel",
+    "text": "A cell that calls exit or die ends the kernel\nPHP cannot catch either, so the process goes. The kernel reports it rather than disappearing silently:\nSystemExit: The cell ended the kernel process with exit or die, so nothing\nfurther can run. Restart the kernel to carry on.\nAnything the cell printed first is still shown. This follows from PHP.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#interrupting-needs-pcntl-and-a-cell-can-still-swallow-it",
+    "href": "limitations.html#interrupting-needs-pcntl-and-a-cell-can-still-swallow-it",
+    "title": "Limitations",
+    "section": "Interrupting needs pcntl, and a cell can still swallow it",
+    "text": "Interrupting needs pcntl, and a cell can still swallow it\nThe stop button sends a signal, so the PHP binary running cells needs the pcntl extension with its functions callable. juphyter install checks the binary it names and warns when it cannot signal, including the case where the extension is loaded but its functions sit in disable_functions.\nAn interrupt arrives as Juphyter\\Engine\\Interrupt, which extends Error rather than Exception so that ordinary defensive code does not absorb it. A cell that catches Throwable in a loop can still swallow it, which is the same trade Python makes by putting KeyboardInterrupt outside Exception.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#a-data-frames-numbers-in-an-html-table-are-not-pillars",
+    "href": "limitations.html#a-data-frames-numbers-in-an-html-table-are-not-pillars",
+    "title": "Limitations",
+    "section": "A data frame’s numbers in an HTML table are not pillar’s",
+    "text": "A data frame’s numbers in an HTML table are not pillar’s\nA data frame’s text/plain output is phibble’s own, character for character. The HTML table is the kernel’s, and it formats a float with PHP’s own string conversion rather than reproducing pillar’s significant-figure logic, so a wide dbl column can read differently in the two. The HTML header also omits the group count that the text output carries. Both are milestone boundaries.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#macos-and-linux-only",
+    "href": "limitations.html#macos-and-linux-only",
+    "title": "Limitations",
+    "section": "macOS and Linux only",
+    "text": "macOS and Linux only\nThe kernel interrupts a cell with POSIX signals and reaps a child process, which the Windows PHP build does not support. This matches the platforms the phit and phpolars extensions declare.",
+    "crumbs": [
+      "Limitations"
+    ]
+  },
+  {
+    "objectID": "limitations.html#not-yet-implemented",
+    "href": "limitations.html#not-yet-implemented",
+    "title": "Limitations",
+    "section": "Not yet implemented",
+    "text": "Not yet implemented\nThese are milestone boundaries with nothing in the design against them:\n\nDocumentation on hover. Jupyter’s inspect_request is not answered, so shift-tab shows nothing.\nReading input. A cell cannot prompt, so readline() and fgets(STDIN) have nothing to read.\nMagics. There are no %-prefixed commands.\nWidgets. ipywidgets is not supported.\nThe debugger. Jupyter’s debug protocol is not implemented, so JupyterLab’s debugger does not attach.\nA Vega-Lite 6 renderer. phiz emits Vega-Lite 6 and JupyterLab’s bundled renderer reads version 5, so plots are published under the version 5 MIME type. Everything phiz currently produces compiles under the renderer JupyterLab ships, and the static SVG covers anything that does not.",
+    "crumbs": [
+      "Limitations"
+    ]
+  }
+]

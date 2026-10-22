@@ -2,7 +2,7 @@
 #
 # Render the documentation site, executing its PHP cells through the kernel.
 #
-# Every page under docs/ declares `jupyter: php` and holds live cells, so
+# Most pages under docs/ declare `jupyter: php` and hold live cells, so
 # building the site is also the broadest end-to-end exercise of the kernel
 # there is: a page that stops rendering is a kernel that stopped working. That
 # is the dogfooding this script exists for.
@@ -25,10 +25,53 @@
 # 8.5 syntax and its classes do not parse below it, so a page that plots cannot
 # render on an older PHP.
 #
-# Usage: scripts/render-docs [--refresh] [--to FORMAT] [quarto arguments...]
+# Quarto renders the site to docs/_site, which git ignores, and this script then
+# publishes it into docs/ beside the sources, which git carries. That is where
+# phpstats.org reads the pages from: it imports docs/<page>.html when
+# docs/<page>.qmd is beside it, so the rendered site is part of the repository
+# rather than something a deploy step produces. The published tree is exactly
+# one render, so rendered files Quarto no longer produces are removed.
 #
-#   --refresh      Reinstall the sandbox and the kernelspec before rendering.
-#   --to FORMAT     A Quarto output format. Default: the site's html.
+# A render here always executes every page. docs/_quarto.yml sets `freeze:
+# auto` so that a render from the frozen output produces the same bytes twice,
+# and that same setting would serve an unchanged page back from docs/_freeze
+# and start no kernel at all, which is the opposite of what this script is for.
+# Quarto has no flag that overrides the freeze for a project render, so the
+# frozen output is deleted before the render and written again by it.
+#
+# An executing render therefore changes eleven committed files even when no
+# source changed: five frozen results, the five pages they belong to, and
+# search.json. Quarto gives every executed cell a new random id, so the bytes
+# move even though the output does not. A diff there after running this script
+# is the expected result rather than a break.
+#
+# Quarto also deletes the published files from docs/ as it starts, so they are
+# copied aside first and put back unless this script publishes a site of its
+# own. A render Quarto failed, a check that refused to publish, and a `--to`
+# other than html all leave docs/ as it was.
+#
+# Two things have to hold before anything is published. Every page that holds
+# runnable cells has to come out with executed output in it, and no page may
+# come out with less executed output than the page it replaces unless Quarto's
+# own hash says its source changed. A render that fails either leaves the
+# committed site alone.
+#
+# `--frozen` is the other half. It renders from the frozen output rather than
+# through the kernel, which is how a contributor without PHP 8.5 and the family
+# packages rebuilds the site, and how CI checks that the committed pages are the
+# ones the sources and the frozen output produce. A page whose source has
+# changed since its output was frozen cannot be rendered that way, and Quarto
+# says so rather than publishing a stale page. It needs Quarto and a python3
+# that can import jupyter_client, and neither PHP nor ipykernel.
+#
+# Usage: scripts/render-docs [--frozen] [--refresh] [--to FORMAT]
+#                            [quarto arguments...]
+#
+#   --frozen        Render from the output frozen under docs/_freeze rather than
+#                   through the kernel. Starts no kernel and needs no PHP.
+#   --refresh       Reinstall the sandbox and the kernelspec before rendering.
+#   --to FORMAT     A Quarto output format. Default: the site's html, which is
+#                   the one that is published; any other is only rendered.
 #   -h, --help      Print this text.
 #
 # Environment:
@@ -44,13 +87,37 @@ set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 build="${JUPHYTER_DOCS_BUILD:-$root/build/docs}"
+previous="$build/previous"
+
+# Whether the published files have been copied aside, and whether docs/ now
+# holds a site this render published. Together they decide what the exit trap
+# below has to put back.
+aside=0
+current=0
 refresh=0
+frozen=0
+format=""
 arguments=()
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --refresh)
             refresh=1
+            shift
+            ;;
+        --frozen)
+            frozen=1
+            shift
+            ;;
+        --to)
+            # The value arrives on the next pass, through the catch-all.
+            format="${2:-}"
+            arguments+=("$1")
+            shift
+            ;;
+        --to=*)
+            format="${1#--to=}"
+            arguments+=("$1")
             shift
             ;;
         -h|--help)
@@ -70,6 +137,246 @@ done
 fail() {
     printf 'render-docs: %s\n' "$1" >&2
     exit 1
+}
+
+# html is the site's own format, and publishing is for the site. Any other
+# format writes other files into docs/_site, with no page to put beside a
+# source and no executed output to check.
+case "${format:-html}" in
+    html) publish=1 ;;
+    *) publish=0 ;;
+esac
+
+# Quarto deletes the published files from docs/ as a render starts, taking them
+# for the leftovers of an earlier one, and rewrites the frozen output as it
+# executes. Everything it will delete is copied aside first, which serves two
+# purposes: publishing compares each page against the one it replaces, and a
+# render that does not reach the end of this script puts the committed site
+# back rather than leaving docs/ stripped of it.
+set_aside_published() {
+    rm -rf "$previous"
+    mkdir -p "$previous"
+
+    # Everything a render puts in docs/, which is the set publishing prunes:
+    # the pages, Quarto's own site_libs, the three files it names itself, and
+    # the frozen output.
+    for path in "$root"/docs/*.html "$root"/docs/site_libs \
+                "$root"/docs/search.json "$root"/docs/sitemap.xml \
+                "$root"/docs/robots.txt "$root"/docs/_freeze; do
+        [ -e "$path" ] || continue
+        cp -R "$path" "$previous/"
+    done
+
+    aside=1
+
+    return 0
+}
+
+# Put the site back unless this render published one of its own. Installed as
+# an exit trap, so it covers a render Quarto failed, a check that refused to
+# publish, and a format with nothing to publish, rather than whichever of the
+# three somebody remembers to handle.
+restore_published() {
+    [ "$aside" -eq 1 ] || return 0
+    [ "$current" -eq 1 ] && return 0
+
+    cp -R "$previous/." "$root/docs/"
+
+    # Quarto stages a page's frozen result in docs/<page>_files while it runs
+    # and moves it into docs/_freeze at the end, so a directory of that name is
+    # the render that stopped part way through, not anything docs/ holds.
+    rm -rf "$root"/docs/*_files
+    printf 'render-docs: nothing was published, so %s is back as it was.\n' \
+        "$root/docs" >&2
+
+    return 0
+}
+
+trap restore_published EXIT
+
+# Quarto writes the site to docs/_site, and the pages have to sit beside
+# their own sources: phpstats.org imports a page only when docs/<path>.html
+# and docs/<path>.qmd are both there, and docs/_site is ignored by git.
+# Publishing is a copy of what Quarto produced, with the rendered files it
+# no longer produces removed, so what git carries is exactly one render.
+#
+# It is also not optional. Quarto takes the published pages for the leftovers
+# of an earlier render and deletes them from docs/ as this render starts, so a
+# render that stops before this point leaves the tree without them.
+publish_site() {
+    if [ "$publish" -eq 0 ]; then
+        printf 'render-docs: rendered to another format, so there is no site to publish.\n'
+        return 0
+    fi
+
+    # The check is for the one failure a render's exit code does not report:
+    # every page produced and nothing executed, which is what a skipped
+    # execution looks like from the outside. Publishing follows it rather than
+    # preceding it, so a render that ran no cells leaves the committed site
+    # alone.
+    # Exit rather than fail: the script below says which check refused and
+    # why, and the exit trap says what it did about it.
+    "$python" - "$root/docs" "$previous" <<'PY' || exit 1
+"""Check that the render executed, then publish _site beside the sources."""
+
+import json
+import os
+import shutil
+import sys
+import tempfile
+from pathlib import Path
+
+# The files a render puts in docs/ under a name of Quarto's choosing, as paths
+# relative to docs/. Everything else there is a source, and is left alone.
+NAMED = ("search.json", "sitemap.xml", "robots.txt")
+
+# The suffixes Quarto renders a page from.
+SOURCES = (".qmd", ".md", ".ipynb")
+
+root = Path(sys.argv[1])
+site = root / "_site"
+previous = Path(sys.argv[2])
+
+if not (site / "index.html").is_file():
+    sys.exit("render-docs: Quarto produced no _site/index.html.")
+
+
+def runnable_cells(source):
+    """The `{php}` cells Quarto executes in one source file.
+
+    A fence of four or more backticks holds a block that is shown rather than
+    run, and install.qmd shows a whole document that way, so this follows the
+    fences rather than counting the lines that look like a cell.
+    """
+    depth = 0
+    cells = 0
+    for line in source.read_text().splitlines():
+        if not line.startswith("```"):
+            continue
+        ticks = len(line) - len(line.lstrip("`"))
+        info = line[ticks:].strip()
+        if depth:
+            if not info and ticks >= depth:
+                depth = 0
+            continue
+        depth = ticks
+        if ticks == 3 and info == "{php}":
+            cells += 1
+    return cells
+
+
+# Quarto puts the attribute on the block it writes for a cell the kernel ran.
+# A page can hold more cells than it has blocks, because a cell with its source
+# hidden and no output of its own leaves nothing on the page, so the count is
+# read as a floor rather than as a tally.
+EXECUTED = 'class="cell" data-execution_count'
+
+def executed_blocks(html):
+    return html.read_text().count(EXECUTED) if html.is_file() else 0
+
+
+def frozen_hash(base, page):
+    """What Quarto recorded for a page's source when it froze its output.
+
+    Quarto hashes the source to decide whether to execute a page again, so two
+    renders that agree on this hash were given the same page to render.
+    """
+    file = base / "_freeze" / page / "execute-results" / "html.json"
+    if not file.is_file():
+        return None
+    try:
+        return json.loads(file.read_text()).get("hash")
+    except ValueError:
+        return None
+
+
+report = []
+unexecuted = []
+lost = []
+for source in sorted(root.glob("*.qmd")):
+    page = source.stem
+    cells = runnable_cells(source)
+    executed = executed_blocks(site / (page + ".html"))
+    report.append("%s %d/%d" % (page, executed, cells))
+    if cells and not executed:
+        unexecuted.append(page)
+        continue
+
+    # A page that lost executed output without its source changing is the
+    # failure the count alone does not catch: the render produced the page and
+    # some of what belongs on it is missing. The two hashes have to agree for
+    # the comparison to mean anything, because a page whose source changed is
+    # allowed to come out with fewer cells than it used to have.
+    before = executed_blocks(previous / (page + ".html"))
+    frozen = frozen_hash(root, page)
+    if before and frozen is not None and frozen == frozen_hash(previous, page):
+        if executed < before:
+            lost.append("%s (%d, was %d)" % (page, executed, before))
+
+if unexecuted:
+    sys.exit("render-docs: the kernel ran nothing on %s. Executed blocks of "
+             "runnable cells, per page: %s." % (", ".join(unexecuted), ", ".join(report)))
+
+if lost:
+    sys.exit("render-docs: %s came out with less executed output than the "
+             "page beside the source, and the source Quarto hashed did not "
+             "change." % ", ".join(lost))
+
+
+def is_rendered(relative):
+    """Whether a file in docs/ is one that a render puts there.
+
+    An .html counts only when a source for the same page is beside it. A page
+    Quarto stopped rendering while its source stayed is the one stale page that
+    matters, because phpstats.org imports a page when both halves are there.
+    An .html that never had a source is something somebody wrote, and removing
+    that would be this script deciding what docs/ may hold.
+    """
+    if relative.startswith("site_libs/") or relative in NAMED:
+        return True
+    if relative.endswith(".html"):
+        page = relative[: -len(".html")]
+        return any((root / (page + suffix)).is_file() for suffix in SOURCES)
+    return False
+
+
+produced = {str(path.relative_to(site)): path for path in site.rglob("*") if path.is_file()}
+
+for relative, source in sorted(produced.items()):
+    destination = root / relative
+    if destination.is_file() and destination.read_bytes() == source.read_bytes():
+        continue
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as file:
+        temporary = Path(file.name)
+    try:
+        shutil.copy2(source, temporary)
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+removed = []
+for path in sorted(root.rglob("*")):
+    if not path.is_file():
+        continue
+    relative = str(path.relative_to(root))
+    # Quarto's own directories, and git's, hold no published file.
+    if relative.split("/")[0].startswith(("_", ".")):
+        continue
+    if is_rendered(relative) and relative not in produced:
+        path.unlink()
+        removed.append(relative)
+
+print("render-docs: executed blocks of runnable cells, per page: %s." % ", ".join(report))
+print("render-docs: published %d files beside the sources." % len(produced))
+if removed:
+    print("render-docs: removed %d file(s) this render no longer produces: %s."
+          % (len(removed), ", ".join(removed)))
+PY
+
+    current=1
+
+    printf 'render-docs: the site is at %s\n' "$root/docs/index.html"
 }
 
 # The PHP that will run the cells, which has to be 8.5 or newer for phiz.
@@ -115,6 +422,47 @@ kernelspec_python() {
 
 command -v quarto >/dev/null 2>&1 \
     || fail "no quarto on PATH. Install it from https://quarto.org/docs/get-started/."
+
+if [ "$frozen" -eq 1 ]; then
+    [ "$refresh" -eq 0 ] \
+        || fail "--frozen renders from docs/_freeze and starts no kernel, so there is nothing for --refresh to reinstall."
+
+    python="$(command -v python3 2>/dev/null)" \
+        || fail "no python3 on PATH. A frozen render starts no kernel, but Quarto still reads the installed kernelspecs through Python, and publishing the site is a Python script."
+
+    # Quarto asks Python for the kernelspecs rather than reading the Jupyter
+    # directories itself, so jupyter_client has to import there. ipykernel and
+    # the engine's four modules do not: nothing is executed here.
+    "$python" -c 'import jupyter_client' 2>/dev/null \
+        || fail "$python cannot import jupyter_client, which is how Quarto lists the installed kernelspecs. Install it with: $python -m pip install jupyter_client"
+
+    # Quarto resolves a document's kernel by name while it builds the site
+    # navigation, which happens before it reads anything frozen, so a render
+    # that starts no kernel still needs a kernelspec of that name to exist.
+    # This one exits the moment it is started, so a cell that reached execution
+    # fails the render instead of quietly coming out unexecuted, which is what
+    # makes this a check and not just a faster render. `env false` rather than a
+    # path to false, because macOS keeps it in /usr/bin and Linux in /bin, and a
+    # kernelspec that cannot be found at all fails with the wrong error.
+    jupyter_data="$build/frozen"
+    mkdir -p "$jupyter_data/kernels/php"
+    printf '%s\n' \
+        '{"argv": ["/usr/bin/env", "false"], "display_name": "PHP (frozen render)", "language": "php"}' \
+        > "$jupyter_data/kernels/php/kernel.json"
+
+    printf 'render-docs: rendering %s from the output frozen under %s\n' \
+        "$root/docs" "$root/docs/_freeze"
+
+    set_aside_published
+
+    JUPYTER_DATA_DIR="$jupyter_data" \
+    JUPYTER_PATH="$jupyter_data" \
+    QUARTO_PYTHON="$python" \
+        quarto render "$root/docs" "${arguments[@]+"${arguments[@]}"}"
+
+    publish_site
+    exit 0
+fi
 
 php="$(find_php)"
 
@@ -177,9 +525,19 @@ python="$(kernelspec_python "$spec")"
 # and PHP cannot redeclare a class.
 printf 'render-docs: rendering %s\n' "$root/docs"
 
+set_aside_published
+
+# Every page runs. `--execute` does not do this: it turns execution on for a
+# document that asked for none, and leaves `freeze: auto` to answer an
+# unchanged page out of the cache. Removing the frozen output is what makes the
+# kernel start, and set_aside_published has already kept a copy of it for the
+# comparison publishing makes.
+rm -rf "$root/docs/_freeze"
+
 JUPYTER_DATA_DIR="$jupyter_data" \
 JUPYTER_PATH="$jupyter_data" \
 QUARTO_PYTHON="$python" \
-    quarto render "$root/docs" --no-execute-daemon "${arguments[@]+"${arguments[@]}"}"
+    quarto render "$root/docs" --no-execute-daemon \
+        "${arguments[@]+"${arguments[@]}"}"
 
-printf 'render-docs: the site is at %s\n' "$root/docs/_site/index.html"
+publish_site

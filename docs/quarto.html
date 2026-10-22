@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Quarto – juphyter</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5a69534754b34dc075d7f980428dccec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./quarto.html">Quarto</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">juphyter</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">juphyter</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./install.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./quarto.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Quarto</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jupyter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JupyterLab</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./limitations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Limitations</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#naming-the-kernel" id="toc-naming-the-kernel" class="nav-link active" data-scroll-target="#naming-the-kernel">Naming the kernel</a></li>
+  <li><a href="#cell-options" id="toc-cell-options" class="nav-link" data-scroll-target="#cell-options">Cell options</a></li>
+  <li><a href="#what-each-format-carries" id="toc-what-each-format-carries" class="nav-link" data-scroll-target="#what-each-format-carries">What each format carries</a></li>
+  <li><a href="#pdf-output" id="toc-pdf-output" class="nav-link" data-scroll-target="#pdf-output">PDF output</a></li>
+  <li><a href="#the-kernel-daemon" id="toc-the-kernel-daemon" class="nav-link" data-scroll-target="#the-kernel-daemon">The kernel daemon</a></li>
+  <li><a href="#freeze" id="toc-freeze" class="nav-link" data-scroll-target="#freeze">Freeze</a></li>
+  <li><a href="#projects" id="toc-projects" class="nav-link" data-scroll-target="#projects">Projects</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/quarto.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Quarto</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A <code>.qmd</code> with PHP cells needs no Quarto extension and no configuration beyond naming the kernel. Quarto’s jupyter engine starts the kernel, runs the cells in order, and puts each cell’s output into the document.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"Highway mileage"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">jupyter</span><span class="kw">:</span><span class="at"> php</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A cell is a fenced block whose info string is <code>{php}</code>, holding PHP without an opening tag:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromCsv(<span class="st">'mpg.csv'</span>)<span class="ot">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="naming-the-kernel" class="level2">
+<h2 class="anchored" data-anchor-id="naming-the-kernel">Naming the kernel</h2>
+<p><code>jupyter: &lt;name&gt;</code> is the form to use. Quarto resolves the name against the installed kernelspecs, so it is the <code>--name</code> that <code>juphyter install</code> was given.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jupyter</span><span class="kw">:</span><span class="at"> php85</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Jupyter also writes a fuller block into a notebook, and Quarto accepts it in a <code>.qmd</code>. For juphyter it needs one field more than the three Jupyter writes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jupyter</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kernelspec</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> php85</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">language</span><span class="kw">:</span><span class="at"> php</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">display_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"PHP 8.5"</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /Users/erik/Library/Jupyter/kernels/php85</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>path</code> is the directory holding <code>kernel.json</code>. Quarto’s jupyter engine reads it when it looks beside a kernelspec for a <code>quarto_setup_cell</code>, which it does for any language it has no built-in support for, and <code>jupyter: &lt;name&gt;</code> is the only form that fills the field in by itself. Without <code>path</code> the render fails with <code>KeyError: 'path'</code>. Naming the kernel rather than describing it avoids the whole question.</p>
+</section>
+<section id="cell-options" class="level2">
+<h2 class="anchored" data-anchor-id="cell-options">Cell options</h2>
+<p>Quarto’s cell options are comments in the cell’s own language, written with a <code>|</code> after the comment marker. Quarto has no <code>php</code> entry in its comment-character table and falls back to <code>#</code>, which PHP reads as a line comment, so <code>#|</code> is a Quarto cell option and a PHP comment at once.</p>
+<p>The options that matter most in a PHP document:</p>
+<ul>
+<li><code>#| echo: false</code> runs the cell and keeps its source out of the page.</li>
+<li><code>#| eval: false</code> shows the source and does not run it.</li>
+<li><code>#| output: false</code> runs the cell and shows no output.</li>
+<li><code>#| error: true</code> lets the render continue past a cell that throws, and keeps the traceback in the output.</li>
+<li><code>#| fig-cap: "..."</code> captions the cell’s figure.</li>
+<li><code>#| label: fig-mileage</code> gives the figure a cross-reference.</li>
+</ul>
+<p>A captioned plot:</p>
+<div id="61772c70" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Plot::of(Datasets::mpg())-&gt;aes(x<span class="ot">:</span> <span class="st">'cty'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span>)-&gt;point(opacity<span class="ot">:</span> <span class="fl">0.5</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div data-phiz="{&quot;$schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.json&quot;,&quot;data&quot;:{&quot;values&quot;:[{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:20,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(av)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:30,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(av)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:17,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:17,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a4 quattro&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a6 quattro&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a6 quattro&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:17,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;audi&quot;,&quot;model&quot;:&quot;a6 quattro&quot;,&quot;displ&quot;:4.2,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;c1500 suburban 2wd&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:14,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;c1500 suburban 2wd&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;c1500 suburban 2wd&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:14,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;c1500 suburban 2wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;c1500 suburban 2wd&quot;,&quot;displ&quot;:6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:12,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;corvette&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;2seater&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;corvette&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;2seater&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;corvette&quot;,&quot;displ&quot;:6.2,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;2seater&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;corvette&quot;,&quot;displ&quot;:6.2,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;2seater&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;corvette&quot;,&quot;displ&quot;:7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;2seater&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;k1500 tahoe 4wd&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;k1500 tahoe 4wd&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:14,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;k1500 tahoe 4wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;k1500 tahoe 4wd&quot;,&quot;displ&quot;:6.5,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;d&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;malibu&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;malibu&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:22,&quot;hwy&quot;:30,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;malibu&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;malibu&quot;,&quot;displ&quot;:3.5,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;chevrolet&quot;,&quot;model&quot;:&quot;malibu&quot;,&quot;displ&quot;:3.6,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l3)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:21,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;caravan 2wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;minivan&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:3.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:3.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:3.9,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:3.9,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:9,&quot;hwy&quot;:12,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:5.2,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;dakota pickup 4wd&quot;,&quot;displ&quot;:5.2,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:3.9,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:9,&quot;hwy&quot;:12,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:5.2,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;durango 4wd&quot;,&quot;displ&quot;:5.9,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:12,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:9,&quot;hwy&quot;:12,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:12,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:9,&quot;hwy&quot;:12,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:5.2,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:5.2,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;dodge&quot;,&quot;model&quot;:&quot;ram 1500 pickup 4wd&quot;,&quot;displ&quot;:5.9,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;expedition 2wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;expedition 2wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;expedition 2wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:12,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;explorer 4wd&quot;,&quot;displ&quot;:5,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:4.2,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:4.2,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;f150 pickup 4wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:21,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:15,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;ford&quot;,&quot;model&quot;:&quot;mustang&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:14,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.6,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:28,&quot;hwy&quot;:33,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.6,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:24,&quot;hwy&quot;:32,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.6,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:25,&quot;hwy&quot;:32,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.6,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:23,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.6,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:24,&quot;hwy&quot;:32,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:26,&quot;hwy&quot;:34,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:25,&quot;hwy&quot;:36,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:24,&quot;hwy&quot;:36,&quot;fl&quot;:&quot;c&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;honda&quot;,&quot;model&quot;:&quot;civic&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:30,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;sonata&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:20,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:20,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;hyundai&quot;,&quot;model&quot;:&quot;tiburon&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:17,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;d&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:3.7,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:9,&quot;hwy&quot;:12,&quot;fl&quot;:&quot;e&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;jeep&quot;,&quot;model&quot;:&quot;grand cherokee 4wd&quot;,&quot;displ&quot;:6.1,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:14,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;land rover&quot;,&quot;model&quot;:&quot;range rover&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;land rover&quot;,&quot;model&quot;:&quot;range rover&quot;,&quot;displ&quot;:4.2,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:12,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;land rover&quot;,&quot;model&quot;:&quot;range rover&quot;,&quot;displ&quot;:4.4,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:12,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;land rover&quot;,&quot;model&quot;:&quot;range rover&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;lincoln&quot;,&quot;model&quot;:&quot;navigator 2wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;lincoln&quot;,&quot;model&quot;:&quot;navigator 2wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:11,&quot;hwy&quot;:16,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;lincoln&quot;,&quot;model&quot;:&quot;navigator 2wd&quot;,&quot;displ&quot;:5.4,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:&quot;r&quot;,&quot;cty&quot;:12,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;mercury&quot;,&quot;model&quot;:&quot;mountaineer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;mercury&quot;,&quot;model&quot;:&quot;mountaineer 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;mercury&quot;,&quot;model&quot;:&quot;mountaineer 4wd&quot;,&quot;displ&quot;:4.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;mercury&quot;,&quot;model&quot;:&quot;mountaineer 4wd&quot;,&quot;displ&quot;:5,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(av)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:23,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:23,&quot;hwy&quot;:32,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:3.5,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;altima&quot;,&quot;displ&quot;:3.5,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(av)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;maxima&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;maxima&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;maxima&quot;,&quot;displ&quot;:3.5,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(av)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;pathfinder 4wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;pathfinder 4wd&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;pathfinder 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;nissan&quot;,&quot;model&quot;:&quot;pathfinder 4wd&quot;,&quot;displ&quot;:5.6,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:12,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;pontiac&quot;,&quot;model&quot;:&quot;grand prix&quot;,&quot;displ&quot;:3.1,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;pontiac&quot;,&quot;model&quot;:&quot;grand prix&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;pontiac&quot;,&quot;model&quot;:&quot;grand prix&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;pontiac&quot;,&quot;model&quot;:&quot;grand prix&quot;,&quot;displ&quot;:3.8,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;pontiac&quot;,&quot;model&quot;:&quot;grand prix&quot;,&quot;displ&quot;:5.3,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:18,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:18,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;forester awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:18,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:21,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:19,&quot;hwy&quot;:25,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;subaru&quot;,&quot;model&quot;:&quot;impreza awd&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:20,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:3.4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:3.4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;4runner 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:14,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry&quot;,&quot;displ&quot;:3.5,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:2.2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:2.4,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:22,&quot;hwy&quot;:31,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:3,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;camry solara&quot;,&quot;displ&quot;:3.3,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:27,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;corolla&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l3)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:24,&quot;hwy&quot;:30,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;corolla&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:24,&quot;hwy&quot;:33,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;corolla&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:26,&quot;hwy&quot;:35,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;corolla&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:28,&quot;hwy&quot;:37,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;corolla&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:26,&quot;hwy&quot;:35,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;land cruiser wagon 4wd&quot;,&quot;displ&quot;:4.7,&quot;year&quot;:1999,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:11,&quot;hwy&quot;:15,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;land cruiser wagon 4wd&quot;,&quot;displ&quot;:5.7,&quot;year&quot;:2008,&quot;cyl&quot;:8,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:13,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;suv&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:2.7,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:17,&quot;hwy&quot;:22,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:3.4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:17,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:3.4,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:19,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:15,&quot;hwy&quot;:18,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;toyota&quot;,&quot;model&quot;:&quot;toyota tacoma 4wd&quot;,&quot;displ&quot;:4,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:4,&quot;cty&quot;:16,&quot;hwy&quot;:20,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;pickup&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;gti&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;gti&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;gti&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;gti&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:22,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;gti&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:1.9,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:33,&quot;hwy&quot;:44,&quot;fl&quot;:&quot;d&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:22,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:5,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:5,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:23,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;jetta&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:24,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;compact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:1.9,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:35,&quot;hwy&quot;:44,&quot;fl&quot;:&quot;d&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:1.9,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:29,&quot;hwy&quot;:41,&quot;fl&quot;:&quot;d&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:2,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l4)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:5,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:20,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;new beetle&quot;,&quot;displ&quot;:2.5,&quot;year&quot;:2008,&quot;cyl&quot;:5,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:20,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;r&quot;,&quot;class&quot;:&quot;subcompact&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:1.8,&quot;year&quot;:1999,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:19,&quot;hwy&quot;:28,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:2,&quot;year&quot;:2008,&quot;cyl&quot;:4,&quot;trans&quot;:&quot;manual(m6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:21,&quot;hwy&quot;:29,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(l5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:16,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:2.8,&quot;year&quot;:1999,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;manual(m5)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:18,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;},{&quot;manufacturer&quot;:&quot;volkswagen&quot;,&quot;model&quot;:&quot;passat&quot;,&quot;displ&quot;:3.6,&quot;year&quot;:2008,&quot;cyl&quot;:6,&quot;trans&quot;:&quot;auto(s6)&quot;,&quot;drv&quot;:&quot;f&quot;,&quot;cty&quot;:17,&quot;hwy&quot;:26,&quot;fl&quot;:&quot;p&quot;,&quot;class&quot;:&quot;midsize&quot;}]},&quot;mark&quot;:{&quot;type&quot;:&quot;point&quot;,&quot;filled&quot;:true,&quot;opacity&quot;:0.5},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;cty&quot;,&quot;type&quot;:&quot;quantitative&quot;,&quot;scale&quot;:{&quot;zero&quot;:false}},&quot;y&quot;:{&quot;field&quot;:&quot;hwy&quot;,&quot;type&quot;:&quot;quantitative&quot;,&quot;scale&quot;:{&quot;zero&quot;:false}}}}"><div data-phiz-view="" wire:ignore=""></div></div>
+<script src="https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js" integrity="sha384-VKdcJr3ZaBIJMbVcopTAI/JEuUkSY6qnwVu9iLuw0DnQ9gQ1JjsfZJhXFQAgNi43" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js" integrity="sha384-9/70gNCfOu6G7xXvkdreMfuqAEsoaGJVXV2BN/JLRXkSmcGvnMqtsRx8HZtUWAvI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js" integrity="sha384-Muy1QRxYFeNrA1zShc1KtN4OfipkR/61gt+HWqN57c1Zxu3Oe16TsilsruVVjfKL" crossorigin="anonymous"></script>
+<script>/* phiz: renders [data-phiz] elements with vega-embed, and re-renders when their spec changes (Livewire morphs). */
+(function () {
+  if (window.Phiz) return;
+  var views = new WeakMap();
+  var dark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+  function parse(json, fallback) {
+    if (!json) return fallback;
+    try { return JSON.parse(json); } catch (e) { console.error('phiz: invalid JSON', e); return fallback; }
+  }
+
+  function target(el) {
+    var view = el.querySelector(':scope > [data-phiz-view]');
+    if (!view) {
+      view = document.createElement('div');
+      view.setAttribute('data-phiz-view', '');
+      view.setAttribute('wire:ignore', '');
+      el.appendChild(view);
+    }
+    return view;
+  }
+
+  function render(el) {
+    var embed = Phiz.embed || window.vegaEmbed;
+    if (!embed) { pending = true; return; }
+    var json = el.getAttribute('data-phiz');
+    var optionsJson = el.getAttribute('data-phiz-options') || '';
+    var key = json + '\u0000' + optionsJson + '\u0000' + (dark && dark.matches ? 'dark' : 'light');
+    var state = views.get(el);
+    if (state && state.key === key) return;
+    var spec = parse(json, null);
+    if (!spec) return;
+    var options = parse(optionsJson, {});
+    if (options.theme === 'auto') {
+      if (dark && dark.matches) options.theme = 'dark'; else delete options.theme;
+    }
+    if (state && state.view) state.view.finalize();
+    // Each render draws into its own element, so a slow, superseded render cannot replace a newer chart.
+    var token = {};
+    var holder = document.createElement('div');
+    target(el).appendChild(holder);
+    views.set(el, { key: key, token: token, view: null });
+    Promise.resolve(embed(holder, spec, options)).then(function (result) {
+      var current = views.get(el);
+      if (!current || current.token !== token) { result.view.finalize(); holder.remove(); return; }
+      Array.prototype.slice.call(holder.parentNode.children).forEach(function (child) { if (child !== holder) child.remove(); });
+      current.view = result.view;
+      el.dispatchEvent(new CustomEvent('phiz:rendered', { detail: { view: result.view }, bubbles: true }));
+    }).catch(function (error) {
+      var current = views.get(el);
+      if (!current || current.token !== token) { holder.remove(); return; }
+      console.error('phiz:', error);
+      holder.textContent = 'Chart error: ' + error.message;
+    });
+  }
+
+  function scan(root) {
+    if (root.nodeType !== 1) return;
+    if (root.hasAttribute('data-phiz')) render(root);
+    root.querySelectorAll('[data-phiz]').forEach(render);
+  }
+
+  function release(root) {
+    if (root.nodeType !== 1) return;
+    var nodes = root.hasAttribute('data-phiz') ? [root] : [];
+    root.querySelectorAll('[data-phiz]').forEach(function (n) { nodes.push(n); });
+    nodes.forEach(function (n) {
+      if (n.isConnected) return;
+      var state = views.get(n);
+      if (state && state.view) state.view.finalize();
+      views.delete(n);
+    });
+  }
+
+  var pending = false;
+  var Phiz = window.Phiz = {
+    embed: null,
+    render: render,
+    scan: function () { scan(document.documentElement); },
+    view: function (el) { var s = views.get(el); return s ? s.view : null; }
+  };
+
+  new MutationObserver(function (mutations) {
+    mutations.forEach(function (m) {
+      if (m.type === 'attributes') { render(m.target); return; }
+      m.addedNodes.forEach(scan);
+      m.removedNodes.forEach(release);
+    });
+  }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-phiz', 'data-phiz-options'] });
+
+  if (dark && dark.addEventListener) dark.addEventListener('change', function () { Phiz.scan(); });
+
+  function start() { pending = false; Phiz.scan(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  window.addEventListener('load', function () { if (pending) start(); });
+})();</script>
+<p>City against highway mileage.</p>
+</div>
+</div>
+<p>PHP cells come out syntax-highlighted. Pandoc’s PHP syntax definition expects a <code>&lt;?php</code> opening tag, which a notebook cell has no place for, and it highlights the cell regardless.</p>
+<p>Every render prints <code>Unknown message type: 'comm_open'</code> once, from ipykernel rather than from Quarto. The kernel installs no comm manager, which is the same absence that leaves ipywidgets unsupported, and the message has no effect on what is rendered.</p>
+</section>
+<section id="what-each-format-carries" class="level2">
+<h2 class="anchored" data-anchor-id="what-each-format-carries">What each format carries</h2>
+<p>A phiz plot publishes four representations and a phibble data frame publishes two. Each output format takes one of them, and Quarto’s choice is the same in every case: for HTML it prefers <code>text/html</code>, for LaTeX and Typst it prefers <code>image/svg+xml</code>, and it falls back to <code>text/plain</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Format</th>
+<th>A phiz plot</th>
+<th>A phibble data frame</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>html</code></td>
+<td>the interactive chart, drawn by Vega-Lite in the browser</td>
+<td>the HTML table, with the dimensions and the type row</td>
+</tr>
+<tr class="even">
+<td><code>typst</code>, <code>pdf</code></td>
+<td>the static SVG, placed as a numbered figure</td>
+<td>a typeset table; the dimension note and the truncation footer are dropped</td>
+</tr>
+<tr class="odd">
+<td><code>ipynb</code></td>
+<td>the HTML embed</td>
+<td>nothing: see below</td>
+</tr>
+</tbody>
+</table>
+<p>Two consequences are worth knowing before you choose a format.</p>
+<p>A PDF figure comes from the static SVG, which phiz produces by running the <code>vl-convert</code> binary. Install it from <a href="https://github.com/vega/vl-convert/releases">vl-convert’s releases</a> and put it on <code>PATH</code>, or point <code>PHIZ_VL_CONVERT</code> at it. Without it a plot has no SVG and a PDF has no figure.</p>
+<p><code>quarto render --to ipynb</code> is a conversion of the rendered document rather than the notebook that was executed. Quarto keeps one representation per output and reaches <code>ipynb</code> through Pandoc’s Markdown reader. An HTML <code>&lt;table&gt;</code> does not survive that trip, so the output is dropped, and error outputs are dropped as well. This is Quarto’s conversion rather than anything about the kernel, and a stock <code>python3</code> kernel loses an <code>IPython.display.HTML('&lt;table&gt;...')</code> output in exactly the same way. Render to HTML or to PDF when a document’s tables matter.</p>
+</section>
+<section id="pdf-output" class="level2">
+<h2 class="anchored" data-anchor-id="pdf-output">PDF output</h2>
+<p>Quarto produces a PDF through LaTeX or through Typst, and Typst is the easier of the two here. Typst ships inside Quarto and places an SVG as it is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render report.qmd <span class="at">--to</span> typst</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The LaTeX route needs one more tool. For LaTeX output Quarto also picks the SVG, and then has to convert it to a PDF, which it does with <code>rsvg-convert</code> from librsvg. Without that binary <code>quarto render --to pdf</code> stops with <code>Could not convert a SVG to a PDF for output</code>. Install librsvg, or render through Typst.</p>
+</section>
+<section id="the-kernel-daemon" class="level2">
+<h2 class="anchored" data-anchor-id="the-kernel-daemon">The kernel daemon</h2>
+<p>Quarto can keep a kernel alive between renders, which saves starting PHP and loading the project’s autoloader again. Two conditions have to hold, and for a PHP kernel today the second one does not:</p>
+<ol type="1">
+<li>The daemon has to be asked for. Quarto turns it on by default only in an interactive session outside CI, and <code>--execute-daemon &lt;seconds&gt;</code> or <code>execute: daemon: &lt;seconds&gt;</code> asks for it explicitly.</li>
+<li>Quarto only keeps a kernel whose language it can write a setup or a cleanup cell for. It looks for <code>lang/&lt;language&gt;</code> among its own resources and then for a <code>quarto_setup_cell</code> or <code>quarto_cleanup_cell</code> file beside the kernelspec. It ships neither for PHP, and <code>juphyter install</code> writes neither, so the server exits after one render and the next render starts a new kernel.</li>
+</ol>
+<p>The practical effect is that each render of a PHP document gets a fresh session, and nothing of a previous render is in scope. Setting</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">daemon</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>makes that explicit, and is the setting to reach for if a future release starts daemonizing PHP kernels and a document turns out to depend on a fresh session. A document that declares a class or a function is such a document: PHP cannot redeclare either, so a second render against a kept-alive kernel would fail on the cell that declares it.</p>
+<p>The engine is ready for the daemon whenever Quarto starts using it. It has no read timeout on its end of the socket, so it waits between requests for as long as the front end leaves it. A kernel made daemonizable on purpose and then left idle for three minutes between two renders answered the second one from the same session. When a kept-alive kernel does end, it takes the PHP engine and the watchdog process that guards it with it, leaving nothing running.</p>
+</section>
+<section id="freeze" class="level2">
+<h2 class="anchored" data-anchor-id="freeze">Freeze</h2>
+<p><code>freeze</code> works unchanged, because it is Quarto’s own cache of a cell’s output and the kernel is not involved in it.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">freeze</span><span class="kw">:</span><span class="at"> auto</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>With <code>freeze: auto</code> a document is re-executed only when its source changes, which is the setting a documentation site wants: a contributor without PHP 8.5 and the phpstats packages installed can still build the site from the frozen output. The frozen output lives in <code>_freeze/</code> and is committed.</p>
+<p>Quarto resolves a document’s kernel by name while it builds the site navigation, which happens before it reads anything frozen, so a kernelspec of that name has to exist even though nothing starts it. <code>scripts/render-docs --frozen</code> writes one whose command exits as soon as it is started, so a cell that did reach execution fails the render rather than coming out unexecuted. That is how this repository rebuilds its own site with no PHP on the machine.</p>
+</section>
+<section id="projects" class="level2">
+<h2 class="anchored" data-anchor-id="projects">Projects</h2>
+<p>In a Quarto project the kernel is named per document, in each document’s front matter. A project with more than three documents to render turns the daemon off unless <code>--execute-daemon</code> was passed on the command line, which for PHP changes nothing.</p>
+<p>One thing is worth checking in a project: Quarto runs the kernel with the document’s own directory as its working directory, and the engine finds the project to load by walking up from there looking for <code>vendor/autoload.php</code>. A document in a subdirectory of a Composer project therefore sees that project. A document outside any Composer project sees none, and <code>JUPHYTER_AUTOLOAD</code> or an <code>autoload</code> entry in a <code>juphyter.json</code> beside the document names one outright.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/juphyter\.phpstats\.org");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/quarto.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

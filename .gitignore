@@ -3,8 +3,20 @@
 /.phpunit.cache/
 .phpunit.result.cache
 .DS_Store
+
+# Quarto's own build directories under docs/. The rendered site is not one of
+# them: scripts/render-docs publishes it from docs/_site into docs/, where it is
+# committed, because phpstats.org imports the pages out of this repository
+# rather than rendering them itself. The executed output under docs/_freeze/ is
+# committed for the same reason, so neither it nor any rendered page belongs
+# here.
 /docs/_site/
 /docs/.quarto/
+
+# Where Quarto stages a page's frozen result while it renders, which it moves
+# into docs/_freeze when the render finishes. render-docs removes one left by a
+# render that did not finish, and this is in case something else interrupts one.
+/docs/*_files/
 /build/
 *.phar
 
