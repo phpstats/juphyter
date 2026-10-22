@@ -8,6 +8,7 @@ use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
 use Juphyter\Install\QuartoProbe;
+use Juphyter\Install\VenvBuilder;
 
 /**
  * A temporary directory, removed after the test.
@@ -169,6 +170,8 @@ function installQuartoPath(): string
  * @param  list<string>  $arguments
  * @param  array<string, string>  $environment  What {@see JupyterPaths} reads, and where `QUARTO_PYTHON` comes from.
  * @param  string|null  $quartoPath  The `PATH` {@see QuartoProbe} searches. Empty by default, so Quarto is absent.
+ * @param  string|null  $venvPath  The `PATH` {@see VenvBuilder} searches for a base interpreter. Empty by default, so there is none.
+ * @param  (Closure(string): bool)|null  $confirm  How the build-an-environment question is answered. Declines by default.
  * @return array{result: int, stdout: string, stderr: string}
  */
 function runInstall(
@@ -178,18 +181,23 @@ function runInstall(
     ?string $packageRoot = null,
     string $osFamily = 'Darwin',
     ?string $quartoPath = null,
+    ?string $venvPath = null,
+    ?Closure $confirm = null,
 ): array {
     $runner ??= installRunner();
     $packageRoot ??= installPackageRoot();
+    $confirm ??= fn (string $question): bool => false;
 
     return captured(fn ($stdout, $stderr) => (new InstallCommand(
         new JupyterPaths($environment, $osFamily),
         new PythonProbe($runner, installPythonPath()),
         new QuartoProbe($runner, $quartoPath ?? '', $environment),
+        new VenvBuilder($runner, $venvPath ?? '', $environment),
         $runner,
         $packageRoot,
         $stdout,
         $stderr,
+        $confirm,
     ))->run($arguments));
 }
 
@@ -1011,5 +1019,159 @@ describe('the Quarto check against a real interpreter', function () {
             ->and($run['stderr'])->toContain('no Jupyter in it')
             ->and($run['stderr'])->toContain(sprintf('export PATH="%s:$PATH"', $recorded))
             ->and($run['stderr'])->toContain('quarto check jupyter');
+    });
+});
+
+describe('building a Python when none can host the kernel', function () {
+    /**
+     * A runner for which the machine's Python has no ipykernel and a named
+     * environment's interpreter has everything.
+     *
+     * The keys are matched in order, so the environment's own calls are
+     * answered before the general "no ipykernel anywhere" rule.
+     *
+     * @param  list<string>  $calls
+     */
+    $world = function (string $environment, array &$calls = []): Closure {
+        return installRunner([
+            $environment.'/bin/python -c import sys' => ['code' => 0],
+            $environment.'/bin/python -m pip install' => ['code' => 0],
+            $environment.'/bin/python -c import ipykernel' => ['stdout' => "7.4.0\n"],
+            'import ipykernel' => ['code' => 1],
+        ], $calls);
+    };
+
+    it('offers to build one and installs into it when the answer is yes', function () use ($world) {
+        $prefix = installWorkspace();
+        $target = installWorkspace().'/env';
+        $asked = [];
+
+        $run = runInstall(
+            ['--prefix', $prefix],
+            ['HOME' => $target.'-home'],
+            $world($target.'-home/.venvs/juphyter'),
+            null,
+            'Darwin',
+            null,
+            null,
+            function (string $question) use (&$asked): bool {
+                $asked[] = $question;
+
+                return true;
+            },
+        );
+
+        expect($run['result'])->toBe(0)
+            ->and($asked)->toHaveCount(1)
+            ->and($asked[0])->toContain('jupyterlab')
+            ->and($asked[0])->toContain($target.'-home/.venvs/juphyter');
+
+        $spec = readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json');
+
+        expect($spec['argv'][0])->toBe($target.'-home/.venvs/juphyter/bin/python');
+    });
+
+    it('does not ask when --create-venv names a directory', function () use ($world) {
+        $prefix = installWorkspace();
+        $target = installWorkspace().'/env';
+        $asked = [];
+
+        $run = runInstall(
+            ['--prefix', $prefix, '--create-venv', $target],
+            ['HOME' => '/home/you'],
+            $world($target),
+            null,
+            'Darwin',
+            null,
+            null,
+            function (string $question) use (&$asked): bool {
+                $asked[] = $question;
+
+                return true;
+            },
+        );
+
+        expect($run['result'])->toBe(0)
+            ->and($asked)->toBe([]);
+
+        $spec = readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json');
+
+        expect($spec['argv'][0])->toBe($target.'/bin/python');
+    });
+
+    it('says what it is building, because installing it takes a minute', function () use ($world) {
+        $prefix = installWorkspace();
+        $target = installWorkspace().'/env';
+
+        $run = runInstall(
+            ['--prefix', $prefix, '--create-venv', $target],
+            [],
+            $world($target),
+        );
+
+        expect($run['stderr'])
+            ->toContain('building a virtual environment at '.$target)
+            ->toContain('jupyterlab');
+    });
+
+    it('declines without a terminal and names the option that would do it', function () {
+        $prefix = installWorkspace();
+
+        $run = runInstall(
+            ['--prefix', $prefix],
+            ['HOME' => '/home/you'],
+            installRunner(['import ipykernel' => ['code' => 1]]),
+        );
+
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])
+            ->toContain('ipykernel is not installed')
+            ->toContain('--create-venv /home/you/.venvs/juphyter')
+            ->and($prefix.'/share/jupyter/kernels/php/kernel.json')->not->toBeFile();
+    });
+
+    it('does not offer to build when --python named an interpreter', function () {
+        $prefix = installWorkspace();
+
+        $run = runInstall(
+            ['--prefix', $prefix, '--python', '/usr/bin/python3'],
+            ['HOME' => '/home/you'],
+            installRunner(['import ipykernel' => ['code' => 1]]),
+            null,
+            'Darwin',
+            null,
+            null,
+            fn (string $question): bool => true,
+        );
+
+        // The reader named an interpreter, so building a different one would
+        // answer a question they did not ask.
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])->toContain('ipykernel is not installed')
+            ->and($run['stderr'])->not->toContain('--create-venv');
+    });
+
+    it('has no default directory to offer when HOME is unset', function () {
+        $prefix = installWorkspace();
+
+        $run = runInstall(
+            ['--prefix', $prefix],
+            [],
+            installRunner(['import ipykernel' => ['code' => 1]]),
+            null,
+            'Darwin',
+            null,
+            null,
+            fn (string $question): bool => true,
+        );
+
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])
+            ->toContain('--create-venv PATH')
+            ->toContain('HOME is unset');
+    });
+
+    it('lists --create-venv in its help', function () {
+        expect(InstallCommand::usage())->toContain('--create-venv PATH');
     });
 });

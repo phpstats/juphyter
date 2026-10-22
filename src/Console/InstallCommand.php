@@ -10,6 +10,7 @@ use Juphyter\Install\JupyterPaths;
 use Juphyter\Install\KernelSpec;
 use Juphyter\Install\PythonProbe;
 use Juphyter\Install\QuartoProbe;
+use Juphyter\Install\VenvBuilder;
 use Phar;
 use RuntimeException;
 
@@ -60,7 +61,9 @@ final class InstallCommand extends Command
     public const DEFAULT_NAME = 'php';
 
     /** @var list<string> */
-    private const OPTIONS = ['name', 'display-name', 'php', 'python', 'prefix', 'autoload'];
+    private const OPTIONS = [
+        'name', 'display-name', 'php', 'python', 'prefix', 'autoload', 'create-venv',
+    ];
 
     /** @var resource */
     private $stdout;
@@ -68,26 +71,34 @@ final class InstallCommand extends Command
     /** @var resource */
     private $stderr;
 
+    /** @var Closure(string): bool */
+    private Closure $confirm;
+
     /**
      * @param  JupyterPaths  $paths  Where kernelspecs live.
      * @param  PythonProbe  $probe  Which interpreter to name, and whether it can host the kernel.
      * @param  QuartoProbe  $quarto  Which interpreter Quarto will run, for the advisory report.
+     * @param  VenvBuilder  $venv  How a virtual environment is built when the machine has no usable Python.
      * @param  Closure(list<string>): array{code: int, stdout: string, stderr: string}  $runner  How to run a subprocess, used to validate `--php`.
      * @param  string  $packageRoot  This package's root, which is a `phar://` path inside a PHAR.
      * @param  resource|null  $stdout
      * @param  resource|null  $stderr
+     * @param  (Closure(string): bool)|null  $confirm  How a yes-or-no question is asked; defaults to {@see terminalConfirm()}.
      */
     public function __construct(
         private readonly JupyterPaths $paths,
         private readonly PythonProbe $probe,
         private readonly QuartoProbe $quarto,
+        private readonly VenvBuilder $venv,
         private readonly Closure $runner,
         private readonly string $packageRoot,
         $stdout = null,
         $stderr = null,
+        ?Closure $confirm = null,
     ) {
         $this->stdout = $stdout ?? STDOUT;
         $this->stderr = $stderr ?? STDERR;
+        $this->confirm = $confirm ?? self::terminalConfirm();
     }
 
     public static function description(): string
@@ -103,6 +114,7 @@ final class InstallCommand extends Command
             JupyterPaths::fromEnvironment(),
             new PythonProbe($runner),
             new QuartoProbe($runner),
+            new VenvBuilder($runner),
             $runner,
             self::packageRoot(),
         );
@@ -153,8 +165,7 @@ final class InstallCommand extends Command
 
         [$php, $phpVersion, $canSignal] = $this->php($options['php'] ?? null);
 
-        $python = $this->probe->interpreter($options['python'] ?? null);
-        $ipykernel = $this->probe->requireIpykernel($python);
+        [$python, $ipykernel] = $this->python($options);
 
         $directory = $this->paths->kernelDirectory($name, $prefix);
         $file = $directory.'/kernel.json';
@@ -306,6 +317,130 @@ final class InstallCommand extends Command
     private static function isAbsoluteExecutable(string $php): bool
     {
         return str_starts_with($php, '/') && is_file($php) && is_executable($php);
+    }
+
+    /**
+     * The interpreter to name in the kernelspec, and its `ipykernel` version.
+     *
+     * The probe fails when the machine has no interpreter that can host the
+     * kernel. On a machine whose only Python is a system or Homebrew build that
+     * is the ordinary case rather than a broken one, because those builds are
+     * marked externally managed and refuse `pip install`. Rather than describe
+     * a virtual environment, `--create-venv` builds one and the install
+     * continues into it.
+     *
+     * An explicit `--python` is never second-guessed. The reader named an
+     * interpreter, and building a different one would answer a question they did
+     * not ask.
+     *
+     * @param  array<string, string>  $options
+     * @return array{string, string} The interpreter and its `ipykernel` version.
+     * @throws RuntimeException When there is no usable interpreter and none is to be built.
+     */
+    private function python(array $options): array
+    {
+        $explicit = $options['python'] ?? null;
+
+        try {
+            $interpreter = $this->probe->interpreter($explicit);
+
+            return [$interpreter, $this->probe->requireIpykernel($interpreter)];
+        } catch (RuntimeException $e) {
+            $directory = $this->venvDirectory($options, $explicit, $e);
+
+            fwrite($this->stderr, sprintf(
+                "juphyter: building a virtual environment at %s and installing %s into\n"
+                ."  it. This takes a minute.\n",
+                $directory,
+                implode(' ', VenvBuilder::PACKAGES),
+            ));
+
+            $interpreter = $this->venv->build($directory);
+
+            return [$interpreter, $this->probe->requireIpykernel($interpreter)];
+        }
+    }
+
+    /**
+     * Where to build an environment, having found no interpreter that works.
+     *
+     * `--create-venv` answers it outright. Without it there is a question to
+     * ask, and a reader who declines gets the probe's own message with the
+     * option appended, so the way forward is in the failure itself.
+     *
+     * @param  array<string, string>  $options
+     * @param  string|null  $explicit  A `--python` value, which suppresses the offer.
+     * @param  RuntimeException  $failure  Why no interpreter was usable.
+     * @throws RuntimeException When no environment is to be built.
+     */
+    private function venvDirectory(
+        array $options,
+        ?string $explicit,
+        RuntimeException $failure,
+    ): string {
+        $named = trim($options['create-venv'] ?? '');
+
+        if ($named !== '') {
+            return $named;
+        }
+
+        if ($explicit !== null && $explicit !== '') {
+            throw $failure;
+        }
+
+        $default = $this->venv->defaultDirectory();
+
+        if ($default === null) {
+            throw new RuntimeException(sprintf(
+                "%s\n\nOr let juphyter build a virtual environment with %s in it:\n\n"
+                ."    juphyter install --create-venv PATH\n\n"
+                .'HOME is unset, so there is no default path to suggest.',
+                rtrim($failure->getMessage(), "\n"),
+                implode(' ', VenvBuilder::PACKAGES),
+            ));
+        }
+
+        $question = sprintf(
+            'Build a virtual environment with %s at %s and install the kernel into it?',
+            implode(' ', VenvBuilder::PACKAGES),
+            $default,
+        );
+
+        if (($this->confirm)($question)) {
+            return $default;
+        }
+
+        throw new RuntimeException(sprintf(
+            "%s\n\nOr let juphyter build a virtual environment with %s in it and install\n"
+            ."the kernel into that:\n\n    juphyter install --create-venv %s",
+            rtrim($failure->getMessage(), "\n"),
+            implode(' ', VenvBuilder::PACKAGES),
+            $default,
+        ));
+    }
+
+    /**
+     * A yes-or-no question put to the terminal.
+     *
+     * Answers no without asking when stdin is not a terminal, so a scripted or
+     * CI install fails with the message the probe wrote instead of blocking on
+     * a question nobody is there to answer.
+     *
+     * @return Closure(string): bool
+     */
+    private static function terminalConfirm(): Closure
+    {
+        return function (string $question): bool {
+            if (! stream_isatty(STDIN)) {
+                return false;
+            }
+
+            fwrite(STDERR, $question.' [y/N] ');
+            $answer = fgets(STDIN);
+
+            return $answer !== false
+                && in_array(strtolower(trim($answer)), ['y', 'yes'], true);
+        };
     }
 
     /**
@@ -612,6 +747,10 @@ final class InstallCommand extends Command
                                     per-user Jupyter data directory.
               --autoload PATH       A vendor/autoload.php for the engine to load instead
                                     of searching upward from the notebook.
+              --create-venv PATH    Build a virtual environment with JupyterLab at PATH
+                                    and install the kernel into it. For a machine whose
+                                    only Python cannot host the kernel, which is asked
+                                    about when this is absent.
               -h, --help            Print this text.
 
             Several PHP versions can be installed side by side by giving each one its own

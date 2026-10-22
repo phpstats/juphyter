@@ -46,6 +46,10 @@ line reports which interpreter that is and what was found there. When it says
 `(no Jupyter)`, the kernelspec is still correct and `quarto render` cannot reach
 it; [Installation](install.qmd) covers the fix.
 
+On a machine with no Python that can host the kernel at all, the command offers
+to build one. [Installation](install.qmd) covers that and the `--create-venv`
+option that answers the offer in advance.
+
 ## A first cell
 
 A cell is PHP without an opening tag. The value of the last expression is the

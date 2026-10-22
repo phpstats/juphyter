@@ -148,6 +148,43 @@ Exporting it from a shell startup file is worth avoiding, because it takes
 precedence over an activated virtual environment and would therefore change the
 interpreter for every Quarto project on the machine.
 
+### When no Python can host the kernel
+
+The kernelspec names an interpreter with `ipykernel` 7 or newer, and a machine
+whose only Python is the system or a Homebrew build has none. Those builds are
+marked externally managed, so `pip install` into them refuses, which leaves a
+virtual environment as the supported way out.
+
+`juphyter install` offers to build one when it finds no interpreter that works:
+
+```
+Build a virtual environment with jupyterlab at /Users/you/.venvs/juphyter and
+install the kernel into it? [y/N]
+```
+
+`--create-venv PATH` answers that in advance, which is what a script or a CI
+job needs:
+
+```bash
+juphyter install --create-venv ~/.venvs/juphyter
+```
+
+The environment gets `jupyterlab`, which carries the `ipykernel` the kernelspec
+names and the `jupyter_client` that Quarto starts a kernel through, so one
+environment answers both. An environment already at that path is adopted rather
+than rebuilt, and the packages are installed either way, so a second run
+finishes an interrupted one. A directory that exists and holds something else is
+refused rather than written into.
+
+Putting the environment on `PATH` is still yours to do, and the command prints
+the line that does it. With no terminal to ask, the command declines and prints
+the same options, so an unattended install fails with a message rather than
+waiting on a question nobody can answer.
+
+An explicit `--python` turns the offer off. Naming an interpreter is a decision
+about which one to use, and building a different one would answer a question you
+did not ask.
+
 ## Your first Quarto document
 
 Write a document in any directory, with no project around it:

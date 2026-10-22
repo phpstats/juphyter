@@ -68,6 +68,12 @@ nothing to `PATH` beyond Composer's bin directory. It builds a virtual
 environment only when that interpreter has no Jupyter, which is the usual case
 on macOS, where `python3` is a Homebrew build.
 
+`juphyter install` can build that environment itself. On a machine with no
+Python that can host the kernel it offers to create one and installs the kernel
+into it, and `--create-venv PATH` answers that offer without being asked. The
+block above does the same work a step at a time, which is what makes it safe to
+paste.
+
 `quarto check jupyter` is the check that catches a half-working install. It has
 to report a Jupyter version and `php` among the kernels:
 

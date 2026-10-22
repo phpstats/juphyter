@@ -1102,3 +1102,70 @@ misleads rather than breaks. Word the line as the interpreter Quarto appears to
 use, and name `quarto check jupyter` as the authority.
 
 **Model.** Mid.
+
+### Task 16: build a Python when the machine has none
+
+**Delivered.** `juphyter install` offers to build a virtual environment with
+JupyterLab in it when it finds no interpreter that can host the kernel, and
+`--create-venv PATH` answers the offer in advance.
+
+**Why it is the installer's job and not a script's.** The question "should there
+be an installer script that detects what you have and installs what you need"
+came up and the answer was no. The detection belongs in `juphyter install`,
+which is already the installer, already has the injected-runner architecture
+these probes need, and is already reached by whoever ran `composer require`. A
+shell script would be a second implementation of the same logic in the language
+that is harder to test, and it would need `curl | sh` to bootstrap, against a
+package that is not on Packagist. One thing a script could do that the command
+cannot is set `PATH` in the calling shell, which a child process cannot; that is
+why the command prints the line instead.
+
+**What the four front ends collapse into.** JupyterLab, notebook, Quarto, and a
+plain Python user do not need four install paths. The kernelspec is one per
+user, in one place, with one shape. The engine is the same. What varies is
+whether the Python that launches the kernel has Jupyter, and that is one
+question with two answers. A JupyterLab user has Jupyter by definition or they
+could not run JupyterLab. Quarto picks its own interpreter and is the case that
+breaks. R has no path at all: Quarto's knitr engine cannot run `{php}` cells,
+and an R user with a working PHP notebook is one who has a Python Jupyter.
+
+**Decisions.**
+
+- The environment gets `jupyterlab` rather than the two libraries strictly
+  needed, because that is the documented install and a reader who asked for an
+  environment expects `jupyter lab` to work in it. It carries `ipykernel` for
+  the kernelspec and `jupyter_client` for Quarto, so one environment answers
+  both needs.
+- `--create-venv` takes the directory rather than being a bare flag. `Options`
+  requires a value for every option, and adding flag support to a parser shared
+  with `uninstall` was more change than the feature needed. Naming the directory
+  is also the more explicit interface for a command that is about to write one.
+- No `--yes`. `--create-venv PATH` already is the non-interactive consent.
+- With no terminal the command declines rather than blocking, so an unattended
+  install fails with the probe's message plus the option that would fix it.
+- An explicit `--python` turns the offer off, because naming an interpreter is a
+  decision about which one to use.
+- An environment already at the path is adopted and the packages installed
+  anyway, so a second run finishes an interrupted `pip`. A directory that holds
+  something else is refused.
+- The command never edits a shell startup file. It prints the `PATH` line. That
+  is the same judgment that kept `QUARTO_PYTHON` out of the shell startup file
+  in 9e5aafb: changing a reader's environment behind their back is the harm, and
+  it does not become acceptable because the installer is the one doing it.
+
+**How it was verified, beyond the unit tests.** The unit tests drive both
+classes through the injected runner and build nothing, which is what caught
+nothing the first time around. So the two paths were also run for real on a
+machine with no Jupyter on `PATH`, with `HOME`, `PATH`, and `--prefix` pointed
+at sandboxes:
+
+1. Without `--create-venv` and without a terminal: exit 1, the probe's message,
+   and the `juphyter install --create-venv <default>` line under it.
+2. With `--create-venv`: a real environment built, `jupyterlab` installed, the
+   kernelspec written naming that environment's interpreter, and the task 15
+   `quarto` line reporting `(no Jupyter)` with the `export PATH` that fixes it.
+
+Then the whole chain: with that environment first on `PATH` and `JUPYTER_PATH`
+pointed at the sandbox prefix, a standalone `.qmd` rendered and the PHP ran.
+That is a machine that started with no Jupyter and ended rendering PHP in
+Quarto, which is the claim the two tasks exist to make.
