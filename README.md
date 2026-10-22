@@ -6,19 +6,110 @@ for statistical work with the [phpstats](https://phpstats.org) packages, so
 [phiz](https://github.com/phpstats/phiz) plots arrive as notebook output rather
 than as text.
 
+## Requirements
+
+- **PHP 8.3 or later**, from Homebrew, Herd, or a distribution package. The
+  kernel uses the `pcntl`, `posix`, and `sockets` extensions, which all three
+  builds include. phiz plots need PHP 8.5.
+- **Composer.**
+- **Python 3.** The kernel's wrapper runs inside `ipykernel`, which the block
+  below installs. Quarto's jupyter engine already requires a Python Jupyter for
+  every kernel it drives, so this is not particular to PHP.
+- **Quarto**, to render Quarto documents. JupyterLab comes with the Python
+  install below.
+- **macOS or Linux.** The kernel interrupts a running cell with POSIX signals,
+  which the Windows PHP build does not provide.
+
 ## Install
 
+A kernelspec belongs to the machine rather than to a project, so install
+juphyter once for your user. Copy the whole block:
+
 ```bash
-composer require --dev phpstats/juphyter
-vendor/bin/juphyter install
+# Jupyter, in a virtual environment, and on PATH so that Quarto finds it.
+python3 -m venv ~/.venvs/juphyter
+~/.venvs/juphyter/bin/pip install jupyterlab
+echo 'export PATH="$HOME/.venvs/juphyter/bin:$PATH"' >> ~/.zshrc
+export PATH="$HOME/.venvs/juphyter/bin:$PATH"
+
+# juphyter. It is not on Packagist yet, so Composer reads the repository
+# directly, which "no-api" does over git and without a GitHub token.
+composer global config repositories.juphyter \
+  '{"type":"vcs","url":"https://github.com/phpstats/juphyter","no-api":true}'
+composer global require phpstats/juphyter:dev-main
+
+# Composer's global bin directory, on PATH, for the juphyter command itself.
+bin="$(composer global config bin-dir --absolute 2>/dev/null)"
+echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
+export PATH="$bin:$PATH"
+
+# The kernelspec, naming the PHP and the Python found above.
+juphyter install
 ```
 
-juphyter needs PHP 8.3 or later and a Python installation that has Jupyter,
-because the kernel's wrapper runs inside `ipykernel`. Both JupyterLab and
-Quarto's jupyter engine already require that Python, so neither needs anything
-extra. The [installation guide](https://juphyter.phpstats.org/install.html)
-covers running several PHP versions side by side, the standalone PHAR, and
-static image export.
+On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
+
+Putting the virtual environment on `PATH` is what makes `quarto render` work.
+Quarto chooses its own Python, and a Python with no Jupyter in it cannot see
+the kernel, so a render otherwise fails with `Jupyter kernel 'php' not found`.
+
+## Your first document
+
+Write a document in any directory, with no project around it:
+
+````markdown
+---
+title: "PHP in Quarto"
+jupyter: php
+---
+
+```{php}
+echo "sum: ", array_sum(range(1, 10)), "\n";
+PHP_VERSION;
+```
+````
+
+`quarto render hello.qmd` runs the cell and puts its output in the HTML. In
+JupyterLab, started with `jupyter lab`, the same kernel appears in the launcher
+under the PHP version it found.
+
+Add a kernel for another PHP with its own name, which is how two versions sit
+side by side:
+
+```bash
+juphyter install --name php85 --php /path/to/php85
+```
+
+## With the phpstats packages
+
+The install above runs plain PHP. phibble tables and phiz plots come from
+separate packages, and a second kernel gives them to a document in any
+directory:
+
+```bash
+for r in phibble phplyr; do
+  composer global config "repositories.$r" \
+    "{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/$r\",\"no-api\":true}"
+done
+composer global require --prefer-source "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
+
+juphyter install --name phpstats --display-name "PHP (phpstats)" \
+  --autoload "$(composer global config home 2>/dev/null)/vendor/autoload.php"
+```
+
+Name that kernel in the front matter as `jupyter: phpstats`. It is a second
+kernel rather than a change to the first because `--autoload` fixes one
+autoloader for every document, which suits a document outside any project and
+breaks one inside a project. The `php` kernel keeps the default: it walks up
+from the document's directory and loads the nearest `vendor/autoload.php`, so a
+document inside a Composer project sees that project's own packages.
+
+phiz needs PHP 8.5 and has to be left out below it. On 8.5 or newer, add it
+with `composer global require --prefer-source "phpstats/phiz:^0.3"`.
+
+The [installation guide](https://juphyter.phpstats.org/install.html) covers
+installing into a single project, the standalone PHAR, where a kernelspec goes,
+and static image export for PDF and Word.
 
 ## Example
 
