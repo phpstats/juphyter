@@ -68,8 +68,8 @@ place.
 
 - A Jupyter kernel for PHP 8.3 and later, on macOS and Linux.
 - State across cells, so a variable bound in one cell is in scope in the next.
-- Tracebacks that name the cell and the line a frame came from, rather than
-  `eval()'d code`.
+- Tracebacks that name the cell and the line a stack frame came from, rather
+  than `eval()'d code`.
 - Rich display for phibble tables and phiz plots, with `toMimeBundle()` and
   `toHtml()` hooks for any other class.
 - Completion, `is_complete` for a front end's continuation prompt, and

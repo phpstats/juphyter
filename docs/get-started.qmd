@@ -77,9 +77,9 @@ redeclared rather than failing in the middle.
 
 ## Errors
 
-A cell that throws reports the exception, its message, and the frames that
-raised it, with each frame naming the cell and the line rather than `eval()'d
-code`.
+A cell that throws reports the exception, its message, and the stack frames
+that raised it, with each stack frame naming the cell and the line rather than
+`eval()'d code`.
 
 ```{php}
 #| error: true
@@ -102,9 +102,10 @@ $widths['narrow'] + $widths['medium'];
 ## Rich display
 
 A value is published in every representation the front end might draw. A
-phibble frame comes with an HTML table and the tibble-style text phibble prints
-at a terminal, and a phiz plot comes with a Vega-Lite specification, an HTML
-embed, a static SVG when vl-convert is installed, and a one-line description.
+phibble data frame comes with an HTML table and the tibble-style text phibble
+prints at a terminal, and a phiz plot comes with a Vega-Lite specification, an
+HTML embed, a static SVG when vl-convert is installed, and a one-line
+description.
 
 ```{php}
 #| echo: false
@@ -148,7 +149,7 @@ new Progress(7, 9);
 ```
 
 `Juphyter\display()` publishes a value part way through a cell, so one cell can
-show several frames or plots.
+show several data frames or plots.
 
 ```{php}
 Juphyter\display(new Progress(3, 9));

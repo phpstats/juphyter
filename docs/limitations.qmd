@@ -75,8 +75,8 @@ RuntimeException: from the function
 
 A closure is different. PHP's trace does not say where a closure was declared,
 and every cell's `eval()` shares one file name, so a closure declared in one
-cell and called from another cannot be placed. The kernel reports the frame
-without a location rather than guessing:
+cell and called from another cannot be placed. The kernel reports the stack
+frame without a location rather than guessing:
 
 ```
 LogicException: from the closure
@@ -119,9 +119,10 @@ rather than `Exception` so that ordinary defensive code does not absorb it. A
 cell that catches `Throwable` in a loop can still swallow it, which is the same
 trade Python makes by putting `KeyboardInterrupt` outside `Exception`.
 
-## A frame's numbers in an HTML table are not pillar's
+## A data frame's numbers in an HTML table are not pillar's
 
-A frame's `text/plain` output is phibble's own, character for character. The
+A data frame's `text/plain` output is phibble's own, character for character.
+The
 HTML table is the kernel's, and it formats a float with PHP's own string
 conversion rather than reproducing pillar's significant-figure logic, so a wide
 `dbl` column can read differently in the two. The HTML header also omits the

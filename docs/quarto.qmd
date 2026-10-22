@@ -98,12 +98,13 @@ what is rendered.
 
 ## What each format carries
 
-A phiz plot publishes four representations and a phibble frame publishes two.
+A phiz plot publishes four representations and a phibble data frame publishes
+two.
 Each output format takes one of them, and Quarto's choice is the same in every
 case: for HTML it prefers `text/html`, for LaTeX and Typst it prefers
 `image/svg+xml`, and it falls back to `text/plain`.
 
-| Format | A phiz plot | A phibble frame |
+| Format | A phiz plot | A phibble data frame |
 |---|---|---|
 | `html` | the interactive chart, drawn by Vega-Lite in the browser | the HTML table, with the dimensions and the type row |
 | `typst`, `pdf` | the static SVG, placed as a numbered figure | a typeset table; the dimension note and the truncation footer are dropped |

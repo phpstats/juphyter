@@ -54,7 +54,7 @@ output is what that representation is for.
 
 ## Tables
 
-A phibble frame renders as an HTML table. The table's own style block uses
+A phibble data frame renders as an HTML table. The table's own style block uses
 JupyterLab's CSS variables for its fonts and colors, with plain fallbacks, so
 it follows the light and dark themes rather than fighting them.
 
