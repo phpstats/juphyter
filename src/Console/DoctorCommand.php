@@ -137,6 +137,14 @@ final class DoctorCommand extends Command
         [$quartoLines, $quartoState, $quartoFix] = $this->checkQuarto($python);
         [$kernelLines, $usableKernels, $kernelFailed] = $this->checkKernels($prefix);
 
+        // The Python section answers whether a new kernel could be installed
+        // here. Once a kernel exists it names its own interpreter and runs in
+        // it, so a default python3 that cannot host one is worth reporting and
+        // is not a fault of this machine.
+        if ($usableKernels !== []) {
+            $pythonLines = self::advisory($pythonLines);
+        }
+
         $lines[] = ['This package', $this->checkPackage()];
         $lines[] = ['PHP', $phpLines];
         $lines[] = ['A Python for the kernel', $pythonLines];
@@ -238,7 +246,8 @@ final class DoctorCommand extends Command
         if ($version === null) {
             return [[
                 [self::FAIL, sprintf('%s has no ipykernel', $interpreter)],
-                [self::NONE, 'fix it with: '.PythonProbe::installCommand($interpreter)],
+                [self::NONE, 'juphyter install builds an environment for it, or: '
+                    .PythonProbe::installCommand($interpreter)],
             ], null];
         }
 
@@ -250,7 +259,8 @@ final class DoctorCommand extends Command
                     $version,
                     PythonProbe::IPYKERNEL_FLOOR,
                 )],
-                [self::NONE, 'fix it with: '.PythonProbe::installCommand($interpreter)],
+                [self::NONE, 'juphyter install builds an environment for it, or: '
+                    .PythonProbe::installCommand($interpreter)],
             ], null];
         }
 
@@ -457,18 +467,38 @@ final class DoctorCommand extends Command
         };
 
         if ($quartoState === self::QUARTO_BROKEN && $fix !== '') {
-            // Both halves, because the export alone lasts until the shell
-            // closes and a reader who pastes only that is back here in the next
-            // terminal.
+            // Editor selection first: it is scoped to one workspace and is
+            // the step a reader who already runs Python notebooks has taken.
+            // The export is offered for one shell and is deliberately not
+            // persisted, because a startup file would change python3 for every
+            // Quarto project on the machine.
             $out .= "\nQuarto runs an interpreter of its own choosing, and that one needs Jupyter\n"
-                ."in it. Put the kernel's interpreter in front of it for this shell:\n\n"
-                ."    ".$fix."\n\n"
-                ."That lasts until the shell closes. To keep it, add the line to ~/.zshrc, or\n"
-                ."~/.bashrc on bash:\n\n"
-                ."    echo '".$fix."' >> ~/.zshrc\n";
+                ."in it. Point Quarto at one that has it.\n\n"
+                ."In Positron, VS Code, or Cursor, select it for the workspace with \"Python:\n"
+                ."Select Interpreter\". The Quarto extension hands the workspace interpreter to\n"
+                ."Quarto, so no other project is affected.\n\n"
+                ."For a single terminal session:\n\n"
+                ."    ".$fix."\n";
         }
 
         return $out;
+    }
+
+    /**
+     * Downgrade the failures in a section to warnings.
+     *
+     * @param  list<array{string, string}>  $lines
+     * @return list<array{string, string}>
+     */
+    private static function advisory(array $lines): array
+    {
+        return array_map(
+            static fn (array $line): array => [
+                $line[0] === self::FAIL ? self::WARN : $line[0],
+                $line[1],
+            ],
+            $lines,
+        );
     }
 
     /** The first line of a multi-line probe message. */

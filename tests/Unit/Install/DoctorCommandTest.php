@@ -226,10 +226,12 @@ describe('Quarto', function () {
             ->toContain('which has no Jupyter in it')
             ->toContain('Quarto: not ready.')
             ->toContain('export PATH="/opt/venv/bin:$PATH"')
-            // The export alone lasts until the shell closes, so the append has
-            // to be there too.
-            ->toContain('lasts until the shell closes')
-            ->toContain('echo \'export PATH="/opt/venv/bin:$PATH"\' >> ~/.zshrc');
+            // Editor selection leads, and the remedy must not tell anyone to
+            // persist the entry: that would change python3 for every Quarto
+            // project on the machine.
+            ->toContain('Python:')
+            ->toContain('Select Interpreter')
+            ->not->toContain('>> ~/.zshrc');
     });
 
     it('takes the PATH entry from a working kernel when no interpreter is usable now', function () {
@@ -390,4 +392,22 @@ describe('the command surface', function () {
         expect(DoctorCommand::name())->toBe('doctor')
             ->and(DoctorCommand::description())->toContain('still run');
     });
+});
+
+it('treats a default Python that cannot host a kernel as advisory once kernels work', function () {
+    $prefix = doctorWorkspace();
+    doctorKernel($prefix, 'php');
+
+    // The default python3 differs from the one the kernel names, and only the
+    // default is missing ipykernel.
+    $run = runDoctor(['--prefix='.$prefix], doctorRunner([
+        '/opt/brew/bin/python3' => ['code' => 1, 'stderr' => "No module named 'ipykernel'\n"],
+        'sys.executable' => ['stdout' => "/opt/brew/bin/python3\n"],
+    ]), withQuarto: false);
+
+    // The kernel names its own interpreter and runs in it, so the default
+    // python3 is worth reporting and is not a fault of this machine.
+    expect($run['result'])->toBe(0)
+        ->and($run['stdout'])->toContain('warn')
+        ->and($run['stdout'])->not->toContain('  fail');
 });
