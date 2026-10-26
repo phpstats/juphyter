@@ -139,11 +139,18 @@ list` reports. The kernel is not the problem in that case, and the kernelspec
 needs no reinstall. `quarto check` writes its report to standard error, so pipe
 it through `2>&1` before a `grep`.
 
-A terminal opened before the shell startup file was edited still carries the
-old `PATH`, which is the usual reason this error outlives an install that went
-correctly otherwise.
+In VS Code or Positron, the interpreter selected for the workspace is the one
+Quarto receives, so an error that survives an otherwise correct install usually
+means that selection names an interpreter with no Jupyter in it.
 
 `QUARTO_PYTHON` names an interpreter outright, for one shell or one project.
+Quarto reads it from the environment first, then from a project `_environment`
+file beside `_quarto.yml`, and falls back to the first `python3` on `PATH`. The
+file cannot override a variable the environment already carries, which is what
+makes the editor's selection decisive: the Quarto extension sets
+`QUARTO_PYTHON` from it on every render, so a wrong selection is corrected
+through the interpreter picker and not through a file.
+
 Exporting it from a shell startup file is worth avoiding, because it takes
 precedence over an activated virtual environment and would therefore change the
 interpreter for every Quarto project on the machine.
@@ -176,30 +183,31 @@ than rebuilt, and the packages are installed either way, so a second run
 finishes an interrupted one. A directory that exists and holds something else is
 refused rather than written into.
 
-Putting the environment on `PATH` is still yours to do, and the command prints
-the line that does it. With no terminal to ask, the command declines and prints
-the same options, so an unattended install fails with a message rather than
-waiting on a question nobody can answer.
+Pointing Quarto at the environment is still yours to do, and the command prints
+how. With no terminal to put the question to, the environment is built without
+asking: there is nobody there to answer, and it is written under your home
+directory without touching any interpreter that was already on the machine.
 
 An explicit `--python` turns the offer off. Naming an interpreter is a decision
 about which one to use, and building a different one would answer a question you
 did not ask.
 
-### Letting the install write the PATH entry
+### Pointing Quarto at the environment
 
-A new environment is of no use to Quarto until it is on `PATH`, and a command
-cannot put it there, because a child process cannot change the `PATH` of the
-shell that started it. `--path-file` names the shell startup file to append the
-entry to:
+A new environment is of no use to Quarto until Quarto runs it. In Positron, VS
+Code, or Cursor, select it for the workspace with **Python: Select
+Interpreter**. The Quarto extension hands the workspace interpreter to Quarto
+for every render in that workspace, so no other project changes.
+
+At a terminal, activate it for the shell:
 
 ```bash
-juphyter install --create-venv ~/.venvs/juphyter --path-file ~/.zshrc
+source ~/.venvs/juphyter/bin/activate
 ```
 
-Nothing is written to a startup file without that option. The append is
-idempotent by directory, so a file that already reaches the interpreter is left
-alone however the entry there was spelled, and a write that cannot be made is
-reported with the line to add by hand while the install still succeeds.
+juphyter writes nothing to a shell startup file. An entry in one would change
+`python3` for every Quarto project on the machine, which is the harm that keeps
+`QUARTO_PYTHON` out of a startup file as well.
 
 ## Checking an install later
 
