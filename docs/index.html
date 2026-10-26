@@ -226,7 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>juphyter runs PHP in a notebook cell. It installs a Jupyter kernel, so JupyterLab lists PHP in its launcher and Quarto executes <code>{php}</code> blocks in a <code>.qmd</code>. The value a cell returns gets the richest representation the front end can draw: a <a href="https://github.com/phpstats/phibble">phibble</a> data frame becomes an HTML table, a <a href="https://github.com/phpstats/phiz">phiz</a> plot becomes a chart or a static figure, and everything else gets a compact dump.</p>
 <p>A notebook sees the project it sits in. The engine walks up from the notebook’s directory looking for <code>vendor/autoload.php</code>, so a notebook inside a Composer project has that project’s packages and its own classes in scope with no configuration.</p>
-<div id="73c4f4a7" class="cell" data-execution_count="2">
+<div id="3b2cb264" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromRows(Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span></span>
@@ -296,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="7235b565" class="cell" data-execution_count="3">
+<div id="e2dd5626" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Plot::of(Datasets::mpg())</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'displ'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span><span class="ot">,</span> color<span class="ot">:</span> <span class="st">'drv'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    -&gt;point(opacity<span class="ot">:</span> <span class="fl">0.7</span>)</span>

@@ -239,7 +239,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="requirements" class="level2">
 <h2 class="anchored" data-anchor-id="requirements">Requirements</h2>
 <ul>
-<li><strong>PHP 8.3 or later</strong>, from Homebrew, Herd, or a distribution package. That floor matches phibble and phplyr. phiz needs PHP 8.5, so plots are available only on a kernel running 8.5 or newer.</li>
+<li><strong>PHP 8.3 or later</strong>, from Homebrew, Herd, or a distribution package. That floor matches phibble, phplyr, and phiz.</li>
 <li><strong>Composer.</strong></li>
 <li><strong>Python 3 with <code>jupyter</code> and <code>ipykernel</code> 7.0 or later.</strong> The wrapper subclasses <code>ipykernel.kernelbase.Kernel</code>, which changed in version 7. This costs nothing extra in practice: JupyterLab is a Python application, and Quarto’s jupyter engine requires a Python Jupyter whatever kernel it drives.</li>
 <li><strong>Quarto</strong>, to render Quarto documents.</li>
@@ -364,7 +364,7 @@ Quarto: not ready.</code></pre>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> php</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#3313d2a6 .cell execution_count=1}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#7c2d0936 .cell execution_count=1}</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="in">``` {.php .cell-code}</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="st">"sum: "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="fu">range</span>(<span class="dv">1</span><span class="ot">,</span> <span class="dv">10</span>))<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="cn">PHP_VERSION</span><span class="ot">;</span></span>
@@ -395,19 +395,19 @@ Quarto: not ready.</code></pre>
 <h2 class="anchored" data-anchor-id="the-phpstats-packages">The phpstats packages</h2>
 <p>None of them is a dependency of juphyter, which installs and runs with any subset of the family present, including none of it. The install above therefore runs plain PHP, and phibble tables and phiz plots need the packages added.</p>
 <p>A second kernel gives them to a document in any directory:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> phibble phplyr<span class="kw">;</span> <span class="cf">do</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> phibble phplyr phiz<span class="kw">;</span> <span class="cf">do</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">composer</span> global config <span class="st">"repositories.</span><span class="va">$r</span><span class="st">"</span> <span class="dt">\</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"{</span><span class="dt">\"</span><span class="st">type</span><span class="dt">\"</span><span class="st">:</span><span class="dt">\"</span><span class="st">vcs</span><span class="dt">\"</span><span class="st">,</span><span class="dt">\"</span><span class="st">url</span><span class="dt">\"</span><span class="st">:</span><span class="dt">\"</span><span class="st">https://github.com/phpstats/</span><span class="va">$r</span><span class="dt">\"</span><span class="st">,</span><span class="dt">\"</span><span class="st">no-api</span><span class="dt">\"</span><span class="st">:true}"</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global require <span class="at">--prefer-source</span> <span class="st">"phpstats/phibble:^0.3"</span> <span class="st">"phpstats/phplyr:^0.3"</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (phpstats)"</span> <span class="dt">\</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--autoload</span> <span class="st">"</span><span class="va">$(</span><span class="ex">composer</span> global config home <span class="dv">2</span><span class="op">&gt;</span>/dev/null<span class="va">)</span><span class="st">/vendor/autoload.php"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global require <span class="at">--prefer-source</span> <span class="dt">\</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"phpstats/phibble:^0.3"</span> <span class="st">"phpstats/phplyr:^0.3"</span> <span class="st">"phpstats/phiz:^0.3"</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (phpstats)"</span> <span class="dt">\</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--autoload</span> <span class="st">"</span><span class="va">$(</span><span class="ex">composer</span> global config home <span class="dv">2</span><span class="op">&gt;</span>/dev/null<span class="va">)</span><span class="st">/vendor/autoload.php"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Name that kernel in the front matter as <code>jupyter: phpstats</code>.</p>
 <p>It is a second kernel rather than a change to the first because <code>--autoload</code> fixes one autoloader for every document it runs, which suits a document outside any project and breaks one inside a project. The <code>php</code> kernel keeps the default search described under <a href="#which-dependencies-a-notebook-sees">Which dependencies a notebook sees</a>, so a document inside a Composer project sees that project’s own packages.</p>
 <p>The packages are not on Packagist, so each needs a <code>repositories</code> entry with <code>"no-api": true</code>, which makes Composer read the repository with <code>git</code> rather than through the GitHub API and so needs no token. <code>--prefer-source</code> is needed for the same reason, because a dist zipball still comes from the API.</p>
 <p>Use the released <code>^0.3</code> tags rather than <code>dev-main</code> for these. phplyr requires <code>phpstats/phibble ^0.3</code>, which a <code>dev-main</code> phibble does not satisfy, so asking for <code>dev-main</code> on both fails to resolve.</p>
-<p>phiz requires PHP 8.5 and has to be left out below that. On 8.5 or newer, add it with <code>composer global require --prefer-source "phpstats/phiz:^0.3"</code>.</p>
 </section>
 <section id="inside-a-single-project" class="level2">
 <h2 class="anchored" data-anchor-id="inside-a-single-project">Inside a single project</h2>
