@@ -375,7 +375,7 @@ describe('installing from the archive', function () {
             ->toContain('juphyter_kernel');
     });
 
-    it('prints the pip command when the interpreter has no ipykernel', function () {
+    it('prints the pip command when a named interpreter has no ipykernel', function () {
         $bin = pharScratch().'/bin-bare';
         mkdir($bin, 0o777, true);
         file_put_contents($bin.'/python3', "#!/bin/sh\ncase \"\$2\" in\n*sys.executable*) echo \"\$0\" ;;\n*) exit 1 ;;\nesac\n");
@@ -383,13 +383,28 @@ describe('installing from the archive', function () {
 
         $prefix = pharPrefix();
         $run = pharRun(
-            [PHP_BINARY, pharArchive(), 'install', '--prefix='.$prefix],
+            [PHP_BINARY, pharArchive(), 'install', '--prefix='.$prefix, '--python='.$bin.'/python3'],
             ['PATH' => $bin, 'HOME' => pharScratch()],
         );
 
         expect($run['code'])->toBe(1)
             ->and($run['stderr'])->toContain('-m pip install "ipykernel>=7.0"')
             ->and(is_dir($prefix.'/share'))->toBeFalse();
+    });
+
+    it('builds an environment rather than touching an interpreter it was not given', function () {
+        $bin = pharScratch().'/bin-nochoice';
+        mkdir($bin, 0o777, true);
+        file_put_contents($bin.'/python3', "#!/bin/sh\ncase \"\$2\" in\n*sys.executable*) echo \"\$0\" ;;\n*) exit 1 ;;\nesac\n");
+        chmod($bin.'/python3', 0o755);
+
+        $run = pharRun(
+            [PHP_BINARY, pharArchive(), 'install', '--prefix='.pharPrefix()],
+            ['PATH' => $bin, 'HOME' => pharScratch()],
+        );
+
+        expect($run['stderr'])->toContain('building a virtual environment')
+            ->and($run['stderr'])->not->toContain('-m pip install "ipykernel>=7.0"');
     });
 
     it('uninstalls what it installed', function () {

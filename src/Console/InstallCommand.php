@@ -63,7 +63,6 @@ final class InstallCommand extends Command
     /** @var list<string> */
     private const OPTIONS = [
         'name', 'display-name', 'php', 'python', 'prefix', 'autoload', 'create-venv',
-        'path-file',
     ];
 
     /** @var resource */
@@ -233,7 +232,7 @@ final class InstallCommand extends Command
             $ipykernel,
             $php,
             $this->enginePath(),
-        ).$quartoLine.$this->pathFile($options['path-file'] ?? null, $python));
+        ).$quartoLine);
 
         return 0;
     }
@@ -423,9 +422,15 @@ final class InstallCommand extends Command
     /**
      * A yes-or-no question put to the terminal.
      *
-     * Answers no without asking when stdin is not a terminal, so a scripted or
-     * CI install fails with the message the probe wrote instead of blocking on
-     * a question nobody is there to answer.
+     * The question has a default of yes, because the environment is the only
+     * remedy juphyter can carry out itself. The alternative is to install
+     * `ipykernel` into an interpreter the reader did not dedicate to juphyter,
+     * which is theirs to decide rather than ours to do.
+     *
+     * Answers yes without asking when stdin is not a terminal. A scripted
+     * install has nobody to put the question to, and the environment is built
+     * under the reader's home directory without touching any interpreter that
+     * was already there, so proceeding is safer than failing.
      *
      * @return Closure(string): bool
      */
@@ -433,14 +438,19 @@ final class InstallCommand extends Command
     {
         return function (string $question): bool {
             if (! stream_isatty(STDIN)) {
-                return false;
+                return true;
             }
 
-            fwrite(STDERR, $question.' [y/N] ');
+            fwrite(STDERR, $question.' [Y/n] ');
             $answer = fgets(STDIN);
 
-            return $answer !== false
-                && in_array(strtolower(trim($answer)), ['y', 'yes'], true);
+            if ($answer === false) {
+                return true;
+            }
+
+            $answer = strtolower(trim($answer));
+
+            return $answer === '' || in_array($answer, ['y', 'yes'], true);
         };
     }
 
@@ -533,12 +543,19 @@ final class InstallCommand extends Command
     /**
      * A warning about Quarto's interpreter, with the way out of it.
      *
-     * The remedy is a `PATH` entry built from the recorded interpreter, which
-     * is worth suggesting only when that interpreter has Jupyter itself.
-     * Otherwise there is no interpreter here to point at and the choice of one
-     * belongs to the reader. `quarto check jupyter` is the authority in both
-     * cases, because the resolution order replicated here is Quarto's and could
-     * change under it.
+     * The remedy names the recorded interpreter, which is worth suggesting only
+     * when that interpreter has Jupyter itself. Otherwise there is no
+     * interpreter here to point at and the choice of one belongs to the reader.
+     *
+     * Selecting the interpreter in an editor comes first, because it is scoped
+     * to a workspace and is the step a reader who runs Python notebooks has
+     * already taken. The `PATH` entry is offered for one shell only. Persisting
+     * it would make every Quarto project on the machine resolve python3 to this
+     * environment, which is the harm that kept `QUARTO_PYTHON` out of the
+     * install.
+     *
+     * `quarto check jupyter` is the authority on the interpreter, because the
+     * resolution order replicated here is Quarto's and could change under it.
      *
      * @param  string  $problem  The opening paragraph, already wrapped.
      * @param  string  $python  The interpreter the kernelspec names.
@@ -547,8 +564,12 @@ final class InstallCommand extends Command
     {
         $remedy = $this->quarto->jupyterClientVersion($python) !== null
             ? sprintf(
-                "  Put the interpreter this kernelspec names first on your PATH, where Quarto\n"
-                ."  finds it as python3:\n\n    %s\n",
+                "  Point Quarto at the interpreter this kernelspec names. In Positron, VS Code,\n"
+                ."  or Cursor, select it for the workspace with \"Python: Select Interpreter\",\n"
+                ."  which the Quarto extension hands to Quarto for that workspace. For a single\n"
+                ."  terminal session:\n\n    %s\n\n"
+                ."  Both are scoped. Putting that line in a shell startup file would change\n"
+                ."  python3 for every project on this machine.\n",
                 self::exportPathCommand($python),
             )
             : sprintf(
@@ -562,79 +583,6 @@ final class InstallCommand extends Command
             $problem,
             $remedy,
         );
-    }
-
-    /**
-     * Add the `PATH` entry to a shell startup file, when asked by name.
-     *
-     * The command will not touch a startup file on its own, because changing a
-     * reader's environment behind their back is the harm that kept
-     * `QUARTO_PYTHON` out of one. Naming the file is the consent, and it is the
-     * one thing the reader cannot have the command do any other way: a child
-     * process cannot put a directory on its parent's `PATH`, so without this
-     * the line has to be copied by hand.
-     *
-     * The write is idempotent by the directory rather than by the whole line,
-     * so a file that already reaches this interpreter is left alone however the
-     * entry there was spelled. A failure is reported and does not fail the
-     * install, which has already written the kernelspec by this point.
-     *
-     * @param  string|null  $file  A `--path-file` value.
-     * @param  string  $python  The interpreter the kernelspec names.
-     * @return string The line for the install report, empty when not asked.
-     */
-    private function pathFile(?string $file, string $python): string
-    {
-        $file = trim($file ?? '');
-
-        if ($file === '') {
-            return '';
-        }
-
-        $bin = dirname($python);
-        $existing = is_file($file) ? (string) @file_get_contents($file) : '';
-        $line = self::exportPathCommand($python);
-
-        if (str_contains($existing, $bin)) {
-            return sprintf("  path-file    %s already reaches %s\n", $file, $bin);
-        }
-
-        $refused = sprintf(
-            "  path-file    could not write %s, so add this line yourself: %s\n",
-            $file,
-            $line,
-        );
-
-        // Asked before writing rather than after, because a failed write raises
-        // a diagnostic of its own and the caller wants the report, not the
-        // notice.
-        if (! self::appendable($file)) {
-            return $refused;
-        }
-
-        $separator = $existing !== '' && ! str_ends_with($existing, "\n") ? "\n" : '';
-
-        if (@file_put_contents($file, $separator.$line."\n", FILE_APPEND) === false) {
-            return $refused;
-        }
-
-        return sprintf("  path-file    added to %s: %s\n", $file, $line);
-    }
-
-    /** Whether a path is a file that can be appended to, or can become one. */
-    private static function appendable(string $file): bool
-    {
-        if (is_dir($file)) {
-            return false;
-        }
-
-        if (file_exists($file)) {
-            return is_writable($file);
-        }
-
-        $directory = dirname($file);
-
-        return is_dir($directory) && is_writable($directory);
     }
 
     /** The `PATH` entry that puts an interpreter's own `bin` directory first. */
@@ -825,9 +773,6 @@ final class InstallCommand extends Command
                                     and install the kernel into it. For a machine whose
                                     only Python cannot host the kernel, which is asked
                                     about when this is absent.
-              --path-file PATH      Append the kernel interpreter's PATH entry to this
-                                    shell startup file, such as ~/.zshrc. Nothing is
-                                    written to a startup file without this.
               -h, --help            Print this text.
 
             Several PHP versions can be installed side by side by giving each one its own

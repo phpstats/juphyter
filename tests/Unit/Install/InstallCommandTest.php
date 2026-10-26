@@ -1176,81 +1176,27 @@ describe('building a Python when none can host the kernel', function () {
     });
 });
 
-describe('adding the PATH entry to a shell startup file', function () {
-    it('appends the entry when a file is named', function () {
-        $workspace = installWorkspace();
-        $rc = $workspace.'/zshrc';
-        file_put_contents($rc, "# existing\n");
-
-        $run = runInstall(['--prefix', $workspace.'/prefix', '--path-file', $rc]);
-
-        expect($run['result'])->toBe(0)
-            ->and(file_get_contents($rc))
-            ->toBe("# existing\nexport PATH=\"/opt/venv/bin:\$PATH\"\n")
-            ->and($run['stdout'])->toContain('path-file    added to '.$rc);
-    });
-
-    it('creates the file when it is not there yet', function () {
-        $workspace = installWorkspace();
-        $rc = $workspace.'/bashrc';
-
-        runInstall(['--prefix', $workspace.'/prefix', '--path-file', $rc]);
-
-        expect(file_get_contents($rc))->toBe("export PATH=\"/opt/venv/bin:\$PATH\"\n");
-    });
-
-    it('starts a line of its own when the file has no trailing newline', function () {
-        $workspace = installWorkspace();
-        $rc = $workspace.'/zshrc';
-        file_put_contents($rc, 'alias l=ls');
-
-        runInstall(['--prefix', $workspace.'/prefix', '--path-file', $rc]);
-
-        expect(file_get_contents($rc))
-            ->toBe("alias l=ls\nexport PATH=\"/opt/venv/bin:\$PATH\"\n");
-    });
-
-    it('does not add it twice, and recognizes the directory however it was spelled', function () {
-        $workspace = installWorkspace();
-        $rc = $workspace.'/zshrc';
-        file_put_contents($rc, "export PATH=\"/opt/venv/bin:\$HOME/bin:\$PATH\"\n");
-        $before = file_get_contents($rc);
-
-        $run = runInstall(['--prefix', $workspace.'/prefix', '--path-file', $rc]);
-
-        expect(file_get_contents($rc))->toBe($before)
-            ->and($run['stdout'])->toContain('already reaches /opt/venv/bin');
-    });
-
-    it('reports a write it could not make and still installs', function () {
-        $workspace = installWorkspace();
-        // A directory cannot be appended to, which is the portable way to make
-        // the write fail without depending on permissions.
-        mkdir($workspace.'/notafile');
-
-        $run = runInstall(['--prefix', $workspace.'/prefix', '--path-file', $workspace.'/notafile']);
-
-        expect($run['result'])->toBe(0)
-            ->and($run['stdout'])
-            ->toContain('could not write')
-            ->toContain('add this line yourself: export PATH="/opt/venv/bin:$PATH"')
-            ->and($workspace.'/prefix/share/jupyter/kernels/php/kernel.json')->toBeFile();
-    });
-
-    it('touches no startup file when the option is absent', function () {
+describe('shell startup files', function () {
+    it('writes to none, and offers no option that would', function () {
         $workspace = installWorkspace();
         $rc = $workspace.'/zshrc';
         file_put_contents($rc, "# untouched\n");
 
         $run = runInstall(['--prefix', $workspace.'/prefix']);
 
-        expect(file_get_contents($rc))->toBe("# untouched\n")
-            ->and($run['stdout'])->not->toContain('path-file');
+        expect($run['result'])->toBe(0)
+            ->and(file_get_contents($rc))->toBe("# untouched\n")
+            ->and(InstallCommand::usage())->not->toContain('--path-file');
     });
 
-    it('documents that nothing is written without it', function () {
-        expect(InstallCommand::usage())
-            ->toContain('--path-file PATH')
-            ->toContain('without this');
+    it('rejects --path-file, which it no longer has', function () {
+        $workspace = installWorkspace();
+        $rc = $workspace.'/zshrc';
+        file_put_contents($rc, "# untouched\n");
+
+        $run = runInstall(['--prefix', $workspace.'/prefix', '--path-file', $rc]);
+
+        expect($run['result'])->toBe(1)
+            ->and(file_get_contents($rc))->toBe("# untouched\n");
     });
 });
