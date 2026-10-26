@@ -197,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#why-the-kernel-is-installed-against-quartos-python" id="toc-why-the-kernel-is-installed-against-quartos-python" class="nav-link" data-scroll-target="#why-the-kernel-is-installed-against-quartos-python">Why the kernel is installed against Quarto’s Python</a></li>
   <li><a href="#when-no-python-can-host-the-kernel" id="toc-when-no-python-can-host-the-kernel" class="nav-link" data-scroll-target="#when-no-python-can-host-the-kernel">When no Python can host the kernel</a></li>
-  <li><a href="#letting-the-install-write-the-path-entry" id="toc-letting-the-install-write-the-path-entry" class="nav-link" data-scroll-target="#letting-the-install-write-the-path-entry">Letting the install write the PATH entry</a></li>
+  <li><a href="#pointing-quarto-at-the-environment" id="toc-pointing-quarto-at-the-environment" class="nav-link" data-scroll-target="#pointing-quarto-at-the-environment">Pointing Quarto at the environment</a></li>
   </ul></li>
   <li><a href="#checking-an-install-later" id="toc-checking-an-install-later" class="nav-link" data-scroll-target="#checking-an-install-later">Checking an install later</a></li>
   <li><a href="#your-first-quarto-document" id="toc-your-first-quarto-document" class="nav-link" data-scroll-target="#your-first-quarto-document">Your first Quarto document</a></li>
@@ -304,8 +304,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 Jupyter: 5.9.1
 Kernels: php, python3</code></pre>
 <p>A <code>Jupyter: (None)</code> line there is this failure, whatever <code>jupyter kernelspec list</code> reports. The kernel is not the problem in that case, and the kernelspec needs no reinstall. <code>quarto check</code> writes its report to standard error, so pipe it through <code>2&gt;&amp;1</code> before a <code>grep</code>.</p>
-<p>A terminal opened before the shell startup file was edited still carries the old <code>PATH</code>, which is the usual reason this error outlives an install that went correctly otherwise.</p>
-<p><code>QUARTO_PYTHON</code> names an interpreter outright, for one shell or one project. Exporting it from a shell startup file is worth avoiding, because it takes precedence over an activated virtual environment and would therefore change the interpreter for every Quarto project on the machine.</p>
+<p>In VS Code or Positron, the interpreter selected for the workspace is the one Quarto receives, so an error that survives an otherwise correct install usually means that selection names an interpreter with no Jupyter in it.</p>
+<p><code>QUARTO_PYTHON</code> names an interpreter outright, for one shell or one project. Quarto reads it from the environment first, then from a project <code>_environment</code> file beside <code>_quarto.yml</code>, and falls back to the first <code>python3</code> on <code>PATH</code>. The file cannot override a variable the environment already carries, which is what makes the editor’s selection decisive: the Quarto extension sets <code>QUARTO_PYTHON</code> from it on every render, so a wrong selection is corrected through the interpreter picker and not through a file.</p>
+<p>Exporting it from a shell startup file is worth avoiding, because it takes precedence over an activated virtual environment and would therefore change the interpreter for every Quarto project on the machine.</p>
 </section>
 <section id="when-no-python-can-host-the-kernel" class="level3">
 <h3 class="anchored" data-anchor-id="when-no-python-can-host-the-kernel">When no Python can host the kernel</h3>
@@ -316,14 +317,15 @@ install the kernel into it? [y/N]</code></pre>
 <p><code>--create-venv PATH</code> answers that in advance, which is what a script or a CI job needs:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--create-venv</span> ~/.venvs/juphyter</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The environment gets <code>jupyterlab</code>, which carries the <code>ipykernel</code> the kernelspec names and the <code>jupyter_client</code> that Quarto starts a kernel through, so one environment answers both. An environment already at that path is adopted rather than rebuilt, and the packages are installed either way, so a second run finishes an interrupted one. A directory that exists and holds something else is refused rather than written into.</p>
-<p>Putting the environment on <code>PATH</code> is still yours to do, and the command prints the line that does it. With no terminal to ask, the command declines and prints the same options, so an unattended install fails with a message rather than waiting on a question nobody can answer.</p>
+<p>Pointing Quarto at the environment is still yours to do, and the command prints how. With no terminal to put the question to, the environment is built without asking: there is nobody there to answer, and it is written under your home directory without touching any interpreter that was already on the machine.</p>
 <p>An explicit <code>--python</code> turns the offer off. Naming an interpreter is a decision about which one to use, and building a different one would answer a question you did not ask.</p>
 </section>
-<section id="letting-the-install-write-the-path-entry" class="level3">
-<h3 class="anchored" data-anchor-id="letting-the-install-write-the-path-entry">Letting the install write the PATH entry</h3>
-<p>A new environment is of no use to Quarto until it is on <code>PATH</code>, and a command cannot put it there, because a child process cannot change the <code>PATH</code> of the shell that started it. <code>--path-file</code> names the shell startup file to append the entry to:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--create-venv</span> ~/.venvs/juphyter <span class="at">--path-file</span> ~/.zshrc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Nothing is written to a startup file without that option. The append is idempotent by directory, so a file that already reaches the interpreter is left alone however the entry there was spelled, and a write that cannot be made is reported with the line to add by hand while the install still succeeds.</p>
+<section id="pointing-quarto-at-the-environment" class="level3">
+<h3 class="anchored" data-anchor-id="pointing-quarto-at-the-environment">Pointing Quarto at the environment</h3>
+<p>A new environment is of no use to Quarto until Quarto runs it. In Positron, VS Code, or Cursor, select it for the workspace with <strong>Python: Select Interpreter</strong>. The Quarto extension hands the workspace interpreter to Quarto for every render in that workspace, so no other project changes.</p>
+<p>At a terminal, activate it for the shell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.venvs/juphyter/bin/activate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>juphyter writes nothing to a shell startup file. An entry in one would change <code>python3</code> for every Quarto project on the machine, which is the harm that keeps <code>QUARTO_PYTHON</code> out of a startup file as well.</p>
 </section>
 </section>
 <section id="checking-an-install-later" class="level2">
@@ -362,7 +364,7 @@ Quarto: not ready.</code></pre>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> php</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#ae301394 .cell execution_count=1}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>::: {#3313d2a6 .cell execution_count=1}</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="in">``` {.php .cell-code}</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="st">"sum: "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="fu">range</span>(<span class="dv">1</span><span class="ot">,</span> <span class="dv">10</span>))<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="cn">PHP_VERSION</span><span class="ot">;</span></span>
