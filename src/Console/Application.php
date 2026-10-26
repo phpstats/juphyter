@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Juphyter\Console;
 
 use ArgumentCountError;
+use Juphyter\Version;
 use ReflectionClass;
 
 /**
@@ -17,6 +18,10 @@ use ReflectionClass;
  * namespace, and keeps the ones the autoloader resolves to a concrete subclass
  * of {@see Command}. The subcommand name is {@see Command::name()}, derived from
  * the class name.
+ *
+ * `--help` and `--version` are handled here rather than discovered, because
+ * neither is a subcommand: they are answered before any command is built, and
+ * `--version` has to answer even when no command can be constructed.
  *
  * Scanning, rather than a static list or a name-to-class lookup alone, is what
  * lets `juphyter` with no arguments list the commands that exist. Listing and
@@ -123,6 +128,12 @@ final class Application
 
         if ($name === null || $name === '-h' || $name === '--help') {
             fwrite($stdout, $this->usage());
+
+            return 0;
+        }
+
+        if ($name === '--version' || $name === '-V') {
+            fwrite($stdout, Version::line());
 
             return 0;
         }

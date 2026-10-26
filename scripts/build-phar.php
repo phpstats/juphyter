@@ -130,6 +130,35 @@ if ($composer === null) {
     );
 }
 
+/**
+ * The version Composer should record for the root package inside the archive.
+ *
+ * The staging directory holds no `.git`, so Composer cannot derive a version
+ * there and would record a placeholder. The repository can answer, and the
+ * answer is passed to the staging install as `COMPOSER_ROOT_VERSION` so that
+ * `juphyter --version` from the PHAR reports what it was built from.
+ */
+$describe = function (string $root): string {
+    $process = proc_open(
+        ['git', '-C', $root, 'describe', '--tags', '--exact-match', 'HEAD'],
+        [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        $pipes,
+    );
+
+    if (! is_resource($process)) {
+        return 'dev-main';
+    }
+
+    $tag = trim((string) stream_get_contents($pipes[1]));
+    stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    // Built off a tag it reports the tag, and anywhere else, including outside
+    // a checkout, it reports the branch it tracks.
+    return proc_close($process) === 0 && $tag !== '' ? $tag : 'dev-main';
+};
+
 /** Copy a file or a directory tree, skipping version-control and cache clutter. */
 $copy = function (string $from, string $to) use (&$copy, $fail): void {
     $name = basename($from);
@@ -215,8 +244,13 @@ try {
         $copy($root.'/'.$directory, $staging.'/'.$directory);
     }
 
-    $say('Installing the production dependencies');
+    $rootVersion = $describe($root);
 
+    $say(sprintf('Installing the production dependencies, as version %s', $rootVersion));
+
+    // The environment is merged rather than replaced, because a bare
+    // environment would lose PATH, HOME, and COMPOSER_HOME, and Composer needs
+    // all three.
     $install = proc_open(
         [
             $composer, 'install',
@@ -226,6 +260,8 @@ try {
         ],
         [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
         $pipes,
+        null,
+        [...getenv(), 'COMPOSER_ROOT_VERSION' => $rootVersion],
     );
 
     if (! is_resource($install)) {

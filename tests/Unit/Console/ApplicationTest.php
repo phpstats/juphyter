@@ -7,6 +7,7 @@ use Juphyter\Tests\Fixtures\Console\ForgotMakeCommand;
 use Juphyter\Tests\Fixtures\Console\GreetCommand;
 use Juphyter\Tests\Fixtures\Console\KernelSpecCommand;
 use Juphyter\Tests\Fixtures\Console\NeedsSocketCommand;
+use Juphyter\Version;
 
 /** The dispatcher over the fixture commands, which stand in for the real ones. */
 function fixtureApplication(): Application
@@ -260,5 +261,42 @@ describe('usage', function () {
         captured(fn ($out, $err) => fixtureApplication()->run(['juphyter', 'greetings'], $out, $err));
 
         expect(GreetCommand::$received)->toBeNull();
+    });
+});
+
+describe('version', function () {
+    it('reports the version on stdout and exits 0 for --version and -V', function () {
+        foreach (['--version', '-V'] as $flag) {
+            $run = captured(fn ($out, $err) => fixtureApplication()->run(
+                ['juphyter', $flag], $out, $err
+            ));
+
+            expect($run['result'])->toBe(0)
+                ->and($run['stderr'])->toBe('')
+                ->and($run['stdout'])->toBe(Version::line())
+                ->and($run['stdout'])->toContain('juphyter ')
+                ->and($run['stdout'])->not->toContain('Usage: juphyter');
+        }
+    });
+
+    // The flag is answered before anything is discovered or constructed, which
+    // is what makes it usable in a bug report about a command that will not run.
+    it('answers even when no command can be listed', function () {
+        $run = withEmptyApplication(fn (Application $application) => captured(
+            fn ($out, $err) => $application->run(['juphyter', '--version'], $out, $err)
+        ));
+
+        expect($run['result'])->toBe(0)
+            ->and($run['stdout'])->toContain('juphyter ')
+            ->and($run['stdout'])->not->toContain('No commands are available.');
+    });
+
+    it('treats a lowercase -v as an unknown command rather than the version flag', function () {
+        $run = captured(fn ($out, $err) => fixtureApplication()->run(
+            ['juphyter', '-v'], $out, $err
+        ));
+
+        expect($run['result'])->toBe(1)
+            ->and($run['stderr'])->toContain('unknown command "-v"');
     });
 });
