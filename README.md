@@ -22,17 +22,16 @@ A kernelspec belongs to the machine rather than to a project, so install
 juphyter once for your user. Copy the whole block:
 
 ```bash
-# juphyter. It is not on Packagist yet, so Composer reads the repository
-# directly, which "no-api" does over git and without a GitHub token.
-composer global config repositories.juphyter \
-  '{"type":"vcs","url":"https://github.com/phpstats/juphyter","no-api":true}'
-composer global require phpstats/juphyter:dev-main
+# juphyter itself.
+composer global require phpstats/juphyter
 
-# Composer's bin directory, so that the juphyter command is on PATH.
+# Composer's bin directory, so that the juphyter command is on PATH, in this
+# shell and in the ones you open later.
 bin="$(composer global config bin-dir --absolute 2>/dev/null)"
 export PATH="$bin:$PATH"
-grep -qF "$bin" ~/.zshrc 2>/dev/null \
-  || echo "export PATH=\"$bin:\$PATH\"" >> ~/.zshrc
+rc=~/.zshrc; [ -n "$BASH_VERSION" ] && rc=~/.bashrc
+grep -qF "$bin" "$rc" 2>/dev/null \
+  || echo "export PATH=\"$bin:\$PATH\"" >> "$rc"
 
 # The kernelspec, and a Python to host the kernel if none is available.
 juphyter install
@@ -41,8 +40,8 @@ juphyter install
 juphyter doctor
 ```
 
-On bash, write `~/.bashrc` in place of `~/.zshrc`. The only `PATH` entry this
-adds is Composer's bin directory, and no Python on the machine is modified.
+The only `PATH` entry this adds is Composer's bin directory, and no Python on
+the machine is modified.
 
 ## Use it
 

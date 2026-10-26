@@ -27,7 +27,7 @@
     "suggest": {
         "phpstats/phibble": "Data frames rendered as notebook tables. Not on Packagist: add the VCS repository https://github.com/phpstats/phibble, then composer require --dev phpstats/phibble",
         "phpstats/phplyr": "A dplyr-style grammar over phibble frames, used by the examples. Not on Packagist: add the VCS repository https://github.com/phpstats/phplyr, then composer require --dev phpstats/phplyr",
-        "phpstats/phiz": "Plots rendered as notebook figures. Installing it needs PHP 8.5, so a dev install below 8.5 has to leave it out. Not on Packagist: add the VCS repository https://github.com/phpstats/phiz, then composer require --dev phpstats/phiz",
+        "phpstats/phiz": "Plots rendered as notebook figures. Not on Packagist: add the VCS repository https://github.com/phpstats/phiz, then composer require --dev phpstats/phiz",
         "ext-pcntl": "Interrupting a running cell, through SIGINT",
         "ext-posix": "Reaping the engine process the transport spawns",
         "ext-sockets": "The unix domain socket between the transport and the engine"
