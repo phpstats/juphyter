@@ -21,9 +21,10 @@
 #   3. QUARTO_PYTHON, so Quarto's jupyter engine runs in the interpreter that
 #      has ipykernel rather than in whichever python3 it would otherwise pick.
 #
-# PHP 8.5 is the floor, set by phiz rather than by juphyter: phiz is written in
-# 8.5 syntax and its classes do not parse below it, so a page that plots cannot
-# render on an older PHP.
+# PHP 8.5 is the floor, set by these pages rather than by juphyter or by the
+# packages they use: docs/index.qmd composes with the pipe operator, which is
+# 8.5 syntax, so that page cannot render on an older PHP. phiz itself needs
+# only 8.3.
 #
 # Quarto renders the site to docs/_site, which git ignores, and this script then
 # publishes it into docs/ beside the sources, which git carries. That is where
@@ -379,7 +380,7 @@ PY
     printf 'render-docs: the site is at %s\n' "$root/docs/index.html"
 }
 
-# The PHP that will run the cells, which has to be 8.5 or newer for phiz.
+# The PHP that will run the cells, which has to be 8.5 or newer for the pipes.
 find_php() {
     local candidate version major minor tried=""
 
@@ -404,7 +405,7 @@ find_php() {
         [ -z "${JUPHYTER_DOCS_PHP:-}" ] || break
     done
 
-    fail "the docs plot with phiz, which needs PHP 8.5 or newer. Tried:${tried:- nothing on PATH}. Set JUPHYTER_DOCS_PHP to the binary to use."
+    fail "the docs compose with the pipe operator, which needs PHP 8.5 or newer. Tried:${tried:- nothing on PATH}. Set JUPHYTER_DOCS_PHP to the binary to use."
 }
 
 # The interpreter a written kernelspec names, read back out of it.

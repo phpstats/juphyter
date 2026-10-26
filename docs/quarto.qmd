@@ -190,9 +190,8 @@ execute:
 ```
 
 With `freeze: auto` a document is re-executed only when its source changes,
-which is the setting a documentation site wants: a contributor without PHP 8.5
-and the phpstats packages installed can still build the site from the frozen
-output. The frozen output lives in `_freeze/` and is committed.
+which is the setting a documentation site wants: a contributor without the
+phpstats packages installed can still build the site from the frozen output. The frozen output lives in `_freeze/` and is committed.
 
 Quarto resolves a document's kernel by name while it builds the site
 navigation, which happens before it reads anything frozen, so a kernelspec of

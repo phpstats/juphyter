@@ -17,8 +17,7 @@ PHP kernel.
 ## Requirements
 
 - **PHP 8.3 or later**, from Homebrew, Herd, or a distribution package. That
-  floor matches phibble and phplyr. phiz needs PHP 8.5, so plots are available
-  only on a kernel running 8.5 or newer.
+  floor matches phibble, phplyr, and phiz.
 - **Composer.**
 - **Python 3 with `jupyter` and `ipykernel` 7.0 or later.** The wrapper
   subclasses `ipykernel.kernelbase.Kernel`, which changed in version 7. This
@@ -298,11 +297,12 @@ runs plain PHP, and phibble tables and phiz plots need the packages added.
 A second kernel gives them to a document in any directory:
 
 ```bash
-for r in phibble phplyr; do
+for r in phibble phplyr phiz; do
   composer global config "repositories.$r" \
     "{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/$r\",\"no-api\":true}"
 done
-composer global require --prefer-source "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
+composer global require --prefer-source \
+  "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3" "phpstats/phiz:^0.3"
 
 juphyter install --name phpstats --display-name "PHP (phpstats)" \
   --autoload "$(composer global config home 2>/dev/null)/vendor/autoload.php"
@@ -325,9 +325,6 @@ for the same reason, because a dist zipball still comes from the API.
 Use the released `^0.3` tags rather than `dev-main` for these. phplyr requires
 `phpstats/phibble ^0.3`, which a `dev-main` phibble does not satisfy, so asking
 for `dev-main` on both fails to resolve.
-
-phiz requires PHP 8.5 and has to be left out below that. On 8.5 or newer, add
-it with `composer global require --prefer-source "phpstats/phiz:^0.3"`.
 
 ## Inside a single project
 
