@@ -8,16 +8,11 @@ than as text.
 
 ## Requirements
 
-- **PHP 8.3 or later**, from Homebrew, Herd, or a distribution package. The
-  kernel uses the `pcntl`, `posix`, and `sockets` extensions, which all three
-  builds include. phiz plots need PHP 8.5.
+- **PHP 8.3 or later** with the `pcntl`, `posix`, and `sockets` extensions.
+  Homebrew, Herd, and distribution builds all include them.
 - **Composer.**
-- **Python 3.** The kernel's wrapper runs inside `ipykernel`. The install uses
-  the Python already on the machine and does not install another one.
-- **Quarto**, to render Quarto documents. Quarto runs a Python of its own
-  choosing, and that one needs Jupyter in it. [Using the kernel](#using-the-kernel)
-  covers how it is chosen, which in an editor is the interpreter you already
-  select for the workspace.
+- **Python 3.** The install uses the one already on the machine and adds none.
+- **Quarto**, to render `.qmd` documents.
 - **macOS or Linux.** The kernel interrupts a running cell with POSIX signals,
   which the Windows PHP build does not provide.
 
@@ -46,13 +41,146 @@ juphyter install
 juphyter doctor
 ```
 
-On a machine running bash, write `~/.bashrc` in place of `~/.zshrc`.
+On bash, write `~/.bashrc` in place of `~/.zshrc`. The only `PATH` entry this
+adds is Composer's bin directory, and no Python on the machine is modified.
 
-The only entry this adds to `PATH` is Composer's bin directory, which is where
-the `juphyter` command lives. Nothing else about your shell changes, and no
-Python on the machine is modified.
+## Use it
 
-## Using the kernel
+Put `jupyter: php` in a document's YAML header:
+
+````markdown
+---
+title: "PHP in Quarto"
+jupyter: php
+---
+
+```{php}
+echo "sum: ", array_sum(range(1, 10)), "\n";
+PHP_VERSION;
+```
+````
+
+Then render it:
+
+- **VS Code, Positron, or Cursor** — open the *folder*, run **Python: Select
+  Interpreter** from the command palette, pick an environment that has Jupyter,
+  and render.
+- **A terminal** — `source ~/.venvs/juphyter/bin/activate`, then
+  `quarto render hello.qmd`.
+- **JupyterLab** — run `jupyter lab`. The PHP kernel is in the launcher.
+
+For a second PHP version, install another kernel under its own name:
+
+```bash
+juphyter install --name php85 --php /path/to/php85
+```
+
+If a render says the kernel is not found, see
+[Troubleshooting](#troubleshooting). It is almost always the interpreter Quarto
+picked, not the kernel.
+
+## With the phpstats packages
+
+The install above runs plain PHP. phibble tables and phiz plots come from
+separate packages, and a second kernel gives them to a document in any
+directory:
+
+```bash
+for r in phibble phplyr phiz; do
+  composer global config "repositories.$r" \
+    "{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/$r\",\"no-api\":true}"
+done
+composer global require --prefer-source \
+  "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3" "phpstats/phiz:^0.3"
+
+juphyter install --name phpstats --display-name "PHP (phpstats)" \
+  --autoload "$(composer global config home 2>/dev/null)/vendor/autoload.php"
+```
+
+Name that kernel in the front matter as `jupyter: phpstats`. It is a second
+kernel rather than a change to the first because `--autoload` fixes one
+autoloader for every document, which suits a document outside any project and
+breaks one inside a project. The `php` kernel keeps the default: it walks up
+from the document's directory and loads the nearest `vendor/autoload.php`, so a
+document inside a Composer project sees that project's own packages.
+
+The [installation guide](https://juphyter.phpstats.org/install.html) covers
+installing into a single project, the standalone PHAR, where a kernelspec goes,
+and static image export for PDF and Word.
+
+## Example
+
+A cell's last expression is its output, as in any notebook:
+
+```php
+$penguins = Phibble\DataFrame::fromCsv('penguins.csv');
+
+$penguins
+    ->groupBy(['species'])
+    ->summarise(['n' => Phibble\Expr\n(), 'mass' => Phibble\Expr\mean(Phibble\Expr\col('body_mass'))])
+```
+
+```
+# A tibble: 3 × 3
+  species       n  mass
+  <chr>     <int> <dbl>
+1 Adelie      151 3701.
+2 Chinstrap    68 3733.
+3 Gentoo      123 5076.
+```
+
+In a notebook, that table arrives as HTML with its column types, and a
+`Phiz\Plot` arrives as a chart. To show several things from one cell, call
+`Juphyter\display()`.
+
+## In Quarto
+
+Name the kernel in the front matter and write `php` cells:
+
+````markdown
+---
+title: "Penguin body mass"
+jupyter: php
+---
+
+```{php}
+#| echo: false
+$penguins = Phibble\DataFrame::fromCsv('penguins.csv');
+```
+
+```{php}
+Phiz\Plot::of($penguins)->aes(x: 'species', y: 'body_mass')->boxplot()
+```
+````
+
+`quarto render` executes the cells and puts the figures and tables in the
+output. Cell options work as they do for any other engine, because PHP accepts
+`#` comments.
+
+## Features
+
+- **Session state:** variables, objects, and declared functions and classes
+  persist from one cell to the next.
+- **Rich display:** phibble tables as HTML, phiz plots as Vega-Lite and as
+  static SVG, and anything with a `toMimeBundle()` or `toHtml()` method.
+- **Readable errors:** a traceback names the cell and the line the user wrote,
+  across cells, rather than `eval()`'d code.
+- **Interrupts:** the stop button ends a running cell and leaves the session
+  usable.
+- **Your project's dependencies:** the kernel finds the nearest
+  `vendor/autoload.php` by walking up from the notebook, so a notebook in a
+  Composer project sees that project.
+- **Completion:** variables, functions, classes, and members, by reflection.
+
+## Limitations
+
+PHP cannot redeclare a class or a function, so re-running a cell that declares
+one needs a kernel restart, and a cell cannot declare a `namespace`. The kernel
+runs on macOS and Linux. The
+[limitations page](https://juphyter.phpstats.org/limitations.html) explains each
+limitation and the reason for it.
+
+## Troubleshooting
 
 ### How Quarto finds a kernel
 
@@ -174,7 +302,7 @@ setting `QUARTO_PYTHON` in the run configuration.
 RStudio belongs to this group. It sets no `QUARTO_PYTHON` of its own, and Quarto
 does not read the Python preference RStudio stores, so `PATH` decides there too.
 
-## If no Python on the machine has Jupyter
+### If no Python on the machine has Jupyter
 
 `juphyter install` offers to build a virtual environment when it cannot find a
 Python that can host the kernel, and `--create-venv PATH` answers that offer in
@@ -195,136 +323,6 @@ the kernels it can see.
 In an editor, check the selected interpreter first, because what it sets
 overrides everything else. At a terminal, check that the environment is
 activated in the shell that runs `quarto`.
-
-## Your first document
-
-Write a document in any directory, with no project around it:
-
-````markdown
----
-title: "PHP in Quarto"
-jupyter: php
----
-
-```{php}
-echo "sum: ", array_sum(range(1, 10)), "\n";
-PHP_VERSION;
-```
-````
-
-`quarto render hello.qmd` runs the cell and puts its output in the HTML. In
-JupyterLab, started with `jupyter lab`, the same kernel appears in the launcher
-under the PHP version it found.
-
-Add a kernel for another PHP with its own name, which is how two versions sit
-side by side:
-
-```bash
-juphyter install --name php85 --php /path/to/php85
-```
-
-## With the phpstats packages
-
-The install above runs plain PHP. phibble tables and phiz plots come from
-separate packages, and a second kernel gives them to a document in any
-directory:
-
-```bash
-for r in phibble phplyr; do
-  composer global config "repositories.$r" \
-    "{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/$r\",\"no-api\":true}"
-done
-composer global require --prefer-source "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
-
-juphyter install --name phpstats --display-name "PHP (phpstats)" \
-  --autoload "$(composer global config home 2>/dev/null)/vendor/autoload.php"
-```
-
-Name that kernel in the front matter as `jupyter: phpstats`. It is a second
-kernel rather than a change to the first because `--autoload` fixes one
-autoloader for every document, which suits a document outside any project and
-breaks one inside a project. The `php` kernel keeps the default: it walks up
-from the document's directory and loads the nearest `vendor/autoload.php`, so a
-document inside a Composer project sees that project's own packages.
-
-phiz needs PHP 8.5 and has to be left out below it. On 8.5 or newer, add it
-with `composer global require --prefer-source "phpstats/phiz:^0.3"`.
-
-The [installation guide](https://juphyter.phpstats.org/install.html) covers
-installing into a single project, the standalone PHAR, where a kernelspec goes,
-and static image export for PDF and Word.
-
-## Example
-
-A cell's last expression is its output, as in any notebook:
-
-```php
-$penguins = Phibble\DataFrame::fromCsv('penguins.csv');
-
-$penguins
-    ->groupBy(['species'])
-    ->summarise(['n' => Phibble\Expr\n(), 'mass' => Phibble\Expr\mean(Phibble\Expr\col('body_mass'))])
-```
-
-```
-# A tibble: 3 × 3
-  species       n  mass
-  <chr>     <int> <dbl>
-1 Adelie      151 3701.
-2 Chinstrap    68 3733.
-3 Gentoo      123 5076.
-```
-
-In a notebook, that table arrives as HTML with its column types, and a
-`Phiz\Plot` arrives as a chart. To show several things from one cell, call
-`Juphyter\display()`.
-
-## In Quarto
-
-Name the kernel in the front matter and write `php` cells:
-
-````markdown
----
-title: "Penguin body mass"
-jupyter: php
----
-
-```{php}
-#| echo: false
-$penguins = Phibble\DataFrame::fromCsv('penguins.csv');
-```
-
-```{php}
-Phiz\Plot::of($penguins)->aes(x: 'species', y: 'body_mass')->boxplot()
-```
-````
-
-`quarto render` executes the cells and puts the figures and tables in the
-output. Cell options work as they do for any other engine, because PHP accepts
-`#` comments.
-
-## Features
-
-- **Session state:** variables, objects, and declared functions and classes
-  persist from one cell to the next.
-- **Rich display:** phibble tables as HTML, phiz plots as Vega-Lite and as
-  static SVG, and anything with a `toMimeBundle()` or `toHtml()` method.
-- **Readable errors:** a traceback names the cell and the line the user wrote,
-  across cells, rather than `eval()`'d code.
-- **Interrupts:** the stop button ends a running cell and leaves the session
-  usable.
-- **Your project's dependencies:** the kernel finds the nearest
-  `vendor/autoload.php` by walking up from the notebook, so a notebook in a
-  Composer project sees that project.
-- **Completion:** variables, functions, classes, and members, by reflection.
-
-## Limitations
-
-PHP cannot redeclare a class or a function, so re-running a cell that declares
-one needs a kernel restart, and a cell cannot declare a `namespace`. The kernel
-runs on macOS and Linux. The
-[limitations page](https://juphyter.phpstats.org/limitations.html) explains each
-limitation and the reason for it.
 
 ## Development
 
