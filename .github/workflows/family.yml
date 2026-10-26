@@ -25,6 +25,7 @@ jobs:
     # ubuntu-latest only, because the vl-convert asset below is the linux-64
     # build. Adding macos-latest means selecting the asset per runner.
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:

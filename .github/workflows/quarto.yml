@@ -28,6 +28,7 @@ env:
 jobs:
   quarto:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: quarto (PHP 8.5)
 
     steps:
@@ -77,6 +78,9 @@ jobs:
       # glyph that no font on the machine has, and the runner image carries no
       # CJK font, so the first run of this job produced a PDF with part of that
       # string missing.
+      # apt occasionally stalls on a mirror here rather than failing, which is
+      # what the job timeout above is for: without one such a stall ran for the
+      # six hours GitHub allows a job and then reported itself as cancelled.
       - name: Install poppler-utils and a CJK font
         run: |
           sudo apt-get update
@@ -145,6 +149,7 @@ jobs:
   # trigger would add no execution that has not already happened.
   docs:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: the committed docs site
 
     steps:
