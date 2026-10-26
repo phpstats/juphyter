@@ -427,8 +427,11 @@ if [ "$frozen" -eq 1 ]; then
     [ "$refresh" -eq 0 ] \
         || fail "--frozen renders from docs/_freeze and starts no kernel, so there is nothing for --refresh to reinstall."
 
-    python="$(command -v python3 2>/dev/null)" \
-        || fail "no python3 on PATH. A frozen render starts no kernel, but Quarto still reads the installed kernelspecs through Python, and publishing the site is a Python script."
+    # Quarto takes QUARTO_PYTHON over PATH, so this resolves the interpreter
+    # the same way rather than checking one Quarto will not use.
+    python="${QUARTO_PYTHON:-$(command -v python3 2>/dev/null)}"
+    [ -n "$python" ] \
+        || fail "no python3 on PATH and no QUARTO_PYTHON. A frozen render starts no kernel, but Quarto still reads the installed kernelspecs through Python, and publishing the site is a Python script."
 
     # Quarto asks Python for the kernelspecs rather than reading the Jupyter
     # directories itself, so jupyter_client has to import there. ipykernel and
