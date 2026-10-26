@@ -177,7 +177,27 @@ jobs:
       # every source the time it was checked out, so those timestamps cannot
       # match what was committed. Nothing else a render produces carries a
       # date.
+      # The theme is compiled at render time and the compiled bootstrap bundle
+      # is not identical across platforms, so its content hash, the file named
+      # after it, and the <link> in every page all differ from a macOS render.
+      # The hash is normalized on both sides and the bundle itself is left out.
+      # Every other byte of the site is still compared.
       - name: The committed pages are what that render produces
         run: |
-          git add --intent-to-add --all docs
-          git diff --exit-code -- docs ':!docs/sitemap.xml'
+          committed="$(mktemp -d)"
+          git archive HEAD docs | tar -x -C "$committed"
+
+          normalize() {
+            find "$1" \( -name '*.html' -o -name 'search.json' \) -print0 \
+              | xargs -0 sed -i -E 's/bootstrap-[0-9a-f]+\.min\.css/bootstrap-THEME.min.css/g'
+            find "$1" -name 'bootstrap-*.min.css' -delete
+            # Build directories git does not carry, and the one file whose
+            # <lastmod> comes from a checkout timestamp.
+            rm -rf "$1/.quarto" "$1/_site"
+            rm -f "$1/sitemap.xml"
+          }
+
+          normalize docs
+          normalize "$committed/docs"
+
+          diff -r "$committed/docs" docs

@@ -1009,8 +1009,11 @@ describe('the Quarto check against a real interpreter', function () {
         );
 
         // What the interpreter calls itself is what Quarto reports, and so is
-        // what the install report has to name.
-        $executable = trim($runner([$python3, '-c', 'import sys; print(sys.executable)'])['stdout']);
+        // what the install report has to name. Ask the path the probe will run,
+        // which is the symlink on Quarto's PATH: invoked through a symlink, a
+        // Linux CPython reports a different sys.executable than the same
+        // interpreter invoked by its own path, and the report follows the probe.
+        $executable = trim($runner([$quarto.'/python3', '-c', 'import sys; print(sys.executable)'])['stdout']);
 
         expect($run['result'])->toBe(0)
             ->and($workspace.'/prefix/share/jupyter/kernels/php/kernel.json')->toBeFile()
