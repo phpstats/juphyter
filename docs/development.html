@@ -252,7 +252,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The render tests run Quarto on the documents in <code>tests/Quarto/fixture</code>. They need Quarto, PHP 8.5, and a Python with the packages in <code>tests/Quarto/requirements.txt</code>, and they install phibble, phplyr, and phiz from <code>tests/Quarto/fixture/composer.json</code> into <code>build/</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> tests/Quarto/requirements.txt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pytest tests/Quarto</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>.github/workflows/family.yml</code> runs the display formatter tests with phibble, phplyr, and phiz installed. None of the three is a dependency of juphyter.</p>
+<p><code>.github/workflows/family.yml</code> runs the display formatter tests with the current Packagist releases of phibble, phplyr, and phiz installed. None of the three is a dependency of juphyter.</p>
 </section>
 <section id="documentation" class="level2">
 <h2 class="anchored" data-anchor-id="documentation">Documentation</h2>

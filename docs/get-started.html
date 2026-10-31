@@ -251,7 +251,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a-first-cell" class="level2">
 <h2 class="anchored" data-anchor-id="a-first-cell">A first cell</h2>
 <p>A cell holds PHP without an opening <code>&lt;?php</code> tag. Whatever the cell prints with <code>echo</code> appears first, and the value of its last expression appears after it.</p>
-<div id="dc9e0d89" class="cell" data-execution_count="1">
+<div id="78ab2b36" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span> <span class="op">=</span> [<span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">7</span><span class="ot">,</span> <span class="dv">11</span><span class="ot">,</span> <span class="dv">13</span>]<span class="ot">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">" primes, summing to "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
@@ -269,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="state-between-cells" class="level2">
 <h2 class="anchored" data-anchor-id="state-between-cells">State between cells</h2>
 <p>Variables, objects, functions, and classes carry from one cell to the next.</p>
-<div id="c4d42db3" class="cell" data-execution_count="2">
+<div id="7658fecc" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span>[] <span class="op">=</span> <span class="dv">17</span><span class="ot">;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -282,10 +282,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="imports" class="level2">
 <h2 class="anchored" data-anchor-id="imports">Imports</h2>
 <p>A <code>use</code> statement applies to its own cell and to every later cell. A notebook can put its imports in its first cell and use short names afterward. This example uses <a href="https://phibble.phpstats.org">phibble</a>, which the <code>php</code> kernel finds when the document sits inside a Composer project that requires it, or which the <code>phpstats</code> kernel from <a href="./install.html#the-phpstats-packages">Installation</a> provides.</p>
-<div id="0e9a5af1" class="cell" data-execution_count="3">
+<div id="ef1258a7" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="404ac2d6" class="cell" data-execution_count="4">
+<div id="5c79fd44" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">$orders</span> <span class="op">=</span> DataFrame::fromRows([</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'web'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">120.50</span>]<span class="ot">,</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'store'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">80.00</span>]<span class="ot">,</span></span>
@@ -337,7 +337,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="errors" class="level2">
 <h2 class="anchored" data-anchor-id="errors">Errors</h2>
 <p>A cell that throws shows the exception, its message, and a traceback whose lines name the cell and the line number.</p>
-<div id="b036c218" class="cell" data-execution_count="5">
+<div id="2a0d6017" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span> <span class="op">=</span> <span class="kw">fn</span> (<span class="dt">array</span> <span class="va">$values</span>) =&gt; <span class="fu">array_sum</span>(<span class="va">$values</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$values</span>)<span class="ot">;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span>([])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -350,7 +350,7 @@ DivisionByZeroError: Division by zero
 </div>
 <p>The session survives the exception. Variables defined before it keep their values.</p>
 <p>Warnings, notices, and deprecations appear in the cell’s error output, and the cell keeps running.</p>
-<div id="b8786f1e" class="cell" data-execution_count="6">
+<div id="dc2d5cc8" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span> <span class="op">=</span> [<span class="st">'narrow'</span> =&gt; <span class="dv">4</span><span class="ot">,</span> <span class="st">'wide'</span> =&gt; <span class="dv">12</span>]<span class="ot">;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span>[<span class="st">'narrow'</span>] <span class="op">+</span> <span class="va">$widths</span>[<span class="st">'medium'</span>]<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -366,7 +366,7 @@ DivisionByZeroError: Division by zero
 <h2 class="anchored" data-anchor-id="rich-output">Rich output</h2>
 <p>The kernel sends each value in every format it can produce, and the front end picks the one it can draw. A phibble data frame comes as an HTML table and as the text phibble prints at a terminal. A phiz plot comes as a Vega-Lite specification, as HTML, as a static SVG when vl-convert is installed, and as a one-line text description.</p>
 <p>Any class can provide its own output. A <code>toHtml(): string</code> method supplies HTML, and a <code>toMimeBundle(): array</code> method supplies every format at once.</p>
-<div id="cc70408c" class="cell" data-execution_count="7">
+<div id="f2023ec9" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">final</span> <span class="kw">class</span> Progress</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>{</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__construct</span>(<span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$done</span><span class="ot">,</span> <span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$total</span>) {}</span>
@@ -394,7 +394,7 @@ DivisionByZeroError: Division by zero
 </div>
 </div>
 <p><code>Juphyter\display()</code> shows a value part way through a cell, so one cell can show several tables or plots.</p>
-<div id="591237bd" class="cell" data-execution_count="8">
+<div id="740184a0" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">3</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">9</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">

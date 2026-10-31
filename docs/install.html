@@ -244,8 +244,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="requirements" class="level2">
 <h2 class="anchored" data-anchor-id="requirements">Requirements</h2>
 <ul>
-<li>PHP 8.3 or a later 8.x release. composer.json requires <code>^8.3</code>, and CI tests PHP 8.3, 8.4, and 8.5.</li>
-<li>The <code>mbstring</code> and <code>tokenizer</code> PHP extensions. Most PHP builds include both.</li>
+<li>PHP 8.3, 8.4, or 8.5. CI tests all three.</li>
+<li>The <code>mbstring</code> and <code>tokenizer</code> PHP extensions. Most PHP builds include both. Releases after 0.1.0 declare both in composer.json, so Composer reports a missing one at install time.</li>
 <li>Composer.</li>
 <li>Python 3 with the <code>venv</code> module. On Debian and Ubuntu that module is the <code>python3-venv</code> package.</li>
 <li>macOS or Linux.</li>
@@ -284,8 +284,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   engine       /Users/you/.composer/vendor/phpstats/juphyter/bin/juphyter
   quarto       /opt/homebrew/opt/python@3.14/bin/python3.14 (no Jupyter)</code></pre>
 <p>The <code>quarto</code> line names the Python that Quarto would use from this shell. It appears only when Quarto is installed. Here it was printed before the second <code>export</code>, so it names a Python without Jupyter, and the command also printed a warning with the <code>export</code> line that fixes it. The kernel is still registered, and the command exits 0.</p>
-<p>On Homebrew, the <code>php</code> line shows a versioned path under <code>Cellar</code>, which <code>brew upgrade</code> removes. To record the path that survives upgrades, pass it explicitly:</p>
+<p>On Homebrew, juphyter 0.1.0 records the versioned path under <code>Cellar</code> shown above, which <code>brew upgrade</code> removes. To record the path that survives upgrades, pass it explicitly:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--php</span> /opt/homebrew/bin/php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Releases after 0.1.0 do this by default. Without <code>--php</code>, they record the first path on <code>PATH</code> with the same name that leads to the running PHP, such as <code>/opt/homebrew/bin/php</code>.</p>
 <section id="keeping-the-path-entries" class="level3">
 <h3 class="anchored" data-anchor-id="keeping-the-path-entries">Keeping the PATH entries</h3>
 <p>To keep the <code>juphyter</code> command available in new shells, add Composer’s bin directory to your shell startup file. This edits <code>~/.zshrc</code>, the zsh startup file. Use <code>~/.bashrc</code> for bash.</p>
