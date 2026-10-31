@@ -50,7 +50,7 @@
     "verify": {
         "command": "juphyter doctor",
         "output": "JupyterLab: ready, with php.",
-        "note": "Reports whether the kernel is ready and whether the optional Quarto support is ready."
+        "note": "Checks kernel readiness and optional Quarto support."
     },
     "quickstart": "get-started",
     "repository": "https://github.com/phpstats/juphyter",
