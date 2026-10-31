@@ -29,9 +29,21 @@ with its dimensions and column types, and a
 [phiz](https://phiz.phpstats.org) plot appears as a chart. Other values appear
 as a compact dump.
 
+The examples below use phibble, phplyr, and phiz. In a Composer project,
+install them with the command below. The `php` kernel then loads the
+project's `vendor/autoload.php` for any notebook or document inside the
+project. [The phpstats packages](install.qmd#the-phpstats-packages) covers
+using them outside a project.
+
+```bash
+composer require phpstats/phibble phpstats/phplyr phpstats/phiz
+```
+
+The first cell imports the phplyr functions that the pipeline calls. phplyr's
+`round()` replaces PHP's built-in `round()` in the cells after this import.
+
 ```{php}
-#| echo: false
-use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean};
+use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round};
 ```
 
 ::: {.panel-tabset group="syntax"}
@@ -43,7 +55,7 @@ $mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
 
 $mpg |>
     group_by('class') |>
-    summarize(models: n(), hwy: mean('hwy')) |>
+    summarize(models: n(), hwy: round(mean('hwy'), 1)) |>
     arrange(desc('hwy'));
 ```
 
@@ -54,7 +66,7 @@ $mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
 
 phplyr($mpg)
     ->groupBy('class')
-    ->summarize(models: n(), hwy: mean('hwy'))
+    ->summarize(models: n(), hwy: round(mean('hwy'), 1))
     ->arrange(desc('hwy'))
     ->get();
 ```

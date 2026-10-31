@@ -209,7 +209,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#keeping-the-path-entries" id="toc-keeping-the-path-entries" class="nav-link" data-scroll-target="#keeping-the-path-entries">Keeping the PATH entries</a></li>
   </ul></li>
-  <li><a href="#check-the-installation" id="toc-check-the-installation" class="nav-link" data-scroll-target="#check-the-installation">Check the installation</a></li>
+  <li><a href="#check-the-installation" id="toc-check-the-installation" class="nav-link" data-scroll-target="#check-the-installation">Check the installation</a>
+  <ul class="collapse">
+  <li><a href="#the-kernel" id="toc-the-kernel" class="nav-link" data-scroll-target="#the-kernel">The kernel</a></li>
+  <li><a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto">Quarto</a></li>
+  </ul></li>
   <li><a href="#the-phpstats-packages" id="toc-the-phpstats-packages" class="nav-link" data-scroll-target="#the-phpstats-packages">The phpstats packages</a></li>
   <li><a href="#which-classes-a-notebook-sees" id="toc-which-classes-a-notebook-sees" class="nav-link" data-scroll-target="#which-classes-a-notebook-sees">Which classes a notebook sees</a></li>
   <li><a href="#installing-into-one-project" id="toc-installing-into-one-project" class="nav-link" data-scroll-target="#installing-into-one-project">Installing into one project</a></li>
@@ -296,7 +300,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="check-the-installation" class="level2">
 <h2 class="anchored" data-anchor-id="check-the-installation">Check the installation</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> doctor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>juphyter doctor</code> checks juphyter’s own files, the PHP that runs the cells, the Python for the kernel, the Python Quarto will use, and every kernel juphyter registered. It ends with one line for JupyterLab and one for Quarto. After the install above:</p>
+<p><code>juphyter doctor</code> checks juphyter’s own files, the PHP that runs the cells, the Python for the kernel, the Python Quarto will use, and every kernel juphyter registered. It ends with two summary lines, one for each check below. After the install above, with Quarto installed:</p>
 <pre><code>juphyter doctor
 
 This package
@@ -318,8 +322,20 @@ Kernels in /Users/you/Library/Jupyter/kernels
 JupyterLab: ready, with php.
 Quarto: ready.</code></pre>
 <p>A line marked <code>fail</code> makes the command exit 1. A line marked <code>warn</code> does not. A missing <code>pcntl</code> is a warning.</p>
-<p>In a shell where the Python environment is not on <code>PATH</code>, the Quarto section fails, the summary reads <code>Quarto: not ready.</code>, and the report ends with the <code>export</code> line that fixes it. JupyterLab still works if you start it from the environment, for example <code>~/.venvs/juphyter/bin/jupyter lab</code>.</p>
+<section id="the-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="the-kernel">The kernel</h3>
+<p><code>JupyterLab: ready, with php.</code> means the <code>php</code> kernel is registered and its PHP, Python, and juphyter files all run. This is the line that confirms the installation. JupyterLab and Quarto both start the kernel from it.</p>
+</section>
+<section id="quarto" class="level3">
+<h3 class="anchored" data-anchor-id="quarto">Quarto</h3>
+<p>Quarto is needed only for rendering <code>.qmd</code> documents. The second line reports whether Quarto can run the kernel from this shell:</p>
+<ul>
+<li><code>Quarto: ready.</code> means Quarto will use a Python that has Jupyter.</li>
+<li><code>Quarto: not installed.</code> means <code>quarto</code> is not on <code>PATH</code>. The Quarto section reports nothing to check, and the command still exits 0.</li>
+<li><code>Quarto: not ready.</code> means Quarto is installed and the Python it would use lacks Jupyter or does not run. The Quarto section fails, the command exits 1, and the report ends with the <code>export</code> line that fixes it. This happens in a shell where the Python environment is not on <code>PATH</code>. JupyterLab still works if you start it from the environment, for example <code>~/.venvs/juphyter/bin/jupyter lab</code>.</li>
+</ul>
 <p>Run <code>juphyter doctor</code> again after upgrading PHP or Python, or after removing a project or an environment. The kernel records absolute paths to a PHP binary, a Python interpreter, and juphyter itself, and the doctor reports any of them that no longer runs.</p>
+</section>
 </section>
 <section id="the-phpstats-packages" class="level2">
 <h2 class="anchored" data-anchor-id="the-phpstats-packages">The phpstats packages</h2>

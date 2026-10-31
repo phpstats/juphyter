@@ -13,6 +13,7 @@
         "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
         "juphyter doctor"
     ],
+    "installation": "install",
     "php": [
         "8.3",
         "8.4",
@@ -48,13 +49,14 @@
     ],
     "verify": {
         "command": "juphyter doctor",
-        "output": "JupyterLab: ready, with php.\nQuarto: ready."
+        "output": "JupyterLab: ready, with php.",
+        "note": "juphyter doctor also reports Quarto on a second line. Quarto is needed only for rendering .qmd documents, and the line reads \"Quarto: not installed.\" when it is absent."
     },
     "quickstart": "get-started",
     "repository": "https://github.com/phpstats/juphyter",
     "example": {
-        "chain": "$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\nphplyr($mpg)\n    ->groupBy('class')\n    ->summarize(models: n(), hwy: mean('hwy'))\n    ->arrange(desc('hwy'))\n    ->get();",
-        "pipe": "$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\n$mpg |>\n    group_by('class') |>\n    summarize(models: n(), hwy: mean('hwy')) |>\n    arrange(desc('hwy'));",
+        "chain": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\nphplyr($mpg)\n    ->groupBy('class')\n    ->summarize(models: n(), hwy: round(mean('hwy'), 1))\n    ->arrange(desc('hwy'))\n    ->get();",
+        "pipe": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\n$mpg |>\n    group_by('class') |>\n    summarize(models: n(), hwy: round(mean('hwy'), 1)) |>\n    arrange(desc('hwy'));",
         "output": "# A tibble: 7 × 3\n  class      models   hwy\n  <chr>       <int> <dbl>\n1 compact        47  28.3\n2 subcompact     35  28.1\n3 midsize        41  27.3\n4 2seater         5  24.8\n5 minivan        11  22.4\n6 suv            62  18.1\n7 pickup         33  16.9"
     },
     "docs": {

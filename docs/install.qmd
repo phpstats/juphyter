@@ -113,8 +113,8 @@ juphyter doctor
 
 `juphyter doctor` checks juphyter's own files, the PHP that runs the cells,
 the Python for the kernel, the Python Quarto will use, and every kernel
-juphyter registered. It ends with one line for JupyterLab and one for
-Quarto. After the install above:
+juphyter registered. It ends with two summary lines, one for each check
+below. After the install above, with Quarto installed:
 
 ```
 juphyter doctor
@@ -142,10 +142,26 @@ Quarto: ready.
 A line marked `fail` makes the command exit 1. A line marked `warn` does not.
 A missing `pcntl` is a warning.
 
-In a shell where the Python environment is not on `PATH`, the Quarto section
-fails, the summary reads `Quarto: not ready.`, and the report ends with the
-`export` line that fixes it. JupyterLab still works if you start it from the
-environment, for example `~/.venvs/juphyter/bin/jupyter lab`.
+### The kernel
+
+`JupyterLab: ready, with php.` means the `php` kernel is registered and its
+PHP, Python, and juphyter files all run. This is the line that confirms the
+installation. JupyterLab and Quarto both start the kernel from it.
+
+### Quarto
+
+Quarto is needed only for rendering `.qmd` documents. The second line reports
+whether Quarto can run the kernel from this shell:
+
+- `Quarto: ready.` means Quarto will use a Python that has Jupyter.
+- `Quarto: not installed.` means `quarto` is not on `PATH`. The Quarto section
+  reports nothing to check, and the command still exits 0.
+- `Quarto: not ready.` means Quarto is installed and the Python it would use
+  lacks Jupyter or does not run. The Quarto section fails, the command exits
+  1, and the report ends with the `export` line that fixes it. This happens
+  in a shell where the Python environment is not on `PATH`. JupyterLab still
+  works if you start it from the environment, for example
+  `~/.venvs/juphyter/bin/jupyter lab`.
 
 Run `juphyter doctor` again after upgrading PHP or Python, or after removing a
 project or an environment. The kernel records absolute paths to a PHP binary,
