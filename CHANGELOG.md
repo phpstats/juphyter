@@ -4,6 +4,21 @@ All notable changes to juphyter are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- **PHP versions.** composer.json allows PHP 8.3, 8.4, and 8.5
+  (`>=8.3 <8.6`), the versions CI tests.
+- **Extensions.** `ext-mbstring` and `ext-tokenizer` are required. The display
+  formatters call `mb_*` functions, and nikic/php-parser needs the tokenizer.
+  `ext-posix` and `ext-sockets` are no longer suggested, because juphyter does
+  not use them.
+- **The default PHP path.** Without `--php`, `juphyter install` records the
+  first path on `PATH` with the same name that leads to the running PHP, such
+  as `/opt/homebrew/bin/php`, instead of the resolved binary. On Homebrew the
+  resolved binary is a versioned `Cellar` path that `brew upgrade` deletes.
+
 ## 0.1.0 - 2026-10-26
 
 First milestone: a PHP kernel that runs in JupyterLab and in Quarto.

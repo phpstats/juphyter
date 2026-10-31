@@ -9,8 +9,7 @@ Documentation: <https://juphyter.phpstats.org>
 
 ## Requirements
 
-- PHP 8.3 or a later 8.x release, with the `mbstring` and `tokenizer`
-  extensions.
+- PHP 8.3, 8.4, or 8.5, with the `mbstring` and `tokenizer` extensions.
 - Composer.
 - Python 3 with the `venv` module.
 - macOS or Linux.

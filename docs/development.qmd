@@ -44,8 +44,9 @@ python -m pip install -r tests/Quarto/requirements.txt
 python -m pytest tests/Quarto
 ```
 
-`.github/workflows/family.yml` runs the display formatter tests with phibble,
-phplyr, and phiz installed. None of the three is a dependency of juphyter.
+`.github/workflows/family.yml` runs the display formatter tests with the
+current Packagist releases of phibble, phplyr, and phiz installed. None of the
+three is a dependency of juphyter.
 
 ## Documentation
 
