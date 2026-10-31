@@ -2,26 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://juphyter.phpstats.org/quarto.html</loc>
-    <lastmod>2026-10-26T13:20:05.139Z</lastmod>
-  </url>
-  <url>
-    <loc>https://juphyter.phpstats.org/jupyter.html</loc>
-    <lastmod>2026-10-22T12:09:52.910Z</lastmod>
-  </url>
-  <url>
-    <loc>https://juphyter.phpstats.org/index.html</loc>
-    <lastmod>2026-10-22T12:09:52.910Z</lastmod>
-  </url>
-  <url>
-    <loc>https://juphyter.phpstats.org/get-started.html</loc>
-    <lastmod>2026-10-22T22:16:29.721Z</lastmod>
-  </url>
-  <url>
-    <loc>https://juphyter.phpstats.org/install.html</loc>
-    <lastmod>2026-10-26T15:50:07.632Z</lastmod>
+    <lastmod>2026-10-31T14:51:57.825Z</lastmod>
   </url>
   <url>
     <loc>https://juphyter.phpstats.org/limitations.html</loc>
-    <lastmod>2026-10-22T12:09:52.910Z</lastmod>
+    <lastmod>2026-10-31T14:50:27.052Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/install.html</loc>
+    <lastmod>2026-10-31T14:48:44.053Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/get-started.html</loc>
+    <lastmod>2026-10-31T14:51:57.826Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/development.html</loc>
+    <lastmod>2026-10-31T14:50:43.783Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/index.html</loc>
+    <lastmod>2026-10-31T14:48:02.848Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/jupyter.html</loc>
+    <lastmod>2026-10-31T14:49:45.339Z</lastmod>
+  </url>
+  <url>
+    <loc>https://juphyter.phpstats.org/python.html</loc>
+    <lastmod>2026-10-31T14:49:14.218Z</lastmod>
   </url>
 </urlset>

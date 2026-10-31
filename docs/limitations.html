@@ -149,19 +149,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">juphyter</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Get started</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./install.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,8 +178,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python and editors</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./limitations.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Limitations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
   </div>
 </li>
     </ul>
@@ -231,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Some of these follow from PHP itself and will not change. Others are milestone boundaries and will. Each one says which.</p>
 <section id="a-cell-cannot-redeclare-a-class-or-a-function" class="level2">
 <h2 class="anchored" data-anchor-id="a-cell-cannot-redeclare-a-class-or-a-function">A cell cannot redeclare a class or a function</h2>
-<p>PHP has no way to replace a class, interface, trait, enum, or function once it is declared, so re-running a cell that declares one cannot work. The kernel refuses such a cell before executing anything, naming the collision:</p>
+<p>To change a class or a function after running its cell, restart the kernel and run the cells again. PHP has no way to replace a class, interface, trait, enum, or function once it is declared, so re-running a cell that declares one cannot work. The kernel refuses such a cell before executing anything, naming the collision:</p>
 <pre><code>RedeclarationError: The class, interface, trait or enum "Widget" was already
 declared in this session, and PHP cannot redeclare it. Restart the kernel to
 redefine it.</code></pre>
@@ -281,7 +293,7 @@ further can run. Restart the kernel to carry on.</code></pre>
 </section>
 <section id="interrupting-needs-pcntl-and-a-cell-can-still-swallow-it" class="level2">
 <h2 class="anchored" data-anchor-id="interrupting-needs-pcntl-and-a-cell-can-still-swallow-it">Interrupting needs pcntl, and a cell can still swallow it</h2>
-<p>The stop button sends a signal, so the PHP binary running cells needs the <code>pcntl</code> extension with its functions callable. <code>juphyter install</code> checks the binary it names and warns when it cannot signal, including the case where the extension is loaded but its functions sit in <code>disable_functions</code>.</p>
+<p>The stop button sends a signal, so the PHP binary running cells needs the <code>pcntl</code> extension with its functions callable. <code>juphyter install</code> and <code>juphyter doctor</code> check that binary and warn when it cannot handle signals, including when the extension is loaded but its functions are listed in <code>disable_functions</code>. Enable <code>pcntl</code> for that binary, or pass <code>--php</code> a binary that has it, and run <code>juphyter install</code> again.</p>
 <p>An interrupt arrives as <code>Juphyter\Engine\Interrupt</code>, which extends <code>Error</code> rather than <code>Exception</code> so that ordinary defensive code does not absorb it. A cell that catches <code>Throwable</code> in a loop can still swallow it, which is the same trade Python makes by putting <code>KeyboardInterrupt</code> outside <code>Exception</code>.</p>
 </section>
 <section id="a-data-frames-numbers-in-an-html-table-are-not-pillars" class="level2">
@@ -290,7 +302,7 @@ further can run. Restart the kernel to carry on.</code></pre>
 </section>
 <section id="macos-and-linux-only" class="level2">
 <h2 class="anchored" data-anchor-id="macos-and-linux-only">macOS and Linux only</h2>
-<p>The kernel interrupts a cell with POSIX signals and reaps a child process, which the Windows PHP build does not support. This matches the platforms the phit and phpolars extensions declare.</p>
+<p>The kernel interrupts a cell with POSIX signals, which the Windows PHP build does not provide, and the engine talks to the Python transport over a Unix socket. juphyter is tested on macOS and Linux only. The Windows Subsystem for Linux has not been tested.</p>
 </section>
 <section id="not-yet-implemented" class="level2">
 <h2 class="anchored" data-anchor-id="not-yet-implemented">Not yet implemented</h2>

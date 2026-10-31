@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Get started – juphyter</title>
+<title>Getting started – juphyter</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -124,7 +124,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./get-started.html">Get started</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./get-started.html">Getting started</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -152,19 +152,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">juphyter</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./get-started.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Get started</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./install.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Getting started</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -181,8 +181,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python and editors</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./limitations.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Limitations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
   </div>
 </li>
     </ul>
@@ -195,12 +207,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#install-the-kernel" id="toc-install-the-kernel" class="nav-link active" data-scroll-target="#install-the-kernel">Install the kernel</a></li>
-  <li><a href="#a-first-cell" id="toc-a-first-cell" class="nav-link" data-scroll-target="#a-first-cell">A first cell</a></li>
+  <li><a href="#a-first-cell" id="toc-a-first-cell" class="nav-link active" data-scroll-target="#a-first-cell">A first cell</a></li>
+  <li><a href="#state-between-cells" id="toc-state-between-cells" class="nav-link" data-scroll-target="#state-between-cells">State between cells</a></li>
   <li><a href="#imports" id="toc-imports" class="nav-link" data-scroll-target="#imports">Imports</a></li>
   <li><a href="#errors" id="toc-errors" class="nav-link" data-scroll-target="#errors">Errors</a></li>
-  <li><a href="#rich-display" id="toc-rich-display" class="nav-link" data-scroll-target="#rich-display">Rich display</a></li>
-  <li><a href="#where-to-go-next" id="toc-where-to-go-next" class="nav-link" data-scroll-target="#where-to-go-next">Where to go next</a></li>
+  <li><a href="#rich-output" id="toc-rich-output" class="nav-link" data-scroll-target="#rich-output">Rich output</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/get-started.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -209,7 +220,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Get started</h1>
+<h1 class="title">Getting started</h1>
 </div>
 
 
@@ -226,34 +237,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="install-the-kernel" class="level2">
-<h2 class="anchored" data-anchor-id="install-the-kernel">Install the kernel</h2>
-<p>A kernelspec belongs to the machine, so the usual choice is to install juphyter once for your user, as <a href="./install.html">Installation</a> describes. Installing it as a development dependency of one project pins the kernel’s version with that project, at the cost of a kernelspec that names that project’s copy of the engine:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require <span class="at">--dev</span> phpstats/juphyter</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The command prints what the kernel is made of.</p>
-<pre><code>Installed the juphyter kernel "php" for PHP 8.5.10.
-  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json
-  python       /opt/homebrew/bin/python3 (ipykernel 7.4.0)
-  php          /opt/homebrew/bin/php
-  engine       /path/to/vendor/phpstats/juphyter/bin/juphyter
-  quarto       /opt/homebrew/bin/python3 (jupyter_client 8.10.0)</code></pre>
-<p>The Python is the interpreter that owns the <code>jupyter</code> on <code>PATH</code>, because the kernel runs inside it. <code>--python</code> names a different one. The PHP is the binary that runs the cells, and <code>--php</code> names a different one, which is how several versions coexist:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install <span class="at">--name</span> php83 <span class="at">--php</span> /opt/homebrew/opt/php@8.3/bin/php</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install <span class="at">--name</span> php85 <span class="at">--php</span> /opt/homebrew/opt/php@8.5/bin/php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>juphyter uninstall --name php83</code> removes a kernelspec juphyter wrote, and refuses to remove one it did not.</p>
-<p>The <code>quarto</code> line appears when Quarto is installed. Quarto runs an interpreter of its own choosing, and that one is the one that needs Jupyter in it, so the line reports which interpreter that is and what was found there. When it says <code>(no Jupyter)</code>, the kernelspec is still correct and <code>quarto render</code> cannot reach it; <a href="./install.html">Installation</a> covers the fix.</p>
-<p>On a machine with no Python that can host the kernel at all, the command offers to build one. <a href="./install.html">Installation</a> covers that and the <code>--create-venv</code> option that answers the offer in advance.</p>
-</section>
+<p>This page assumes the <code>php</code> kernel is installed and <code>juphyter doctor</code> reports it as ready. <a href="./install.html">Installation</a> covers both. The examples were run in a Quarto document, and they behave the same way in a JupyterLab notebook.</p>
+<p>To follow along in JupyterLab, run <code>jupyter lab</code> from an environment that has it, such as <code>~/.venvs/juphyter/bin/jupyter lab</code>, and choose the PHP kernel in the launcher. To follow along in Quarto, create a file <code>first.qmd</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "A first PHP document"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> php</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="in">```{php}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="st">"sum: "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="fu">range</span>(<span class="dv">1</span><span class="ot">,</span> <span class="dv">10</span>))<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="st">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then run <code>quarto render first.qmd</code>, which writes <code>first.html</code>.</p>
 <section id="a-first-cell" class="level2">
 <h2 class="anchored" data-anchor-id="a-first-cell">A first cell</h2>
-<p>A cell is PHP without an opening tag. The value of the last expression is the cell’s result, and <code>echo</code> goes to the cell’s output stream.</p>
-<div id="72b9f2ff" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span> <span class="op">=</span> [<span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">7</span><span class="ot">,</span> <span class="dv">11</span><span class="ot">,</span> <span class="dv">13</span>]<span class="ot">;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">" primes, summing to "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">array_sum</span>(<span class="va">$primes</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A cell holds PHP without an opening <code>&lt;?php</code> tag. Whatever the cell prints with <code>echo</code> appears first, and the value of its last expression appears after it.</p>
+<div id="dc9e0d89" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span> <span class="op">=</span> [<span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">7</span><span class="ot">,</span> <span class="dv">11</span><span class="ot">,</span> <span class="dv">13</span>]<span class="ot">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">" primes, summing to "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">array_sum</span>(<span class="va">$primes</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>6 primes, summing to 41</code></pre>
 </div>
@@ -261,85 +264,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>6.833333333333333</code></pre>
 </div>
 </div>
-<p>State carries between cells, so the next cell sees what this one bound.</p>
-<div id="537f7da3" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span>[] <span class="op">=</span> <span class="dv">17</span><span class="ot">;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A cell whose last expression is a statement or a call that returns <code>null</code> shows only what it printed.</p>
+</section>
+<section id="state-between-cells" class="level2">
+<h2 class="anchored" data-anchor-id="state-between-cells">State between cells</h2>
+<p>Variables, objects, functions, and classes carry from one cell to the next.</p>
+<div id="c4d42db3" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span>[] <span class="op">=</span> <span class="dv">17</span><span class="ot">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>[2, 3, 5, 7, 11, 13, 17]</code></pre>
 </div>
 </div>
+<p>Restarting the kernel starts a new PHP session with nothing defined. In JupyterLab, use <strong>Kernel &gt; Restart Kernel</strong>. Each <code>quarto render</code> starts a new session.</p>
 </section>
 <section id="imports" class="level2">
 <h2 class="anchored" data-anchor-id="imports">Imports</h2>
-<p>A <code>use</code> statement applies to the cells after it as well as to its own. The session accumulates them, so a notebook can put its imports in a first cell and use short class names from then on.</p>
-<div id="af058688" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="bu">DateTimeImmutable</span><span class="ot">;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$released</span> <span class="op">=</span> <span class="kw">new</span> <span class="bu">DateTimeImmutable</span>(<span class="st">'2026-11-20'</span>)<span class="ot">;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="va">$released</span>-&gt;format(<span class="st">'F Y'</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 3, line 0</code></pre>
+<p>A <code>use</code> statement applies to its own cell and to every later cell. A notebook can put its imports in its first cell and use short names afterward. This example uses <a href="https://phibble.phpstats.org">phibble</a>, which the <code>php</code> kernel finds when the document sits inside a Composer project that requires it, or which the <code>phpstats</code> kernel from <a href="./install.html#the-phpstats-packages">Installation</a> provides.</p>
+<div id="0e9a5af1" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>'November 2026'</code></pre>
-</div>
-</div>
-<p><code>namespace</code> is not supported in a cell, and a cell cannot redeclare a class or a function that another cell already declared. PHP has no way to undefine either, so a second run of a cell that declares one reports what it would have redeclared rather than failing in the middle.</p>
-</section>
-<section id="errors" class="level2">
-<h2 class="anchored" data-anchor-id="errors">Errors</h2>
-<p>A cell that throws reports the exception, its message, and the stack frames that raised it, with each stack frame naming the cell and the line rather than <code>eval()'d code</code>.</p>
-<div id="afbcc435" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span> <span class="op">=</span> [<span class="st">'narrow'</span> =&gt; <span class="dv">4</span><span class="ot">,</span> <span class="st">'wide'</span> =&gt; <span class="dv">12</span>]<span class="ot">;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span> <span class="op">=</span> <span class="kw">fn</span> (<span class="dt">array</span> <span class="va">$values</span>) =&gt; <span class="fu">array_sum</span>(<span class="va">$values</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$values</span>)<span class="ot">;</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span>([])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 4, line 0</code></pre>
-</div>
-<div class="cell-output cell-output-error">
-<pre><code>DivisionByZeroError: Division by zero
-DivisionByZeroError: Division by zero
-  in a closure
-  at Cell 4, line 5</code></pre>
-</div>
-</div>
-<p>Warnings, notices, and deprecations go to the cell’s error stream and leave the cell running.</p>
-<div id="ba7398d8" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span> <span class="op">=</span> [<span class="st">'narrow'</span> =&gt; <span class="dv">4</span><span class="ot">,</span> <span class="st">'wide'</span> =&gt; <span class="dv">12</span>]<span class="ot">;</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span>[<span class="st">'narrow'</span>] <span class="op">+</span> <span class="va">$widths</span>[<span class="st">'medium'</span>]<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 5, line 0
-Warning: Undefined array key "medium" in Cell 5, line 3</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>4</code></pre>
-</div>
-</div>
-</section>
-<section id="rich-display" class="level2">
-<h2 class="anchored" data-anchor-id="rich-display">Rich display</h2>
-<p>A value is published in every representation the front end might draw. A phibble data frame comes with an HTML table and the tibble-style text phibble prints at a terminal, and a phiz plot comes with a Vega-Lite specification, an HTML embed, a static SVG when vl-convert is installed, and a one-line description.</p>
-<div id="548132d9" class="cell" data-execution_count="6">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 6, line -1</code></pre>
-</div>
-</div>
-<div id="0121711c" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>DataFrame::fromRows([</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'package'</span> =&gt; <span class="st">'phibble'</span><span class="ot">,</span> <span class="st">'purpose'</span> =&gt; <span class="st">'data frames'</span><span class="ot">,</span> <span class="st">'version'</span> =&gt; <span class="fl">0.3</span>]<span class="ot">,</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'package'</span> =&gt; <span class="st">'phplyr'</span><span class="ot">,</span> <span class="st">'purpose'</span> =&gt; <span class="st">'dplyr verbs'</span><span class="ot">,</span> <span class="st">'version'</span> =&gt; <span class="fl">0.3</span>]<span class="ot">,</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'package'</span> =&gt; <span class="st">'phiz'</span><span class="ot">,</span> <span class="st">'purpose'</span> =&gt; <span class="st">'plots'</span><span class="ot">,</span> <span class="st">'version'</span> =&gt; <span class="fl">0.3</span>]<span class="ot">,</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 7, line -1</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div id="404ac2d6" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">$orders</span> <span class="op">=</span> DataFrame::fromRows([</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'web'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">120.50</span>]<span class="ot">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'store'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">80.00</span>]<span class="ot">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'web'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'south'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">42.25</span>]<span class="ot">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>])<span class="ot">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="va">$orders</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div class="juphyter-table">
 <style>.juphyter-table{font-family:var(--jp-code-font-family,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:var(--jp-code-font-size,0.85em);color:var(--jp-content-font-color1,#111827)}.juphyter-table .juphyter-note{color:var(--jp-content-font-color2,#6b7280);margin:0.15em 0}.juphyter-table table{border-collapse:collapse;margin:0.3em 0}.juphyter-table th,.juphyter-table td{padding:0.1em 0.75em 0.1em 0;text-align:left;white-space:nowrap}.juphyter-table thead th{border-bottom:1px solid var(--jp-border-color2,#d1d5db)}.juphyter-table .juphyter-num{text-align:right}.juphyter-table .juphyter-rowid{color:var(--jp-content-font-color3,#9ca3af);font-weight:normal;text-align:right}.juphyter-table .juphyter-type{color:var(--jp-content-font-color2,#6b7280);font-weight:normal}.juphyter-table .juphyter-na{color:var(--jp-content-font-color3,#9ca3af)}</style>
 <div class="juphyter-note">A tibble: 3 × 3</div>
@@ -348,29 +302,29 @@ Warning: Undefined array key "medium" in Cell 5, line 3</code></pre>
 <thead>
 <tr class="header">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">package <span class="juphyter-type">&lt;chr&gt;</span></th>
-<th data-quarto-table-cell-role="th">purpose <span class="juphyter-type">&lt;chr&gt;</span></th>
-<th class="juphyter-num" data-quarto-table-cell-role="th">version <span class="juphyter-type">&lt;dbl&gt;</span></th>
+<th data-quarto-table-cell-role="th">channel <span class="juphyter-type">&lt;chr&gt;</span></th>
+<th data-quarto-table-cell-role="th">region <span class="juphyter-type">&lt;chr&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">total <span class="juphyter-type">&lt;dbl&gt;</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">1</th>
-<td>phibble</td>
-<td>data frames</td>
-<td class="juphyter-num">0.3</td>
+<td>web</td>
+<td>north</td>
+<td class="juphyter-num">120.5</td>
 </tr>
 <tr class="even">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">2</th>
-<td>phplyr</td>
-<td>dplyr verbs</td>
-<td class="juphyter-num">0.3</td>
+<td>store</td>
+<td>north</td>
+<td class="juphyter-num">80</td>
 </tr>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">3</th>
-<td>phiz</td>
-<td>plots</td>
-<td class="juphyter-num">0.3</td>
+<td>web</td>
+<td>south</td>
+<td class="juphyter-num">42.25</td>
 </tr>
 </tbody>
 </table>
@@ -378,44 +332,71 @@ Warning: Undefined array key "medium" in Cell 5, line 3</code></pre>
 </div>
 </div>
 </div>
-<p>Any class can opt in. A <code>toHtml(): string</code> method supplies the <code>text/html</code> representation, and a <code>toMimeBundle(): array</code> method supplies the whole bundle.</p>
-<div id="07ba6a9f" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">final</span> <span class="kw">class</span> Progress</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__construct</span>(<span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$done</span><span class="ot">,</span> <span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$total</span>) {}</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> toHtml()<span class="ot">:</span> <span class="dt">string</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fu">sprintf</span>(</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">'&lt;progress value="%d" max="%d"&gt;&lt;/progress&gt; %d of %d'</span><span class="ot">,</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;done<span class="ot">,</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;total<span class="ot">,</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;done<span class="ot">,</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;total<span class="ot">,</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        )<span class="ot">;</span></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__toString</span>()<span class="ot">:</span> <span class="dt">string</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fu">sprintf</span>(<span class="st">'%d of %d'</span><span class="ot">,</span> <span class="va">$this</span>-&gt;done<span class="ot">,</span> <span class="va">$this</span>-&gt;total)<span class="ot">;</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="kw">new</span> Progress(<span class="dv">7</span><span class="ot">,</span> <span class="dv">9</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 8, line -1</code></pre>
+<p>A cell cannot declare a <code>namespace</code>, and it cannot declare a class or a function that an earlier cell already declared. <a href="./limitations.html">Limitations</a> explains both.</p>
+</section>
+<section id="errors" class="level2">
+<h2 class="anchored" data-anchor-id="errors">Errors</h2>
+<p>A cell that throws shows the exception, its message, and a traceback whose lines name the cell and the line number.</p>
+<div id="b036c218" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span> <span class="op">=</span> <span class="kw">fn</span> (<span class="dt">array</span> <span class="va">$values</span>) =&gt; <span class="fu">array_sum</span>(<span class="va">$values</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$values</span>)<span class="ot">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span>([])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>DivisionByZeroError: Division by zero
+DivisionByZeroError: Division by zero
+  in a closure
+  at Cell 5, line 3</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+</div>
+<p>The session survives the exception. Variables defined before it keep their values.</p>
+<p>Warnings, notices, and deprecations appear in the cell’s error output, and the cell keeps running.</p>
+<div id="b8786f1e" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span> <span class="op">=</span> [<span class="st">'narrow'</span> =&gt; <span class="dv">4</span><span class="ot">,</span> <span class="st">'wide'</span> =&gt; <span class="dv">12</span>]<span class="ot">;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span>[<span class="st">'narrow'</span>] <span class="op">+</span> <span class="va">$widths</span>[<span class="st">'medium'</span>]<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Undefined array key "medium" in Cell 6, line 3</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>4</code></pre>
+</div>
+</div>
+</section>
+<section id="rich-output" class="level2">
+<h2 class="anchored" data-anchor-id="rich-output">Rich output</h2>
+<p>The kernel sends each value in every format it can produce, and the front end picks the one it can draw. A phibble data frame comes as an HTML table and as the text phibble prints at a terminal. A phiz plot comes as a Vega-Lite specification, as HTML, as a static SVG when vl-convert is installed, and as a one-line text description.</p>
+<p>Any class can provide its own output. A <code>toHtml(): string</code> method supplies HTML, and a <code>toMimeBundle(): array</code> method supplies every format at once.</p>
+<div id="cc70408c" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">final</span> <span class="kw">class</span> Progress</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__construct</span>(<span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$done</span><span class="ot">,</span> <span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$total</span>) {}</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> toHtml()<span class="ot">:</span> <span class="dt">string</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fu">sprintf</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">'&lt;progress value="%d" max="%d"&gt;&lt;/progress&gt; %d of %d'</span><span class="ot">,</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;done<span class="ot">,</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;total<span class="ot">,</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;done<span class="ot">,</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>            <span class="va">$this</span>-&gt;total<span class="ot">,</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        )<span class="ot">;</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__toString</span>()<span class="ot">:</span> <span class="dt">string</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fu">sprintf</span>(<span class="st">'%d of %d'</span><span class="ot">,</span> <span class="va">$this</span>-&gt;done<span class="ot">,</span> <span class="va">$this</span>-&gt;total)<span class="ot">;</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="kw">new</span> Progress(<span class="dv">7</span><span class="ot">,</span> <span class="dv">9</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
 <progress value="7" max="9"></progress> 7 of 9
 </div>
 </div>
-<p><code>Juphyter\display()</code> publishes a value part way through a cell, so one cell can show several data frames or plots.</p>
-<div id="42b80c5d" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">3</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">9</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: The use statement with non-compound name 'DateTimeImmutable' has no effect in Cell 9, line -1</code></pre>
-</div>
+<p><code>Juphyter\display()</code> shows a value part way through a cell, so one cell can show several tables or plots.</p>
+<div id="591237bd" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">3</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">9</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <progress value="3" max="9"></progress> 3 of 9
 </div>
@@ -423,10 +404,6 @@ Warning: Undefined array key "medium" in Cell 5, line 3</code></pre>
 <progress value="9" max="9"></progress> 9 of 9
 </div>
 </div>
-</section>
-<section id="where-to-go-next" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-go-next">Where to go next</h2>
-<p><a href="./quarto.html">Quarto</a> covers rendering a <code>.qmd</code> to HTML, <code>ipynb</code>, and PDF. <a href="./jupyter.html">JupyterLab</a> covers the notebook interface and what it draws.</p>
 
 
 </section>

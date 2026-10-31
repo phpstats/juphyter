@@ -152,19 +152,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">juphyter</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Get started</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./install.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -181,8 +181,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python and editors</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./limitations.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Limitations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./development.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
   </div>
 </li>
     </ul>
@@ -195,10 +207,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-a-notebook-shows" id="toc-what-a-notebook-shows" class="nav-link active" data-scroll-target="#what-a-notebook-shows">What a notebook shows</a></li>
-  <li><a href="#plots" id="toc-plots" class="nav-link" data-scroll-target="#plots">Plots</a></li>
+  <li><a href="#starting-a-notebook" id="toc-starting-a-notebook" class="nav-link active" data-scroll-target="#starting-a-notebook">Starting a notebook</a></li>
+  <li><a href="#running-cells" id="toc-running-cells" class="nav-link" data-scroll-target="#running-cells">Running cells</a></li>
+  <li><a href="#project-classes" id="toc-project-classes" class="nav-link" data-scroll-target="#project-classes">Project classes</a></li>
   <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables">Tables</a></li>
-  <li><a href="#notebooks-and-projects" id="toc-notebooks-and-projects" class="nav-link" data-scroll-target="#notebooks-and-projects">Notebooks and projects</a></li>
+  <li><a href="#plots" id="toc-plots" class="nav-link" data-scroll-target="#plots">Plots</a></li>
   <li><a href="#converting-a-notebook" id="toc-converting-a-notebook" class="nav-link" data-scroll-target="#converting-a-notebook">Converting a notebook</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/jupyter.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -225,31 +238,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Once <code>juphyter install</code> has written a kernelspec, JupyterLab lists it in the launcher under the name <code>--display-name</code> gave it, or the name the install command chose by itself. A new notebook with that kernel runs PHP cells.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install <span class="at">--name</span> php85 <span class="at">--display-name</span> <span class="st">"PHP 8.5"</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The kernel has to be installed where the running JupyterLab looks. <code>juphyter install</code> writes to <code>JUPYTER_DATA_DIR</code> when it is set, and otherwise to the per-user data directory, which is <code>~/Library/Jupyter</code> on macOS and <code>~/.local/share/jupyter</code> on Linux. <code>jupyter kernelspec list</code> shows what a JupyterLab will find.</p>
-<section id="what-a-notebook-shows" class="level2">
-<h2 class="anchored" data-anchor-id="what-a-notebook-shows">What a notebook shows</h2>
-<p>A cell’s result appears under it as an <code>Out[n]</code>. State carries from one cell to the next, the stop button interrupts a running cell, and restarting the kernel starts a new PHP session with nothing bound.</p>
-<p>Tab completion covers three things: the session’s variables after a <code>$</code>, the declared functions and classes for a bare prefix, and a value’s public members after <code>-&gt;</code> or <code>::</code>. The continuation prompt works as well, so an unterminated block or string leaves the cell open rather than running it.</p>
+<section id="starting-a-notebook" class="level2">
+<h2 class="anchored" data-anchor-id="starting-a-notebook">Starting a notebook</h2>
+<p>Start JupyterLab from the Python environment that has it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.venvs/juphyter/bin/jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The launcher lists each kernel juphyter registered under its display name, such as “PHP 8.5” for the default <code>php</code> kernel and “PHP (phpstats)” for the kernel from <a href="./install.html#the-phpstats-packages">Installation</a>. A notebook that is already open changes kernel through <strong>Kernel &gt; Change Kernel</strong>.</p>
+<p>JupyterLab finds kernels in the per-user Jupyter data directory and in <code>JUPYTER_DATA_DIR</code> when it is set. <code>jupyter kernelspec list</code> shows the kernels a JupyterLab started from the same environment will find.</p>
 </section>
-<section id="plots" class="level2">
-<h2 class="anchored" data-anchor-id="plots">Plots</h2>
-<p>JupyterLab draws a phiz plot from the Vega-Lite specification. juphyter publishes the specification under <code>application/vnd.vegalite.v5+json</code>, which is the newest Vega-Lite MIME type JupyterLab’s bundled renderer defines, and the specification itself is Vega-Lite 6.</p>
-<p>Publishing a version 6 specification under the version 5 MIME type was the one display risk worth checking before relying on it, because the renderer could reject a construct it does not know. It does not: JupyterLab’s bundled Vega-Lite 5.6.1 compiled sixteen phiz-generated specifications without complaint. No mime-renderer extension is needed, and phiz needs no change.</p>
-<p>The static SVG that juphyter also publishes is not JupyterLab’s path. It is there for Quarto’s PDF and docx output and for any front end without JavaScript, and it is the fallback if a later Vega-Lite construct does turn out to be rejected.</p>
-<p>The HTML representation is not JupyterLab’s path either. JupyterLab does not execute scripts in <code>text/html</code> output, and phiz’s <code>embed()</code> output is a container plus a script tag, so it would render as an empty box. Quarto’s HTML output is what that representation is for.</p>
+<section id="running-cells" class="level2">
+<h2 class="anchored" data-anchor-id="running-cells">Running cells</h2>
+<p>A cell’s result appears under it as <code>Out[n]</code>. State carries from one cell to the next. The stop button interrupts a running cell when PHP has the <code>pcntl</code> extension, and <strong>Kernel &gt; Restart Kernel</strong> starts a new PHP session with nothing defined.</p>
+<p>Tab completion covers three cases:</p>
+<ul>
+<li>Variables in the session, after a <code>$</code>.</li>
+<li>Declared functions and classes, for a bare prefix.</li>
+<li>Public methods, properties, and constants, after <code>-&gt;</code> or <code>::</code>.</li>
+</ul>
+<p>An unfinished block or string keeps the cell open for another line instead of running it.</p>
+</section>
+<section id="project-classes" class="level2">
+<h2 class="anchored" data-anchor-id="project-classes">Project classes</h2>
+<p>Jupyter starts the kernel in the notebook’s directory. The kernel looks upward from there for <code>vendor/autoload.php</code>, so a notebook saved inside a Composer project can use that project’s classes and packages.</p>
+<p>A notebook kept outside the project it works on names the autoloader in a <code>juphyter.json</code> beside it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"autoload"</span><span class="fu">:</span> <span class="st">"../app/vendor/autoload.php"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="./install.html#which-classes-a-notebook-sees">Which classes a notebook sees</a> lists every way to set it.</p>
 </section>
 <section id="tables" class="level2">
 <h2 class="anchored" data-anchor-id="tables">Tables</h2>
-<p>A phibble data frame renders as an HTML table. The table’s own style block uses JupyterLab’s CSS variables for its fonts and colors, with plain fallbacks, so it follows the light and dark themes rather than fighting them.</p>
-<div id="ecb56acc" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>DataFrame::fromRows([</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'JupyterLab'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the Vega-Lite spec'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'text/html'</span>]<span class="ot">,</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'Quarto HTML'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the HTML embed'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'text/html'</span>]<span class="ot">,</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'Quarto PDF'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the static SVG'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'the parsed table'</span>]<span class="ot">,</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A phibble data frame appears as an HTML table with its dimensions and column types. The table’s styles use JupyterLab’s theme variables, so it follows the light and dark themes.</p>
+<div id="03b5b444" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DataFrame::fromRows([</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'JupyterLab'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the Vega-Lite spec'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'text/html'</span>]<span class="ot">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'Quarto HTML'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the HTML embed'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'text/html'</span>]<span class="ot">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'front end'</span> =&gt; <span class="st">'Quarto PDF'</span><span class="ot">,</span> <span class="st">'plot from'</span> =&gt; <span class="st">'the static SVG'</span><span class="ot">,</span> <span class="st">'table from'</span> =&gt; <span class="st">'the parsed table'</span>]<span class="ot">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div class="juphyter-table">
 <style>.juphyter-table{font-family:var(--jp-code-font-family,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:var(--jp-code-font-size,0.85em);color:var(--jp-content-font-color1,#111827)}.juphyter-table .juphyter-note{color:var(--jp-content-font-color2,#6b7280);margin:0.15em 0}.juphyter-table table{border-collapse:collapse;margin:0.3em 0}.juphyter-table th,.juphyter-table td{padding:0.1em 0.75em 0.1em 0;text-align:left;white-space:nowrap}.juphyter-table thead th{border-bottom:1px solid var(--jp-border-color2,#d1d5db)}.juphyter-table .juphyter-num{text-align:right}.juphyter-table .juphyter-rowid{color:var(--jp-content-font-color3,#9ca3af);font-weight:normal;text-align:right}.juphyter-table .juphyter-type{color:var(--jp-content-font-color2,#6b7280);font-weight:normal}.juphyter-table .juphyter-na{color:var(--jp-content-font-color3,#9ca3af)}</style>
@@ -290,19 +314,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="notebooks-and-projects" class="level2">
-<h2 class="anchored" data-anchor-id="notebooks-and-projects">Notebooks and projects</h2>
-<p>Jupyter starts a kernel with the notebook’s own directory as its working directory, and the engine walks up from there looking for <code>vendor/autoload.php</code>. A notebook saved inside a Composer project therefore has that project’s classes in scope, including its phibble and phiz, with nothing to configure.</p>
-<p>A notebook kept outside the project it works on needs the autoloader named. <code>JUPHYTER_AUTOLOAD</code> names one for a launch, <code>juphyter install --autoload</code> names one for a kernelspec, and an <code>autoload</code> entry in a <code>juphyter.json</code> beside the notebook names one for a project. A <code>juphyter.json</code> can also set the memory limit and add to the include path:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"autoload"</span><span class="fu">:</span> <span class="st">"../app/vendor/autoload.php"</span><span class="fu">,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"memory_limit"</span><span class="fu">:</span> <span class="st">"512M"</span><span class="fu">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"include_path"</span><span class="fu">:</span> <span class="st">"lib"</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="plots" class="level2">
+<h2 class="anchored" data-anchor-id="plots">Plots</h2>
+<p>JupyterLab draws a phiz plot from its Vega-Lite specification and needs no extension for it. phiz writes Vega-Lite 6 specifications, and juphyter publishes them under <code>application/vnd.vegalite.v5+json</code>, the newest Vega-Lite type JupyterLab’s built-in renderer accepts. On 2026-10-19, with phiz 0.3, JupyterLab’s bundled Vega-Lite 5.6.1 compiled all sixteen phiz specifications tested.</p>
+<p>juphyter also publishes a static SVG and an HTML version of each plot. JupyterLab uses neither. It does not run scripts in HTML output, and the HTML version is a container with a script that draws the chart, so it would show as an empty box. The SVG serves Quarto’s PDF and Word output, front ends without JavaScript, and any Vega-Lite 6 construct that the version 5 renderer rejects.</p>
 </section>
 <section id="converting-a-notebook" class="level2">
 <h2 class="anchored" data-anchor-id="converting-a-notebook">Converting a notebook</h2>
-<p><code>quarto convert</code> turns a <code>.ipynb</code> into a <code>.qmd</code> and back, and <code>nbconvert</code> exports a notebook to HTML or PDF from Python. Both work on a PHP notebook without knowing anything about PHP, because what they read is the notebook format rather than the language. <a href="./quarto.html">Quarto</a> covers rendering a document directly.</p>
+<p><code>quarto convert</code> turns a <code>.ipynb</code> into a <code>.qmd</code> and back, and <code>jupyter nbconvert</code> exports a notebook to HTML or PDF. Both work on a PHP notebook, because they read the notebook file format and not the language.</p>
 
 
 </section>
