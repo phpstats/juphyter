@@ -12,18 +12,15 @@
         "python3 -m venv ~/.venvs/juphyter",
         "~/.venvs/juphyter/bin/pip install jupyterlab",
         "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
-        "composer global config repositories.juphyter '{\"type\":\"vcs\",\"url\":\"https://github.com/phpstats/juphyter\",\"no-api\":true}'",
-        "composer global require phpstats/juphyter:dev-main",
+        "composer global require phpstats/juphyter",
         "export PATH=\"$(composer global config bin-dir --absolute):$PATH\"",
         "juphyter install"
     ],
     "requires": [
-        "PHP 8.3, 8.4, or 8.5, with the pcntl, posix, and sockets extensions; a phiz plot needs 8.5",
-        "Composer",
-        "Python 3 with ipykernel, which the kernel's transport runs inside",
-        "Quarto, to render Quarto documents; JupyterLab needs none of it",
-        "macOS or Linux, because a cell is interrupted with POSIX signals",
-        "The vl-convert binary, optional, for the static images a PDF or Word figure is made from"
+        "PHP 8.3+",
+        "pcntl, posix, and sockets extensions",
+        "Python 3 with ipykernel",
+        "macOS or Linux"
     ],
     "repository": "https://github.com/phpstats/juphyter",
     "example": {
@@ -59,5 +56,9 @@
                 "path": "limitations.qmd"
             }
         ]
-    }
+    },
+    "optional": [
+        "Quarto",
+        "vl-convert"
+    ]
 }
