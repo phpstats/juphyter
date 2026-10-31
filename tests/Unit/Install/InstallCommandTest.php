@@ -224,7 +224,7 @@ describe('writing the kernelspec', function () {
             'language' => 'php',
             'interrupt_mode' => 'signal',
             'env' => [
-                'JUPHYTER_PHP' => PHP_BINARY,
+                'JUPHYTER_PHP' => InstallCommand::stableBinary(PHP_BINARY, (string) getenv('PATH')),
                 'JUPHYTER_ENGINE' => installPackageRoot().'/bin/juphyter',
                 'PYTHONPATH' => installPackageRoot().'/kernel',
             ],
@@ -403,11 +403,60 @@ describe('the PHP binary', function () {
 
         $spec = readKernelSpec($prefix.'/share/jupyter/kernels/php/kernel.json');
 
-        expect($spec['env']['JUPHYTER_PHP'])->toBe(PHP_BINARY);
+        expect($spec['env']['JUPHYTER_PHP'])
+            ->toBe(InstallCommand::stableBinary(PHP_BINARY, (string) getenv('PATH')))
+            ->and(realpath($spec['env']['JUPHYTER_PHP']))->toBe(realpath(PHP_BINARY));
 
         foreach ($calls as $call) {
             expect(implode(' ', $call))->not->toContain('PHP_BINARY');
         }
+    });
+
+    it('records the default PHP under the PATH symlink that reaches it, as Homebrew needs', function () {
+        // PHP_BINARY on Homebrew is the versioned Cellar path, which brew
+        // upgrade deletes; /opt/homebrew/bin/php is a symlink into it that
+        // survives. Here a fake Cellar binary and a bin directory of links
+        // stand in for both.
+        $home = installWorkspace();
+        mkdir($home.'/Cellar/php/8.5.10/bin', 0o777, true);
+        mkdir($home.'/bin');
+        mkdir($home.'/other');
+        $cellar = $home.'/Cellar/php/8.5.10/bin/php';
+        file_put_contents($cellar, "#!/bin/sh\n");
+        chmod($cellar, 0o755);
+        symlink($cellar, $home.'/bin/php');
+
+        expect(InstallCommand::stableBinary($cellar, $home.'/other:'.$home.'/bin/:/usr/bin'))
+            ->toBe($home.'/bin/php');
+    });
+
+    it('keeps the binary when no PATH entry reaches it', function () {
+        $home = installWorkspace();
+        mkdir($home.'/Cellar', 0o777, true);
+        mkdir($home.'/bin');
+        $cellar = $home.'/Cellar/php';
+        $elsewhere = $home.'/Cellar/php-other';
+        file_put_contents($cellar, "#!/bin/sh\n");
+        file_put_contents($elsewhere, "#!/bin/sh\n");
+        chmod($cellar, 0o755);
+        chmod($elsewhere, 0o755);
+        symlink($elsewhere, $home.'/bin/php');
+
+        expect(InstallCommand::stableBinary($cellar, $home.'/bin:relative/bin'))->toBe($cellar)
+            ->and(InstallCommand::stableBinary($home.'/missing/php', $home.'/bin'))->toBe($home.'/missing/php');
+    });
+
+    it('looks only for the same name, so php8.3 is never swapped for php', function () {
+        $home = installWorkspace();
+        mkdir($home.'/bin');
+        $versioned = $home.'/bin/php8.3';
+        file_put_contents($versioned, "#!/bin/sh\n");
+        chmod($versioned, 0o755);
+        mkdir($home.'/alternatives');
+        symlink($versioned, $home.'/alternatives/php');
+
+        expect(InstallCommand::stableBinary($versioned, $home.'/alternatives:'.$home.'/bin'))
+            ->toBe($versioned);
     });
 
     it('validates --php by running it, and takes the path it reports', function () {

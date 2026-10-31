@@ -330,6 +330,8 @@ describe('installing from the archive', function () {
             ->and($spec['env']['JUPHYTER_ENGINE'])->toBe(realpath(pharArchive()))
             ->and($spec['env']['JUPHYTER_ENGINE'])->not->toContain('phar://')
             ->and($spec['env']['JUPHYTER_ENGINE'])->toEndWith('/juphyter.phar')
+            // PHP_BINARY itself, because the archive runs with only the fake
+            // Python on PATH, so no PATH entry leads to this PHP.
             ->and($spec['env']['JUPHYTER_PHP'])->toBe(PHP_BINARY)
             // Beside the kernelspec, because Python cannot import from a PHAR.
             ->and($spec['env']['PYTHONPATH'])->toBe($directory.'/kernel');

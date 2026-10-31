@@ -241,7 +241,8 @@ final class InstallCommand extends Command
      * The PHP binary and its version.
      *
      * With no `--php`, that is the interpreter running this command, which it
-     * can answer from its own constants. With `--php`, the binary is run: that
+     * can answer from its own constants, recorded under the path on `PATH`
+     * that reaches it ({@see stableBinary()}). With `--php`, the binary is run: that
      * validates it, reports its version for the default display name, and
      * answers whether it can be interrupted.
      *
@@ -267,7 +268,7 @@ final class InstallCommand extends Command
     private function php(?string $php): array
     {
         if ($php === null || $php === '') {
-            return [PHP_BINARY, PHP_VERSION, Interrupt::available()];
+            return [self::stableBinary(PHP_BINARY, (string) getenv('PATH')), PHP_VERSION, Interrupt::available()];
         }
 
         // The third line asks the target PHP the same question
@@ -311,6 +312,47 @@ final class InstallCommand extends Command
         }
 
         return [$binary !== '' ? $binary : $php, $version, $signals];
+    }
+
+    /**
+     * The path on `PATH` that reaches a PHP binary, or the binary itself.
+     *
+     * `PHP_BINARY` has every symlink resolved, so on Homebrew it is
+     * `/opt/homebrew/Cellar/php/8.5.10/bin/php`, which `brew upgrade` deletes.
+     * The shell reached it through `/opt/homebrew/bin/php`, and that path
+     * survives the upgrade. The first `PATH` entry holding an executable of the
+     * same name that resolves to the same file is taken. Only the same name is
+     * looked for, so a `php8.3` is never swapped for a `php` that an
+     * alternatives switch could later point at another version.
+     *
+     * @param  string  $binary  The resolved binary, normally `PHP_BINARY`.
+     * @param  string  $path  A colon-separated `PATH`.
+     */
+    public static function stableBinary(string $binary, string $path): string
+    {
+        $target = realpath($binary);
+
+        if ($target === false) {
+            return $binary;
+        }
+
+        $name = basename($binary);
+
+        foreach (explode(PATH_SEPARATOR, $path) as $directory) {
+            $directory = rtrim($directory, '/');
+
+            if ($directory === '' || ! str_starts_with($directory, '/')) {
+                continue;
+            }
+
+            $candidate = $directory.'/'.$name;
+
+            if (is_file($candidate) && is_executable($candidate) && realpath($candidate) === $target) {
+                return $candidate;
+            }
+        }
+
+        return $binary;
     }
 
     /** Whether a `--php` value is already a path the kernelspec can name. */
