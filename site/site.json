@@ -1,31 +1,61 @@
 {
     "package": "juphyter",
     "title": "juphyter",
-    "tagline": "A Jupyter and Quarto kernel for PHP, built for statistical work with the phpstats packages.",
+    "tagline": "A Jupyter and Quarto kernel for PHP.",
     "summary": [
-        "juphyter runs PHP cells in JupyterLab and in Quarto documents. It installs a Jupyter kernelspec, so JupyterLab lists PHP in its launcher and Quarto executes {php} blocks in a .qmd. It corresponds to IRkernel, which runs R in Jupyter, and to knitr, which executes R in Quarto and R Markdown.",
-        "A cell's last expression is its result, and that value is published in every representation the front end might draw. A phibble data frame arrives as an HTML table carrying its dimensions and its column types, a phiz plot as a Vega-Lite chart in a notebook and as a static SVG in a PDF, and any class can opt in with a toHtml() or a toMimeBundle() method. Juphyter\\display() publishes a value part way through a cell, so one cell can show several tables or plots.",
-        "Session state carries from one cell to the next, including use statements and declared functions and classes, and a traceback names the cell and the line a stack frame came from rather than eval()'d code. The engine finds the nearest vendor/autoload.php by walking up from the notebook's own directory, so a notebook inside a Composer project sees that project's packages with nothing to configure, and --autoload or a juphyter.json entry names an autoloader for a notebook kept outside a project.",
-        "The kernel is a Python transport in front of a PHP engine. ipykernel speaks the Jupyter protocol and a PHP process runs the cells over a unix socket, which is why the install needs a Python with ipykernel in it as well as PHP. The engine runs on macOS and Linux, because interrupting a running cell uses POSIX signals. PHP can redeclare neither a class nor a function, so re-running a cell that declares one needs a kernel restart, and a cell cannot declare a namespace."
+        "juphyter runs PHP cells in JupyterLab notebooks and in Quarto documents. It registers a Jupyter kernel, so JupyterLab lists PHP in its launcher and Quarto runs the {php} cells of a .qmd that names the kernel. It corresponds to IRkernel, which runs R in Jupyter.",
+        "One PHP session lasts across cells, including use imports and declared functions and classes. A cell's last value is its output: a phibble data frame appears as an HTML table and a phiz plot as a chart, and tracebacks name the cell and the line. A notebook inside a Composer project can use that project's classes and packages, because the kernel loads the nearest vendor/autoload.php above it."
     ],
     "install": [
-        "python3 -m venv ~/.venvs/juphyter",
-        "~/.venvs/juphyter/bin/pip install jupyterlab",
-        "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
         "composer global require phpstats/juphyter",
         "export PATH=\"$(composer global config bin-dir --absolute):$PATH\"",
-        "juphyter install"
+        "juphyter install --create-venv ~/.venvs/juphyter",
+        "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
+        "juphyter doctor"
+    ],
+    "php": [
+        "8.3",
+        "8.4",
+        "8.5"
     ],
     "requires": [
-        "PHP 8.3+",
-        "pcntl, posix, and sockets extensions",
-        "Python 3 with ipykernel",
-        "macOS or Linux"
+        "mbstring and tokenizer PHP extensions",
+        "Composer",
+        "Python 3 with the venv module"
     ],
+    "optional": [
+        {
+            "name": "pcntl PHP extension",
+            "for": "interrupting a running cell with the stop button"
+        },
+        {
+            "name": "Quarto",
+            "for": "rendering .qmd documents"
+        },
+        {
+            "name": "vl-convert",
+            "for": "static phiz plot images in PDF and Word output"
+        },
+        {
+            "name": "phibble, phplyr, and phiz",
+            "for": "data frame tables and charts in notebooks"
+        }
+    ],
+    "build": [],
+    "platforms": [
+        "macOS",
+        "Linux"
+    ],
+    "verify": {
+        "command": "juphyter doctor",
+        "output": "JupyterLab: ready, with php.\nQuarto: ready."
+    },
+    "quickstart": "get-started",
     "repository": "https://github.com/phpstats/juphyter",
     "example": {
-        "chain": "$penguins = Phibble\\DataFrame::fromCsv('penguins.csv');\n\n$penguins\n    ->groupBy(['species'])\n    ->summarise(['n' => Phibble\\Expr\\n(), 'mass' => Phibble\\Expr\\mean(Phibble\\Expr\\col('body_mass'))])",
-        "output": "# A tibble: 3 × 3\n  species       n  mass\n  <chr>     <int> <dbl>\n1 Adelie      151 3701.\n2 Chinstrap    68 3733.\n3 Gentoo      123 5076."
+        "chain": "$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\nphplyr($mpg)\n    ->groupBy('class')\n    ->summarize(models: n(), hwy: mean('hwy'))\n    ->arrange(desc('hwy'))\n    ->get();",
+        "pipe": "$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\n$mpg |>\n    group_by('class') |>\n    summarize(models: n(), hwy: mean('hwy')) |>\n    arrange(desc('hwy'));",
+        "output": "# A tibble: 7 × 3\n  class      models   hwy\n  <chr>       <int> <dbl>\n1 compact        47  28.3\n2 subcompact     35  28.1\n3 midsize        41  27.3\n4 2seater         5  24.8\n5 minivan        11  22.4\n6 suv            62  18.1\n7 pickup         33  16.9"
     },
     "docs": {
         "root": "docs",
@@ -36,12 +66,12 @@
                 "path": "index.qmd"
             },
             {
-                "title": "Get started",
-                "path": "get-started.qmd"
-            },
-            {
                 "title": "Installation",
                 "path": "install.qmd"
+            },
+            {
+                "title": "Getting started",
+                "path": "get-started.qmd"
             },
             {
                 "title": "Quarto",
@@ -52,13 +82,17 @@
                 "path": "jupyter.qmd"
             },
             {
+                "title": "Python and editors",
+                "path": "python.qmd"
+            },
+            {
                 "title": "Limitations",
                 "path": "limitations.qmd"
+            },
+            {
+                "title": "Contributing",
+                "path": "development.qmd"
             }
         ]
-    },
-    "optional": [
-        "Quarto",
-        "vl-convert"
-    ]
+    }
 }

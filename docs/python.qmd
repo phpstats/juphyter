@@ -1,0 +1,154 @@
+---
+title: "Python interpreters and editors"
+---
+
+Two Python interpreters take part in running a PHP document, and they can be
+different ones.
+
+- The kernel's interpreter is the one `juphyter install` recorded. It runs
+  juphyter's Python transport and needs ipykernel 7.0 or later.
+- Quarto's interpreter is the one Quarto chooses for itself when it renders.
+  It needs `jupyter_client`, `nbformat`, `nbclient`, and `pyyaml`, because
+  Quarto's Jupyter engine imports them before it starts any kernel. The
+  environment that `juphyter install --create-venv` builds has all four,
+  because it holds JupyterLab.
+
+JupyterLab uses no third interpreter. It starts each kernel with the
+interpreter that kernel's kernelspec names.
+
+## When Quarto cannot find the kernel
+
+When Quarto's interpreter has no Jupyter in it, Quarto can list no kernels at
+all, and a render stops with:
+
+```
+ERROR: Jupyter kernel 'php' not found. Known kernels: python3
+```
+
+The PHP kernel is not the problem, and reinstalling it changes nothing. A
+`jupyter: python3` document fails the same way with that interpreter. The fix
+is to point Quarto at an interpreter that has Jupyter, as described below.
+
+Two commands report the interpreter Quarto will use. `juphyter doctor` prints
+it in its Quarto section. `quarto check jupyter` reports it from Quarto's side,
+together with the Jupyter version and the kernels it can see:
+
+```
+Path: /Users/you/.venvs/juphyter/bin/python
+Jupyter: 5.9.1
+Kernels: php, python3
+```
+
+A `Jupyter: (None)` line means Quarto's interpreter has no Jupyter.
+`quarto check` writes to standard error, so add `2>&1` before piping it to
+`grep`.
+
+## How Quarto chooses an interpreter
+
+Measured with Quarto 1.10.18, in order of precedence:
+
+1. `QUARTO_PYTHON`, when the environment sets it.
+2. `QUARTO_PYTHON` from a project `_environment` file. Quarto reads that file
+   only when it sits beside `_quarto.yml`, and the file does not override a
+   value the environment already sets.
+3. The first `python3` on `PATH`.
+
+Quarto does not read `VIRTUAL_ENV`, so an environment that is active only
+through that variable is ignored. There is no fallback to `python`, and
+`RETICULATE_PYTHON` has no effect.
+
+## At a terminal
+
+Put the environment first on `PATH` for the current shell, either with the
+`export` line that `juphyter install` and `juphyter doctor` print or by
+activating the environment:
+
+```bash
+source ~/.venvs/juphyter/bin/activate
+quarto render notebook.qmd
+```
+
+For a single command:
+
+```bash
+QUARTO_PYTHON=~/.venvs/juphyter/bin/python quarto render notebook.qmd
+```
+
+For every render in one Quarto project, put an `_environment` file beside
+`_quarto.yml`. It needs an absolute path:
+
+```
+QUARTO_PYTHON=/Users/you/.venvs/juphyter/bin/python
+```
+
+Exporting `QUARTO_PYTHON` or the environment's `PATH` entry from a shell
+startup file changes the interpreter for every Quarto project on the machine,
+including projects that do not use PHP. juphyter writes neither to a startup
+file.
+
+## VS Code and Cursor
+
+Open the document's folder as a workspace. The Quarto extension asks the
+Python extension for the interpreter of the workspace folder that holds the
+document, and a `.qmd` opened on its own has no workspace folder to ask about.
+
+Run **Python: Select Interpreter** from the command palette and choose an
+environment that has Jupyter, such as `~/.venvs/juphyter`. The Quarto extension
+passes that choice to Quarto as `QUARTO_PYTHON` on every render in the
+workspace. Nothing outside the workspace changes.
+
+Because the extension sets `QUARTO_PYTHON`, a project `_environment` file
+cannot override the selection. A wrong selection is corrected in the
+interpreter picker.
+
+## Positron
+
+Positron bundles the same Python extension and the same Quarto extension, so
+the steps are the same: open the folder, then run **Python: Select
+Interpreter**.
+
+A workspace that already has an interpreter stored keeps it.
+`python.defaultInterpreterPath` in `.vscode/settings.json` applies only when no
+interpreter has been selected, so a stored choice is replaced through the
+picker. A change to that setting takes effect after **Developer: Reload
+Window**.
+
+Positron opens a new terminal for each render, so the interpreter it passed to
+Quarto can be read there:
+
+```bash
+echo "QUARTO_PYTHON=[$QUARTO_PYTHON]"
+```
+
+An empty value means no interpreter is selected for the workspace.
+
+## Other editors
+
+An editor without Quarto integration, such as PhpStorm, leaves the choice to
+`PATH`. Activate the environment before starting the editor, or set
+`QUARTO_PYTHON` in its terminal or run configuration.
+
+RStudio is in this group. It sets no `QUARTO_PYTHON` of its own, and Quarto
+does not read the Python preference that RStudio stores.
+
+## When no Python can host the kernel
+
+`juphyter install` looks for an interpreter in this order: the one named by
+`--python`, then the one that owns the `jupyter` command on `PATH`, read from
+that script's first line. When the interpreter it found has no ipykernel 7, it
+builds a virtual environment with JupyterLab instead of installing into the
+existing interpreter.
+
+System and Homebrew Python builds are marked as externally managed, and
+`pip install` into them refuses. A virtual environment avoids that.
+
+- `--create-venv PATH` names where to build it.
+- Without `--create-venv`, the command asks before building one at
+  `~/.venvs/juphyter`, and builds it without asking when there is no terminal.
+- An environment that already exists at that path is reused, and its packages
+  are installed again, so a second run finishes an interrupted one.
+- A directory that exists and holds something other than an environment is
+  refused.
+- With `--python`, the command builds nothing. When the named interpreter has
+  no ipykernel, it prints the `pip install` command for that interpreter and
+  writes no kernel.

@@ -4,8 +4,13 @@ jupyter: php
 ---
 
 A `.qmd` with PHP cells needs no Quarto extension and no configuration beyond
-naming the kernel. Quarto's jupyter engine starts the kernel, runs the cells in
-order, and puts each cell's output into the document.
+naming the kernel. Quarto's Jupyter engine starts the kernel, runs the cells in
+order, and puts each cell's output into the document. This page was checked
+with Quarto 1.10.18, the version CI tests.
+
+Quarto runs its Jupyter engine in a Python interpreter of its own choosing,
+which needs Jupyter in it. `juphyter doctor` reports whether it has, and
+[Python interpreters and editors](python.qmd) covers how to choose it.
 
 ```yaml
 ---
@@ -17,12 +22,15 @@ jupyter: php
 A cell is a fenced block whose info string is `{php}`, holding PHP without an
 opening tag:
 
-```php
-use Phibble\DataFrame;
-
-$mpg = DataFrame::fromCsv('mpg.csv');
+````markdown
+```{{php}}
+$mpg = \Phibble\DataFrame::fromCsv('mpg.csv');
 $mpg;
 ```
+````
+
+`quarto render report.qmd` writes `report.html` beside the document. `--to`
+chooses another format, such as `--to typst` for a PDF.
 
 ## Naming the kernel
 
@@ -45,11 +53,13 @@ jupyter:
     name: php85
     language: php
     display_name: "PHP 8.5"
-    path: /Users/erik/Library/Jupyter/kernels/php85
+    path: /Users/you/Library/Jupyter/kernels/php85
 ---
 ```
 
-`path` is the directory holding `kernel.json`. Quarto's jupyter engine reads it
+`path` is the directory holding `kernel.json`, shown here for macOS.
+[Installation](install.qmd#where-the-kernel-is-registered) lists the directory
+on Linux. Quarto's jupyter engine reads it
 when it looks beside a kernelspec for a `quarto_setup_cell`, which it does for
 any language it has no built-in support for, and `jupyter: <name>` is the only
 form that fills the field in by itself. Without `path` the render fails with
@@ -99,18 +109,15 @@ what is rendered.
 ## What each format carries
 
 A phiz plot publishes four representations and a phibble data frame publishes
-two.
-Each output format takes one of them, and Quarto's choice is the same in every
-case: for HTML it prefers `text/html`, for LaTeX and Typst it prefers
-`image/svg+xml`, and it falls back to `text/plain`.
+two. Each output format takes one of them. For HTML Quarto prefers
+`text/html`, for LaTeX and Typst it prefers `image/svg+xml`, and otherwise it
+falls back to `text/plain`.
 
 | Format | A phiz plot | A phibble data frame |
 |---|---|---|
 | `html` | the interactive chart, drawn by Vega-Lite in the browser | the HTML table, with the dimensions and the type row |
 | `typst`, `pdf` | the static SVG, placed as a numbered figure | a typeset table; the dimension note and the truncation footer are dropped |
 | `ipynb` | the HTML embed | nothing: see below |
-
-Two consequences are worth knowing before you choose a format.
 
 A PDF figure comes from the static SVG, which phiz produces by running the
 `vl-convert` binary. Install it from
@@ -189,16 +196,15 @@ execute:
   freeze: auto
 ```
 
-With `freeze: auto` a document is re-executed only when its source changes,
-which is the setting a documentation site wants: a contributor without the
-phpstats packages installed can still build the site from the frozen output. The frozen output lives in `_freeze/` and is committed.
+With `freeze: auto` a document is executed again only when its source
+changes. Quarto stores the output in `_freeze/`, and a project that commits
+that directory can be rendered on a machine without PHP or the packages the
+cells use.
 
-Quarto resolves a document's kernel by name while it builds the site
-navigation, which happens before it reads anything frozen, so a kernelspec of
-that name has to exist even though nothing starts it. `scripts/render-docs
---frozen` writes one whose command exits as soon as it is started, so a cell
-that did reach execution fails the render rather than coming out unexecuted.
-That is how this repository rebuilds its own site with no PHP on the machine.
+Quarto looks up a document's kernel by name before it reads the frozen
+output, so a kernel with that name has to be registered on the rendering
+machine even when no cell runs. [Contributing](development.qmd#documentation)
+shows how this repository does that for its own site.
 
 ## Projects
 
@@ -207,8 +213,8 @@ matter. A project with more than three documents to render turns the daemon off
 unless `--execute-daemon` was passed on the command line, which for PHP changes
 nothing.
 
-One thing is worth checking in a project: Quarto runs the kernel with the
-document's own directory as its working directory, and the engine finds the
+Quarto runs the kernel with the document's own directory as its working
+directory, and the engine finds the
 project to load by walking up from there looking for `vendor/autoload.php`. A
 document in a subdirectory of a Composer project therefore sees that project. A
 document outside any Composer project sees none, and `JUPHYTER_AUTOLOAD` or an

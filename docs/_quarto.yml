@@ -13,12 +13,16 @@ website:
     style: docked
     search: true
     contents:
-      - index.qmd
-      - get-started.qmd
+      - text: Overview
+        href: index.qmd
       - install.qmd
+      - get-started.qmd
       - quarto.qmd
       - jupyter.qmd
+      - text: Python and editors
+        href: python.qmd
       - limitations.qmd
+      - development.qmd
 
 format:
   html:

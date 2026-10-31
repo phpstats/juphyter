@@ -7,7 +7,8 @@ boundaries and will. Each one says which.
 
 ## A cell cannot redeclare a class or a function
 
-PHP has no way to replace a class, interface, trait, enum, or function once it
+To change a class or a function after running its cell, restart the kernel and
+run the cells again. PHP has no way to replace a class, interface, trait, enum, or function once it
 is declared, so re-running a cell that declares one cannot work. The kernel
 refuses such a cell before executing anything, naming the collision:
 
@@ -110,9 +111,11 @@ Anything the cell printed first is still shown. This follows from PHP.
 ## Interrupting needs pcntl, and a cell can still swallow it
 
 The stop button sends a signal, so the PHP binary running cells needs the
-`pcntl` extension with its functions callable. `juphyter install` checks the
-binary it names and warns when it cannot signal, including the case where the
-extension is loaded but its functions sit in `disable_functions`.
+`pcntl` extension with its functions callable. `juphyter install` and
+`juphyter doctor` check that binary and warn when it cannot handle signals,
+including when the extension is loaded but its functions are listed in
+`disable_functions`. Enable `pcntl` for that binary, or pass `--php` a binary
+that has it, and run `juphyter install` again.
 
 An interrupt arrives as `Juphyter\Engine\Interrupt`, which extends `Error`
 rather than `Exception` so that ordinary defensive code does not absorb it. A
@@ -130,9 +133,10 @@ group count that the text output carries. Both are milestone boundaries.
 
 ## macOS and Linux only
 
-The kernel interrupts a cell with POSIX signals and reaps a child process, which
-the Windows PHP build does not support. This matches the platforms the phit and
-phpolars extensions declare.
+The kernel interrupts a cell with POSIX signals, which the Windows PHP build
+does not provide, and the engine talks to the Python transport over a Unix
+socket. juphyter is tested on macOS and Linux only. The Windows Subsystem for
+Linux has not been tested.
 
 ## Not yet implemented
 

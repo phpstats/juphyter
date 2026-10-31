@@ -3,60 +3,62 @@ title: "JupyterLab"
 jupyter: php
 ---
 
-Once `juphyter install` has written a kernelspec, JupyterLab lists it in the
-launcher under the name `--display-name` gave it, or the name the install
-command chose by itself. A new notebook with that kernel runs PHP cells.
+## Starting a notebook
+
+Start JupyterLab from the Python environment that has it:
 
 ```bash
-vendor/bin/juphyter install --name php85 --display-name "PHP 8.5"
-jupyter lab
+~/.venvs/juphyter/bin/jupyter lab
 ```
 
-The kernel has to be installed where the running JupyterLab looks. `juphyter
-install` writes to `JUPYTER_DATA_DIR` when it is set, and otherwise to the
-per-user data directory, which is `~/Library/Jupyter` on macOS and
-`~/.local/share/jupyter` on Linux. `jupyter kernelspec list` shows what a
-JupyterLab will find.
+The launcher lists each kernel juphyter registered under its display name,
+such as "PHP 8.5" for the default `php` kernel and "PHP (phpstats)" for the
+kernel from [Installation](install.qmd#the-phpstats-packages). A notebook
+that is already open changes kernel through **Kernel > Change Kernel**.
 
-## What a notebook shows
+JupyterLab finds kernels in the per-user Jupyter data directory and in
+`JUPYTER_DATA_DIR` when it is set. `jupyter kernelspec list` shows the kernels
+a JupyterLab started from the same environment will find.
 
-A cell's result appears under it as an `Out[n]`. State carries from one cell to
-the next, the stop button interrupts a running cell, and restarting the kernel
-starts a new PHP session with nothing bound.
+## Running cells
 
-Tab completion covers three things: the session's variables after a `$`, the
-declared functions and classes for a bare prefix, and a value's public members
-after `->` or `::`. The continuation prompt works as well, so an unterminated
-block or string leaves the cell open rather than running it.
+A cell's result appears under it as `Out[n]`. State carries from one cell to
+the next. The stop button interrupts a running cell when PHP has the `pcntl`
+extension, and **Kernel > Restart Kernel** starts a new PHP session with
+nothing defined.
 
-## Plots
+Tab completion covers three cases:
 
-JupyterLab draws a phiz plot from the Vega-Lite specification. juphyter
-publishes the specification under `application/vnd.vegalite.v5+json`, which is
-the newest Vega-Lite MIME type JupyterLab's bundled renderer defines, and the
-specification itself is Vega-Lite 6.
+- Variables in the session, after a `$`.
+- Declared functions and classes, for a bare prefix.
+- Public methods, properties, and constants, after `->` or `::`.
 
-Publishing a version 6 specification under the version 5 MIME type was the one
-display risk worth checking before relying on it, because the renderer could
-reject a construct it does not know. It does not: JupyterLab's bundled
-Vega-Lite 5.6.1 compiled sixteen phiz-generated specifications without
-complaint. No mime-renderer extension is needed, and phiz needs no change.
+An unfinished block or string keeps the cell open for another line instead
+of running it.
 
-The static SVG that juphyter also publishes is not JupyterLab's path. It is
-there for Quarto's PDF and docx output and for any front end without
-JavaScript, and it is the fallback if a later Vega-Lite construct does turn out
-to be rejected.
+## Project classes
 
-The HTML representation is not JupyterLab's path either. JupyterLab does not
-execute scripts in `text/html` output, and phiz's `embed()` output is a
-container plus a script tag, so it would render as an empty box. Quarto's HTML
-output is what that representation is for.
+Jupyter starts the kernel in the notebook's directory. The kernel looks
+upward from there for `vendor/autoload.php`, so a notebook saved inside a
+Composer project can use that project's classes and packages.
+
+A notebook kept outside the project it works on names the autoloader in a
+`juphyter.json` beside it:
+
+```json
+{
+  "autoload": "../app/vendor/autoload.php"
+}
+```
+
+[Which classes a notebook sees](install.qmd#which-classes-a-notebook-sees)
+lists every way to set it.
 
 ## Tables
 
-A phibble data frame renders as an HTML table. The table's own style block uses
-JupyterLab's CSS variables for its fonts and colors, with plain fallbacks, so
-it follows the light and dark themes rather than fighting them.
+A phibble data frame appears as an HTML table with its dimensions and column
+types. The table's styles use JupyterLab's theme variables, so it follows the
+light and dark themes.
 
 ```{php}
 #| echo: false
@@ -71,32 +73,24 @@ DataFrame::fromRows([
 ]);
 ```
 
-## Notebooks and projects
+## Plots
 
-Jupyter starts a kernel with the notebook's own directory as its working
-directory, and the engine walks up from there looking for
-`vendor/autoload.php`. A notebook saved inside a Composer project therefore has
-that project's classes in scope, including its phibble and phiz, with nothing
-to configure.
+JupyterLab draws a phiz plot from its Vega-Lite specification and needs no
+extension for it. phiz writes Vega-Lite 6 specifications, and juphyter
+publishes them under `application/vnd.vegalite.v5+json`, the newest Vega-Lite
+type JupyterLab's built-in renderer accepts. On 2026-10-19, with phiz 0.3,
+JupyterLab's bundled Vega-Lite 5.6.1 compiled all sixteen phiz specifications
+tested.
 
-A notebook kept outside the project it works on needs the autoloader named.
-`JUPHYTER_AUTOLOAD` names one for a launch, `juphyter install --autoload` names
-one for a kernelspec, and an `autoload` entry in a `juphyter.json` beside the
-notebook names one for a project. A `juphyter.json` can also set the memory
-limit and add to the include path:
-
-```json
-{
-  "autoload": "../app/vendor/autoload.php",
-  "memory_limit": "512M",
-  "include_path": "lib"
-}
-```
+juphyter also publishes a static SVG and an HTML version of each plot.
+JupyterLab uses neither. It does not run scripts in HTML output, and the
+HTML version is a container with a script that draws the chart, so it would
+show as an empty box. The SVG serves Quarto's PDF and Word output, front ends
+without JavaScript, and any Vega-Lite 6 construct that the version 5 renderer
+rejects.
 
 ## Converting a notebook
 
-`quarto convert` turns a `.ipynb` into a `.qmd` and back, and `nbconvert`
-exports a notebook to HTML or PDF from Python. Both work on a PHP notebook
-without knowing anything about PHP, because what they read is the notebook
-format rather than the language. [Quarto](quarto.qmd) covers rendering a
-document directly.
+`quarto convert` turns a `.ipynb` into a `.qmd` and back, and `jupyter
+nbconvert` exports a notebook to HTML or PDF. Both work on a PHP notebook,
+because they read the notebook file format and not the language.

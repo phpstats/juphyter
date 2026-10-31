@@ -1,0 +1,98 @@
+---
+title: "Contributing"
+---
+
+## Setup
+
+```bash
+git clone https://github.com/phpstats/juphyter
+cd juphyter
+composer install
+```
+
+`bin/juphyter` runs the checkout. `bin/juphyter install --name juphyter-dev`
+registers a kernel that runs it, without replacing the `php` kernel.
+
+## Tests
+
+The PHP tests and the coding standard:
+
+```bash
+vendor/bin/pest
+composer lint
+```
+
+A few tests send the engine an interrupt and are skipped when PHP lacks the
+`pcntl` or `posix` extension. CI runs the PHP tests on PHP 8.3, 8.4, and 8.5,
+on Ubuntu and macOS.
+
+The protocol tests start the kernel and drive it over the Jupyter protocol.
+They need a Python with Jupyter:
+
+```bash
+python -m pip install -r tests/Protocol/requirements.txt
+python -m pytest tests/Protocol
+```
+
+The render tests run Quarto on the documents in `tests/Quarto/fixture`. They
+need Quarto, PHP 8.5, and a Python with the packages in
+`tests/Quarto/requirements.txt`, and they install phibble, phplyr, and phiz
+from `tests/Quarto/fixture/composer.json` into `build/`:
+
+```bash
+python -m pip install -r tests/Quarto/requirements.txt
+python -m pytest tests/Quarto
+```
+
+`.github/workflows/family.yml` runs the display formatter tests with phibble,
+phplyr, and phiz installed. None of the three is a dependency of juphyter.
+
+## Documentation
+
+The documentation is a Quarto site in `docs/`, and most pages run their PHP
+cells through the kernel. phpstats.org imports the rendered HTML from this
+repository and does not run Quarto, so the rendered pages and the frozen
+output under `docs/_freeze/` are committed with their sources.
+
+```bash
+scripts/render-docs
+```
+
+The script installs phibble, phplyr, and phiz into `build/docs/sandbox` from
+the render tests' manifest, registers a `php` kernel in a private Jupyter data
+directory under `build/docs`, renders every page through it, and copies the
+result into `docs/`. It needs PHP 8.5, because the overview uses the pipe
+operator. `--refresh` reinstalls the sandbox and the kernel. `scripts/render-docs
+--help` lists the environment variables that choose the PHP and the Python.
+
+An executing render changes the committed HTML and frozen output even when no
+source changed, because Quarto gives each executed cell a new random id.
+
+```bash
+scripts/render-docs --frozen
+```
+
+renders from the frozen output with no PHP. Quarto looks up each page's
+kernel by name before it reads frozen output, so the script registers a `php`
+kernel whose command exits immediately, and a page that needs executing fails
+the render. CI uses this to check that the committed HTML matches the
+sources.
+
+A page joins the site through the `sidebar` in `docs/_quarto.yml`.
+phpstats.org takes its navigation from that sidebar and fails to sync a page
+that is listed without rendered HTML. `site/site.json` holds the install
+commands, requirements, and summary that phpstats.org shows on the package's
+overview.
+
+Plans and design notes are kept in `docs/work/`, outside the site.
+
+## The PHAR
+
+```bash
+php scripts/build-phar.php
+```
+
+writes `build/juphyter.phar` from the files listed in `phar.json`. `php
+juphyter.phar install` registers a kernel whose engine is the PHAR, and copies
+the Python transport beside the kernelspec, because Python cannot import from
+inside a PHAR. No PHAR is published with a release.

@@ -1,92 +1,101 @@
 ---
 title: "juphyter"
-subtitle: "A Jupyter and Quarto kernel for PHP, built for statistical work with the phpstats packages"
+subtitle: "A Jupyter and Quarto kernel for PHP"
 jupyter: php
 ---
 
-juphyter runs PHP in a notebook cell. It installs a Jupyter kernel, so
-JupyterLab lists PHP in its launcher and Quarto executes `{php}` blocks in a
-`.qmd`. The value a cell returns gets the richest representation the front end
-can draw: a [phibble](https://github.com/phpstats/phibble) data frame becomes
-an HTML table, a [phiz](https://github.com/phpstats/phiz) plot becomes a chart
-or a static figure, and everything else gets a compact dump.
+juphyter runs PHP code in notebooks and in Quarto documents.
 
-A notebook sees the project it sits in. The engine walks up from the notebook's
-directory looking for `vendor/autoload.php`, so a notebook inside a Composer
-project has that project's packages and its own classes in scope with no
-configuration.
+A notebook is a file of cells. Each cell holds a few lines of code, and its
+output appears directly beneath it: text, a table, or a chart. The program
+that runs the cells is called a kernel, and it keeps one PHP session open, so a
+variable set in one cell is available in the next.
+[JupyterLab](https://jupyter.org/) is the usual application for editing and
+running notebooks. [Quarto](https://quarto.org/) renders a Markdown document
+with code cells into HTML, PDF, or Word, running each cell and placing its
+output in the document.
+
+juphyter is that kernel for PHP. After `juphyter install`, JupyterLab lists PHP
+in its launcher, and Quarto runs the `{php}` cells of any `.qmd` that names
+the kernel in its front matter. It is meant for statistical and exploratory
+work with the phpstats packages: load data, try a pipeline, look at the
+table or the plot it produces, and change the code until the result is right.
+
+## What a cell shows
+
+The value of a cell's last expression is its output. A
+[phibble](https://phibble.phpstats.org) data frame appears as an HTML table
+with its dimensions and column types, and a
+[phiz](https://phiz.phpstats.org) plot appears as a chart. Other values appear
+as a compact dump.
 
 ```{php}
 #| echo: false
-use Phibble\DataFrame;
-use Phiz\Datasets;
-use Phiz\Plot;
-use function Phplyr\{group_by, summarise, arrange, desc, n, mean};
+use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean};
 ```
 
-```{php}
-$mpg = DataFrame::fromRows(Datasets::mpg());
+::: {.panel-tabset group="syntax"}
 
-$mpg
-    |> group_by('class')
-    |> summarise(models: n(), hwy: mean('hwy'))
-    |> arrange(desc('hwy'));
+## PHP 8.5+
+
+```{php}
+$mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
+
+$mpg |>
+    group_by('class') |>
+    summarize(models: n(), hwy: mean('hwy')) |>
+    arrange(desc('hwy'));
 ```
 
+## PHP 8.3–8.4
+
 ```{php}
-#| fig-cap: "Highway mileage falls as engine displacement rises."
-Plot::of(Datasets::mpg())
+$mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
+
+phplyr($mpg)
+    ->groupBy('class')
+    ->summarize(models: n(), hwy: mean('hwy'))
+    ->arrange(desc('hwy'))
+    ->get();
+```
+
+:::
+
+```{php}
+#| fig-cap: "Highway mileage against engine displacement."
+\Phiz\Plot::of(\Phiz\Datasets::mpg())
     ->aes(x: 'displ', y: 'hwy', color: 'drv')
     ->point(opacity: 0.7)
     ->smooth(method: 'lm')
     ->labs(x: 'Displacement (L)', y: 'Highway mpg', color: 'Drive');
 ```
 
-Both outputs above were produced by running the code above them in this page.
-The site is rendered by `scripts/render-docs`, which executes every PHP cell
-through the kernel.
+## What the kernel provides
 
-## Install
+- State across cells, including `use` imports and declared functions and
+  classes.
+- Tracebacks that name the cell and the line, instead of `eval()'d code`.
+- HTML tables for phibble data frames and charts for phiz plots, plus
+  `toHtml()` and `toMimeBundle()` hooks for any other class.
+- `Juphyter\display()`, which shows a value part way through a cell.
+- Completion of variables, functions, classes, and members.
+- Interrupting a running cell with the stop button, when PHP has the `pcntl`
+  extension.
+- Loading the nearest `vendor/autoload.php` above the notebook, so a notebook
+  inside a Composer project can use that project's classes and packages.
 
-```bash
-composer require --dev phpstats/juphyter
-vendor/bin/juphyter install
-```
+juphyter requires none of the phpstats packages. It runs plain PHP, and it
+formats a phibble data frame or a phiz plot when those packages are
+installed.
 
-The install command writes one kernelspec where Jupyter looks for them and
-prints where it went. It needs a Python installation that has `ipykernel`,
-because the kernel is a Python transport in front of a PHP engine, and it
-reports the exact `pip` command when that is missing. Several PHP versions can
-be installed side by side, each under its own `--name`.
+## How it works
 
-Static images from phiz plots need the
-[vl-convert](https://github.com/vega/vl-convert) binary on `PATH`. Without it a
-plot still draws in HTML output and in JupyterLab, and a PDF has no figure to
-place.
+The kernel has two processes. A small Python program built on
+[ipykernel](https://github.com/ipython/ipykernel) handles the Jupyter
+protocol, and a PHP process runs the cells. They talk over a Unix socket. This
+is why an install needs a Python with ipykernel as well as PHP, and why the
+kernel runs on macOS and Linux only.
 
-## What it covers
-
-- A Jupyter kernel for PHP 8.3 and later, on macOS and Linux.
-- State across cells, so a variable bound in one cell is in scope in the next.
-- Tracebacks that name the cell and the line a stack frame came from, rather
-  than `eval()'d code`.
-- Rich display for phibble tables and phiz plots, with `toMimeBundle()` and
-  `toHtml()` hooks for any other class.
-- Completion, `is_complete` for a front end's continuation prompt, and
-  interruption through the stop button.
-- Quarto's `.qmd` and JupyterLab, with cell options, figure captions, and HTML,
-  `ipynb`, and PDF output.
-
-## The phpstats family
-
-juphyter is the notebook of the phpstats family.
-[phibble](https://github.com/phpstats/phibble) provides data frames,
-[phplyr](https://github.com/phpstats/phplyr) the dplyr verbs over them,
-[phiz](https://github.com/phpstats/phiz) the plots, and
-[phit](https://github.com/phpstats/phit) and
-[CmdStanPHP](https://github.com/phpstats/CmdStanPHP) the models. juphyter
-requires none of them and formats any of them that is installed.
-
-[Get started](get-started.qmd) walks through a first notebook.
-[Quarto](quarto.qmd) covers rendering a document, and
-[JupyterLab](jupyter.qmd) covers the notebook interface.
+[Installation](install.qmd) covers the requirements and the install
+commands, and [Getting started](get-started.qmd) walks through a first
+notebook.

@@ -1,59 +1,33 @@
 ---
-title: "Get started"
+title: "Getting started"
 jupyter: php
 ---
 
-## Install the kernel
+This page assumes the `php` kernel is installed and `juphyter doctor` reports
+it as ready. [Installation](install.qmd) covers both. The examples were run in
+a Quarto document, and they behave the same way in a JupyterLab notebook.
 
-A kernelspec belongs to the machine, so the usual choice is to install juphyter
-once for your user, as [Installation](install.qmd) describes. Installing it as a
-development dependency of one project pins the kernel's version with that
-project, at the cost of a kernelspec that names that project's copy of the
-engine:
+To follow along in JupyterLab, run `jupyter lab` from an environment that has
+it, such as `~/.venvs/juphyter/bin/jupyter lab`, and choose the PHP kernel in
+the launcher. To follow along in Quarto, create a file `first.qmd`:
 
-```bash
-composer require --dev phpstats/juphyter
-vendor/bin/juphyter install
+````markdown
+---
+title: "A first PHP document"
+jupyter: php
+---
+
+```{{php}}
+echo "sum: ", array_sum(range(1, 10)), "\n";
 ```
+````
 
-The command prints what the kernel is made of.
-
-```
-Installed the juphyter kernel "php" for PHP 8.5.10.
-  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json
-  python       /opt/homebrew/bin/python3 (ipykernel 7.4.0)
-  php          /opt/homebrew/bin/php
-  engine       /path/to/vendor/phpstats/juphyter/bin/juphyter
-  quarto       /opt/homebrew/bin/python3 (jupyter_client 8.10.0)
-```
-
-The Python is the interpreter that owns the `jupyter` on `PATH`, because the
-kernel runs inside it. `--python` names a different one. The PHP is the binary
-that runs the cells, and `--php` names a different one, which is how several
-versions coexist:
-
-```bash
-vendor/bin/juphyter install --name php83 --php /opt/homebrew/opt/php@8.3/bin/php
-vendor/bin/juphyter install --name php85 --php /opt/homebrew/opt/php@8.5/bin/php
-```
-
-`juphyter uninstall --name php83` removes a kernelspec juphyter wrote, and
-refuses to remove one it did not.
-
-The `quarto` line appears when Quarto is installed. Quarto runs an interpreter
-of its own choosing, and that one is the one that needs Jupyter in it, so the
-line reports which interpreter that is and what was found there. When it says
-`(no Jupyter)`, the kernelspec is still correct and `quarto render` cannot reach
-it; [Installation](install.qmd) covers the fix.
-
-On a machine with no Python that can host the kernel at all, the command offers
-to build one. [Installation](install.qmd) covers that and the `--create-venv`
-option that answers the offer in advance.
+Then run `quarto render first.qmd`, which writes `first.html`.
 
 ## A first cell
 
-A cell is PHP without an opening tag. The value of the last expression is the
-cell's result, and `echo` goes to the cell's output stream.
+A cell holds PHP without an opening `<?php` tag. Whatever the cell prints with
+`echo` appears first, and the value of its last expression appears after it.
 
 ```{php}
 $primes = [2, 3, 5, 7, 11, 13];
@@ -63,7 +37,12 @@ echo count($primes), " primes, summing to ", array_sum($primes), "\n";
 array_sum($primes) / count($primes);
 ```
 
-State carries between cells, so the next cell sees what this one bound.
+A cell whose last expression is a statement or a call that returns `null`
+shows only what it printed.
+
+## State between cells
+
+Variables, objects, functions, and classes carry from one cell to the next.
 
 ```{php}
 $primes[] = 17;
@@ -71,42 +50,54 @@ $primes[] = 17;
 $primes;
 ```
 
+Restarting the kernel starts a new PHP session with nothing defined. In
+JupyterLab, use **Kernel > Restart Kernel**. Each `quarto render` starts a new
+session.
+
 ## Imports
 
-A `use` statement applies to the cells after it as well as to its own. The
-session accumulates them, so a notebook can put its imports in a first cell and
-use short class names from then on.
+A `use` statement applies to its own cell and to every later cell. A notebook
+can put its imports in its first cell and use short names afterward. This
+example uses [phibble](https://phibble.phpstats.org), which the `php` kernel
+finds when the document sits inside a Composer project that requires it, or
+which the `phpstats` kernel from
+[Installation](install.qmd#the-phpstats-packages) provides.
 
 ```{php}
-use DateTimeImmutable;
-
-$released = new DateTimeImmutable('2026-11-20');
-
-$released->format('F Y');
+use Phibble\DataFrame;
 ```
 
-`namespace` is not supported in a cell, and a cell cannot redeclare a class or a
-function that another cell already declared. PHP has no way to undefine either,
-so a second run of a cell that declares one reports what it would have
-redeclared rather than failing in the middle.
+```{php}
+$orders = DataFrame::fromRows([
+    ['channel' => 'web', 'region' => 'north', 'total' => 120.50],
+    ['channel' => 'store', 'region' => 'north', 'total' => 80.00],
+    ['channel' => 'web', 'region' => 'south', 'total' => 42.25],
+]);
+
+$orders;
+```
+
+A cell cannot declare a `namespace`, and it cannot declare a class or a
+function that an earlier cell already declared. [Limitations](limitations.qmd)
+explains both.
 
 ## Errors
 
-A cell that throws reports the exception, its message, and the stack frames
-that raised it, with each stack frame naming the cell and the line rather than
-`eval()'d code`.
+A cell that throws shows the exception, its message, and a traceback whose
+lines name the cell and the line number.
 
 ```{php}
 #| error: true
-$widths = ['narrow' => 4, 'wide' => 12];
-
 $mean = fn (array $values) => array_sum($values) / count($values);
 
 $mean([]);
 ```
 
-Warnings, notices, and deprecations go to the cell's error stream and leave the
-cell running.
+The session survives the exception. Variables defined before it keep their
+values.
+
+Warnings, notices, and deprecations appear in the cell's error output, and the
+cell keeps running.
 
 ```{php}
 $widths = ['narrow' => 4, 'wide' => 12];
@@ -114,29 +105,16 @@ $widths = ['narrow' => 4, 'wide' => 12];
 $widths['narrow'] + $widths['medium'];
 ```
 
-## Rich display
+## Rich output
 
-A value is published in every representation the front end might draw. A
-phibble data frame comes with an HTML table and the tibble-style text phibble
-prints at a terminal, and a phiz plot comes with a Vega-Lite specification, an
-HTML embed, a static SVG when vl-convert is installed, and a one-line
-description.
+The kernel sends each value in every format it can produce, and the front end
+picks the one it can draw. A phibble data frame comes as an HTML table and as
+the text phibble prints at a terminal. A phiz plot comes as a Vega-Lite
+specification, as HTML, as a static SVG when vl-convert is installed, and as a
+one-line text description.
 
-```{php}
-#| echo: false
-use Phibble\DataFrame;
-```
-
-```{php}
-DataFrame::fromRows([
-    ['package' => 'phibble', 'purpose' => 'data frames', 'version' => 0.3],
-    ['package' => 'phplyr', 'purpose' => 'dplyr verbs', 'version' => 0.3],
-    ['package' => 'phiz', 'purpose' => 'plots', 'version' => 0.3],
-]);
-```
-
-Any class can opt in. A `toHtml(): string` method supplies the `text/html`
-representation, and a `toMimeBundle(): array` method supplies the whole bundle.
+Any class can provide its own output. A `toHtml(): string` method supplies
+HTML, and a `toMimeBundle(): array` method supplies every format at once.
 
 ```{php}
 final class Progress
@@ -163,15 +141,10 @@ final class Progress
 new Progress(7, 9);
 ```
 
-`Juphyter\display()` publishes a value part way through a cell, so one cell can
-show several data frames or plots.
+`Juphyter\display()` shows a value part way through a cell, so one cell can
+show several tables or plots.
 
 ```{php}
 Juphyter\display(new Progress(3, 9));
 Juphyter\display(new Progress(9, 9));
 ```
-
-## Where to go next
-
-[Quarto](quarto.qmd) covers rendering a `.qmd` to HTML, `ipynb`, and PDF.
-[JupyterLab](jupyter.qmd) covers the notebook interface and what it draws.
