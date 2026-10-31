@@ -16,6 +16,6 @@ from .kernel import Engine, EngineError, JuphyterKernel
 
 #: Reported as ``implementation_version`` in `kernel_info_reply`. The PHP
 #: version a kernel runs is the engine's to report, and is not this.
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = ["Engine", "EngineError", "JuphyterKernel", "__version__"]

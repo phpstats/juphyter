@@ -6,8 +6,8 @@ title: "Installation"
 
 - PHP 8.3, 8.4, or 8.5. CI tests all three.
 - The `mbstring` and `tokenizer` PHP extensions. Most PHP builds include both.
-  Releases after 0.1.0 declare both in composer.json, so Composer reports a
-  missing one at install time.
+  juphyter 0.1.1 and later declare both in composer.json, so Composer reports
+  a missing one at install time.
 - Composer.
 - Python 3 with the `venv` module. On Debian and Ubuntu that module is the
   `python3-venv` package.
@@ -81,17 +81,14 @@ appears only when Quarto is installed. Here it was printed before the second
 a warning with the `export` line that fixes it. The kernel is still
 registered, and the command exits 0.
 
-On Homebrew, juphyter 0.1.0 records the versioned path under `Cellar` shown
-above, which `brew upgrade` removes. To record the path that survives
-upgrades, pass it explicitly:
+On Homebrew, juphyter 0.1.0 recorded the versioned path under `Cellar` shown
+above, which `brew upgrade` removes. juphyter 0.1.1 and later record the first
+path on `PATH` with the same name that leads to the running PHP, such as
+`/opt/homebrew/bin/php`. With 0.1.0, pass that path explicitly:
 
 ```bash
 juphyter install --php /opt/homebrew/bin/php
 ```
-
-Releases after 0.1.0 do this by default. Without `--php`, they record the
-first path on `PATH` with the same name that leads to the running PHP, such
-as `/opt/homebrew/bin/php`.
 
 ### Keeping the PATH entries
 

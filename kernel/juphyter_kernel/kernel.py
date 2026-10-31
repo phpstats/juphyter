@@ -730,7 +730,7 @@ class JuphyterKernel(Kernel):
     """A Jupyter kernel for PHP, forwarding every request to the engine."""
 
     implementation = "juphyter"
-    implementation_version = "0.1.0"
+    implementation_version = "0.1.1"
 
     #: What `kernel_info` reports when the engine has not answered yet. The
     #: version is deliberately absent rather than guessed: the engine reports
