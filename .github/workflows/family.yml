@@ -38,7 +38,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pcntl, posix, sockets, pdo_sqlite
+          extensions: mbstring, pcntl, posix, pdo_sqlite
           coverage: none
 
       # The vl-convert *binary*, from the project's own release. The
@@ -67,18 +67,12 @@ jobs:
             exit 1
           fi
 
-      # phibble and phplyr are added rather than declared: a `composer require`
-      # here keeps the committed manifest at the "none" set. no-api on the
-      # repository entries and --prefer-source together need no GitHub token.
-      - name: Install phibble and phplyr
+      # The packages are added rather than declared: a `composer require` here
+      # keeps the committed manifest at the "none" set. They are the current
+      # Packagist releases, and --prefer-source clones them from GitHub rather
+      # than downloading zipballs through api.github.com, so no token is needed.
+      - name: Install phibble, phplyr, and phiz
         run: composer require --dev --no-interaction --no-progress --prefer-source
-               "phpstats/phibble:^0.3" "phpstats/phplyr:^0.3"
-
-      # phiz requires PHP 8.5, so below that the set stops at phibble and
-      # phplyr, as the siblings do it.
-      - name: Install phiz
-        if: matrix.php == '8.5'
-        run: composer require --dev --no-interaction --no-progress --prefer-source
-               "phpstats/phiz:^0.3"
+               "phpstats/phibble:^0.5" "phpstats/phplyr:^0.4" "phpstats/phiz:^0.5"
 
       - run: vendor/bin/pest

@@ -35,12 +35,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      # pcntl carries the interrupt the protocol tests send, posix the reaping,
-      # and sockets the engine's channel to the transport.
+      # mbstring is required, and pcntl carries the interrupt the protocol
+      # tests send. The Python transport reaps the engine, and the engine's
+      # channel is a core stream socket, so neither posix nor sockets is needed.
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pcntl, posix, sockets
+          extensions: mbstring, pcntl
           coverage: none
 
       - run: composer install --no-interaction --no-progress

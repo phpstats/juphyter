@@ -20,12 +20,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # pcntl and posix carry the kernel's interrupt handling and child
-      # reaping; sockets carries the engine's channel to the transport.
+      # mbstring is required. pcntl carries the kernel's interrupt handling,
+      # and posix lets the interrupt tests send SIGINT; without either those
+      # tests skip. juphyter uses no sockets extension: the engine's channel
+      # to the transport is a core stream socket.
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pcntl, posix, sockets
+          extensions: mbstring, pcntl, posix
           coverage: none
 
       - run: composer install --no-interaction --no-progress
