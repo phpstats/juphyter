@@ -214,7 +214,7 @@ def project(tools: dict[str, str]) -> Project:
     The notebooks and the manifest are copied fresh on every run, because they
     are the thing under test and they cost nothing. `vendor/` is left alone when
     the manifest has not changed since it was installed, because installing it
-    clones three repositories from GitHub.
+    clones three packages from GitHub.
     """
     root = BUILD / "project"
     root.mkdir(parents=True, exist_ok=True)
@@ -242,9 +242,8 @@ def project(tools: dict[str, str]) -> Project:
             "install",
             "--no-interaction",
             "--no-progress",
-            # no-api on the repository entries keeps Composer off
-            # api.github.com for metadata, and --prefer-source keeps it off
-            # the dist zipballs too, so neither needs a GitHub token.
+            # --prefer-source clones from GitHub rather than downloading dist
+            # zipballs through api.github.com, so it needs no GitHub token.
             "--prefer-source",
         ],
         cwd=root,
@@ -257,8 +256,8 @@ def project(tools: dict[str, str]) -> Project:
     if result.returncode != 0 or not built.autoloader.is_file():
         pytest.skip(
             "The fixture notebook needs {} installed in {}, and Composer could "
-            "not install them. None of the three is on Packagist, so this needs "
-            "network access to GitHub. Composer said:\n{}".format(
+            "not install them. They come from Packagist and are cloned from "
+            "GitHub, so this needs network access. Composer said:\n{}".format(
                 ", ".join(FAMILY), root, (result.stdout + result.stderr).strip()[-2000:]
             )
         )

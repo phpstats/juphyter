@@ -5,27 +5,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.5",
-        "phpstats/phibble": "^0.3",
-        "phpstats/phplyr": "^0.3",
-        "phpstats/phiz": "^0.3"
+        "phpstats/phibble": "^0.5",
+        "phpstats/phplyr": "^0.4",
+        "phpstats/phiz": "^0.5"
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/phpstats/phibble",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/phpstats/phplyr",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/phpstats/phiz",
-            "no-api": true
-        }
-    ]
+    "prefer-stable": true
 }

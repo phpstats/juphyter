@@ -478,8 +478,8 @@ if [ "$refresh" -eq 1 ]; then
 fi
 
 # The sandbox's manifest is the render tests' fixture manifest, rather than a
-# second copy of the same three requirements and the same three repository
-# entries. The two want exactly the same packages for exactly the same reason.
+# second copy of the same three requirements. The two want exactly the same
+# packages for exactly the same reason.
 if [ ! -f "$sandbox/vendor/autoload.php" ]; then
     command -v composer >/dev/null 2>&1 \
         || fail "no composer on PATH, and the docs examples need phibble, phplyr, and phiz installed."
@@ -488,12 +488,11 @@ if [ ! -f "$sandbox/vendor/autoload.php" ]; then
     mkdir -p "$sandbox"
     cp "$root/tests/Quarto/fixture/composer.json" "$sandbox/composer.json"
 
-    # no-api on the repository entries keeps Composer off api.github.com for
-    # metadata, and --prefer-source keeps it off the dist zipballs too, so
-    # neither needs a GitHub token.
+    # --prefer-source clones from GitHub rather than downloading dist zipballs
+    # through api.github.com, so it needs no GitHub token.
     ( cd "$sandbox" && "$php" "$(command -v composer)" install \
         --no-interaction --no-progress --prefer-source ) \
-        || fail "Composer could not install phibble, phplyr, and phiz. None of the three is on Packagist, so this needs network access to GitHub."
+        || fail "Composer could not install phibble, phplyr, and phiz. They come from Packagist and are cloned from GitHub, so this needs network access."
 fi
 
 spec="$jupyter_data/kernels/php/kernel.json"
