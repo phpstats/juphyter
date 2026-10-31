@@ -50,7 +50,7 @@
     "verify": {
         "command": "juphyter doctor",
         "output": "JupyterLab: ready, with php.",
-        "note": "A second line reports Quarto, which is needed only for rendering .qmd documents."
+        "note": "Reports whether the kernel is ready and whether the optional Quarto support is installed."
     },
     "quickstart": "get-started",
     "repository": "https://github.com/phpstats/juphyter",
