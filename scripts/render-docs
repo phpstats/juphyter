@@ -168,6 +168,14 @@ set_aside_published() {
         cp -R "$path" "$previous/"
     done
 
+    # Pages one directory down, such as examples/, keep their directory.
+    for path in "$root"/docs/[!_]*/*.html; do
+        [ -e "$path" ] || continue
+        case "$path" in "$root"/docs/site_libs/*) continue ;; esac
+        mkdir -p "$previous/$(basename "$(dirname "$path")")"
+        cp "$path" "$previous/$(basename "$(dirname "$path")")/"
+    done
+
     aside=1
 
     return 0
@@ -186,7 +194,7 @@ restore_published() {
     # Quarto stages a page's frozen result in docs/<page>_files while it runs
     # and moves it into docs/_freeze at the end, so a directory of that name is
     # the render that stopped part way through, not anything docs/ holds.
-    rm -rf "$root"/docs/*_files
+    rm -rf "$root"/docs/*_files "$root"/docs/[!_]*/*_files
     printf 'render-docs: nothing was published, so %s is back as it was.\n' \
         "$root/docs" >&2
 
@@ -294,8 +302,10 @@ def frozen_hash(base, page):
 report = []
 unexecuted = []
 lost = []
-for source in sorted(root.glob("*.qmd")):
-    page = source.stem
+# The pages at the top of docs/ and one directory down, such as examples/.
+# docs/work holds notes in Markdown, which the glob does not match.
+for source in sorted(list(root.glob("*.qmd")) + list(root.glob("[!_]*/*.qmd"))):
+    page = str(source.relative_to(root).with_suffix(""))
     cells = runnable_cells(source)
     executed = executed_blocks(site / (page + ".html"))
     report.append("%s %d/%d" % (page, executed, cells))

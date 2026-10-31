@@ -59,6 +59,16 @@
         "pipe": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\n$mpg |>\n    group_by('class') |>\n    summarize(models: n(), hwy: round(mean('hwy'), 1)) |>\n    arrange(desc('hwy'));",
         "output": "# A tibble: 7 × 3\n  class      models   hwy\n  <chr>       <int> <dbl>\n1 compact        47  28.3\n2 subcompact     35  28.1\n3 midsize        41  27.3\n4 2seater         5  24.8\n5 minivan        11  22.4\n6 suv            62  18.1\n7 pickup         33  16.9"
     },
+    "examples": [
+        {
+            "path": "examples/notebook",
+            "title": "Show a table and a chart in a notebook",
+            "description": "Summarizes a data frame in one notebook cell and plots the summary in the next, with each result shown beneath its cell.",
+            "also": [
+                "phiz"
+            ]
+        }
+    ],
     "docs": {
         "root": "docs",
         "format": "quarto",
@@ -94,6 +104,11 @@
             {
                 "title": "Contributing",
                 "path": "development.qmd"
+            },
+            {
+                "title": "Show a table and a chart in a notebook",
+                "path": "examples/notebook.qmd",
+                "section": "Examples"
             }
         ]
     }

@@ -1,0 +1,104 @@
+---
+title: "Show a table and a chart in a notebook"
+jupyter: php
+---
+
+This example summarizes a data frame in one cell and plots the summary in the
+next, with each result shown beneath its cell.
+
+Prerequisites: the `php` kernel from [Installation](../install.qmd), and PHP
+8.5 for the pipe version or PHP 8.3 for the method chain.
+
+## Setup
+
+Create a Composer project with phibble, phplyr, and phiz, and start JupyterLab
+in that directory:
+
+```bash
+mkdir mileage && cd mileage
+composer require phpstats/phibble phpstats/phplyr phpstats/phiz
+~/.venvs/juphyter/bin/jupyter lab
+```
+
+Choose the PHP kernel in the launcher. The kernel loads the project's
+`vendor/autoload.php` before the first cell runs, so a cell needs no
+`<?php` tag and no `require`. The same cells run in a Quarto document that
+sits in the project and names `jupyter: php` in its front matter.
+
+## The data
+
+The cells use the `mpg` dataset that ships with phiz: 234 cars, with each
+car's class and its highway fuel economy in miles per gallon (`hwy`).
+
+## A table
+
+The first cell imports the classes and functions that the later cells use. A
+`use` statement in a cell applies to every cell after it. phplyr's `round()`
+replaces PHP's built-in `round()` in those cells.
+
+```{php}
+use Phibble\DataFrame;
+use Phiz\Datasets;
+use Phiz\Plot;
+use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round};
+```
+
+The second cell counts the cars in each class and their mean highway mileage.
+A cell's last value is its output, and a phibble data frame appears as an HTML
+table.
+
+::: {.panel-tabset group="syntax"}
+
+## PHP 8.5+
+
+```{php}
+$mpg = DataFrame::fromRows(Datasets::mpg());
+
+$byClass = $mpg |>
+    group_by('class') |>
+    summarize(cars: n(), hwy: round(mean('hwy'), 1)) |>
+    arrange(desc('hwy'));
+
+$byClass;
+```
+
+## PHP 8.3–8.4
+
+```{php}
+$mpg = DataFrame::fromRows(Datasets::mpg());
+
+$byClass = phplyr($mpg)
+    ->groupBy('class')
+    ->summarize(cars: n(), hwy: round(mean('hwy'), 1))
+    ->arrange(desc('hwy'))
+    ->get();
+
+$byClass;
+```
+
+:::
+
+## A chart
+
+`$byClass` is still defined, because the kernel keeps one PHP session across
+cells. A phiz plot appears as an interactive chart.
+
+```{php}
+#| fig-cap: "Mean highway mileage by vehicle class."
+Plot::of($byClass)
+    ->aes(x: 'class', y: 'hwy')
+    ->col()
+    ->labs(x: 'Vehicle class', y: 'Mean highway mpg');
+```
+
+## How it works
+
+The kernel sends each value in every format it can produce, and JupyterLab or
+Quarto shows the richest one it supports. A data frame comes as HTML and as
+text. A plot comes as a Vega-Lite specification, as HTML, and as text, and also
+as SVG when vl-convert is installed. [Getting started](../get-started.qmd#rich-output)
+describes the formats, and [JupyterLab](../jupyter.qmd) and
+[Quarto](../quarto.qmd) cover each front end. The verbs come from
+[phplyr](https://phplyr.phpstats.org), the data frame from
+[phibble](https://phibble.phpstats.org), and the chart from
+[phiz](https://phiz.phpstats.org).
