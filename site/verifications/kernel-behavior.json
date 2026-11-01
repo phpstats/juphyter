@@ -1,0 +1,100 @@
+{
+    "title": "Kernel behavior over the Jupyter protocol",
+    "label": "Kernel behavior",
+    "kind": "contract",
+    "checked": "Execution state, output streaming, interrupts, completion offsets, and process cleanup, driven through a real kernel over the Jupyter protocol with jupyter_client.",
+    "versions": {
+        "PHP": "8.5.10",
+        "Python": "3.14.7",
+        "ipykernel": "7.4.0",
+        "jupyter_client": "8.10.0"
+    },
+    "comparison": [
+        {
+            "id": "contract",
+            "kind": "exact",
+            "applies_to": "the behavior each test asserts"
+        }
+    ],
+    "cases": [
+        {
+            "name": "the kernelspec starts the wrapper as a module",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "state carries from one cell to the next",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "a silent cell shows nothing but still reports an error",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "an engine killed mid cell is reported rather than hanging",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "an interrupt stops a running cell",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "stdout and stderr arrive in the order they were written",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "a cell that prints megabytes does not deadlock",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "what the engine writes to its own descriptors is streamed",
+            "quantity": "behavior",
+            "status": "fail",
+            "reason": "AssertionError: assert 917504 == (1024 * 1024)"
+        },
+        {
+            "name": "the cursor is converted across a multibyte character",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "a kernel killed outright leaves no engine running",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "an orphaned engine in a runaway cell stops itself",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "the watchdog leaves a long cell and its sleep alone",
+            "quantity": "behavior",
+            "status": "pass"
+        },
+        {
+            "name": "a shutdown leaves no engine and no temporary directory",
+            "quantity": "behavior",
+            "status": "pass"
+        }
+    ],
+    "reproduce": [
+        "python -m pip install -r tests/Protocol/requirements.txt",
+        "composer install",
+        "python -m pytest tests/Protocol -v"
+    ],
+    "source": "tests/Protocol/test_kernel.py",
+    "environment": {
+        "date": "2026-11-01",
+        "commit": "d506bea",
+        "php": "8.5.10",
+        "python": "3.14.7",
+        "os": "macOS 27.0.1 (arm64)"
+    }
+}

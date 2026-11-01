@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+#
+# Runs juphyter's verification suites with JUnit output and writes the
+# records under site/verifications/ from that run.
+#
+#   evidence/verify
+#
+# It needs what the suites need: PHP with pcntl, Composer, Quarto, and a
+# Python with the packages in tests/Protocol/requirements.txt and
+# tests/Quarto/requirements.txt. JUPHYTER_EVIDENCE_PYTHON names that Python;
+# the default is the python3 on PATH. A failing suite does not stop the run:
+# its failures are recorded.
+#
+# The family suite runs in a copy of the committed tree under build/evidence,
+# with the current phibble, phplyr, and phiz releases required into it, the
+# way .github/workflows/family.yml does, so composer.json here is untouched.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+out="$root/build/evidence"
+python="${JUPHYTER_EVIDENCE_PYTHON:-python3}"
+
+# One PHP for every suite: first on PATH, so `juphyter install` in the
+# protocol suite records it, and named to the render tests, which otherwise
+# look for php85 first.
+php="$(command -v "${JUPHYTER_EVIDENCE_PHP:-php}")"
+export PATH="$(dirname "$php"):$PATH"
+export JUPHYTER_QUARTO_PHP="$php" JUPHYTER_TEST_PHP="$php" JUPHYTER_EVIDENCE_PHP="$php"
+
+rm -rf "$out"
+mkdir -p "$out/junit" "$out/family"
+cd "$root"
+
+if [ -n "$(git status --porcelain -- src kernel bin tests composer.json)" ]; then
+    echo "evidence/verify: src, kernel, bin, tests, or composer.json has uncommitted changes; the records would not match the commit they name." >&2
+    exit 1
+fi
+
+composer install --no-interaction --no-progress --quiet
+
+echo "evidence/verify: protocol suite"
+"$python" -m pytest tests/Protocol -q -p no:cacheprovider \
+    --junitxml="$out/junit/protocol.xml" || true
+
+echo "evidence/verify: Quarto suite"
+"$python" -m pytest tests/Quarto -q -p no:cacheprovider \
+    --junitxml="$out/junit/quarto.xml" || true
+
+echo "evidence/verify: family suite"
+git archive HEAD | tar -x -C "$out/family"
+(
+    cd "$out/family"
+    composer install --no-interaction --no-progress --quiet
+    composer require --dev --no-interaction --no-progress --quiet --prefer-source \
+        "phpstats/phibble:^0.5" "phpstats/phplyr:^0.4" "phpstats/phiz:^0.5"
+    "$php" vendor/bin/pest --log-junit "$out/junit/family.xml" \
+        --log-teamcity "$out/junit/family.teamcity" >/dev/null || true
+    composer show --format=json phpstats/phibble > "$out/phibble.json"
+    composer show --format=json phpstats/phplyr > "$out/phplyr.json"
+    composer show --format=json phpstats/phiz > "$out/phiz.json"
+)
+
+"$python" "$root/evidence/export_verifications.py" "$out" "$root/site/verifications"

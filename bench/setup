@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#
+# Prepares build/bench for the benchmarks:
+#
+# - build/bench/venv, a Python environment with ipykernel and jupyter_client,
+#   made with uv when it is installed and with python3 -m venv otherwise;
+# - build/bench/project, a Composer project with phibble, phplyr, and phiz,
+#   from the render tests' manifest;
+# - two kernels in build/bench/jupyter: bench-php, which runs this checkout,
+#   and bench-python3, a stock ipykernel.
+#
+# JUPHYTER_BENCH_PHP names the PHP to benchmark; the default is php on PATH.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+build="$root/build/bench"
+php="$(command -v "${JUPHYTER_BENCH_PHP:-php}")"
+
+rm -rf "$build"
+mkdir -p "$build/project"
+
+if command -v uv >/dev/null 2>&1; then
+    uv venv --quiet "$build/venv"
+    uv pip install --quiet --python "$build/venv/bin/python" "ipykernel>=7" "jupyter_client>=8"
+else
+    python3 -m venv "$build/venv"
+    "$build/venv/bin/python" -m pip install --quiet "ipykernel>=7" "jupyter_client>=8"
+fi
+
+(cd "$root" && composer install --no-interaction --no-progress --quiet)
+
+cp "$root/tests/Quarto/fixture/composer.json" "$build/project/composer.json"
+(cd "$build/project" && "$php" "$(command -v composer)" install --no-interaction --no-progress --quiet)
+
+export JUPYTER_DATA_DIR="$build/jupyter"
+"$php" "$root/bin/juphyter" install --name bench-php --php "$php" \
+    --python "$build/venv/bin/python" >/dev/null
+"$build/venv/bin/python" -m ipykernel install --user --name bench-python3 >/dev/null
+
+echo "bench/setup: ready in $build, benchmarking $("$php" -r 'echo PHP_VERSION;') at $php"

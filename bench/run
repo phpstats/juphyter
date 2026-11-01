@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+#   bench/run [startup|cells|all] [arguments for the benchmark]
+#
+# Runs a benchmark with build/bench's Python, after bench/setup. On Linux the
+# record is written to site/benchmarks/; elsewhere to build/bench/records/,
+# because only Linux runs are published.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+python="$root/build/bench/venv/bin/python"
+[ -x "$python" ] || { echo "bench/run: run bench/setup first." >&2; exit 1; }
+
+export JUPHYTER_BENCH_PHP="$(command -v "${JUPHYTER_BENCH_PHP:-php}")"
+which="${1:-all}"
+shift || true
+
+case "$which" in
+    startup) "$python" "$root/bench/startup.py" "$@" ;;
+    cells) "$python" "$root/bench/cells.py" "$@" ;;
+    all)
+        "$python" "$root/bench/startup.py" "$@"
+        "$python" "$root/bench/cells.py"
+        ;;
+    *) echo "bench/run: unknown benchmark $which (startup, cells, or all)." >&2; exit 1 ;;
+esac

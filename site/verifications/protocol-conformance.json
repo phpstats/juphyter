@@ -1,0 +1,123 @@
+{
+    "title": "Jupyter protocol: conformance with jupyter_kernel_test",
+    "label": "Protocol conformance",
+    "kind": "reference",
+    "checked": "The kernel answers execute, complete, is_complete, and kernel_info requests, and every message it sends validates against the Jupyter messaging protocol v5 schema, as checked by jupyter_kernel_test's KernelTests.",
+    "reference": "jupyter_kernel_test 0.7.0, Jupyter messaging protocol 5.x",
+    "versions": {
+        "PHP": "8.5.10",
+        "Python": "3.14.7",
+        "ipykernel": "7.4.0",
+        "jupyter_client": "8.10.0",
+        "jupyter_kernel_test": "0.7.0"
+    },
+    "inputs": "The PHP samples declared on JuphyterKernelTests in tests/Protocol/test_kernel.py.",
+    "comparison": [
+        {
+            "id": "schema",
+            "kind": "exact",
+            "applies_to": "message structure against the v5 schema, and the expected output of each sample"
+        }
+    ],
+    "cases": [
+        {
+            "name": "clear output",
+            "quantity": "messages and output",
+            "status": "skipped",
+            "reason": "No code clear output"
+        },
+        {
+            "name": "completion",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "display data",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "error",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "execute result",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "execute stderr",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "execute stdout",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "history",
+            "quantity": "messages and output, check 1",
+            "status": "skipped",
+            "reason": "History tail not supported"
+        },
+        {
+            "name": "history",
+            "quantity": "messages and output, check 2",
+            "status": "skipped",
+            "reason": "History range not supported"
+        },
+        {
+            "name": "history",
+            "quantity": "messages and output, check 3",
+            "status": "skipped",
+            "reason": "No code history pattern"
+        },
+        {
+            "name": "inspect",
+            "quantity": "messages and output",
+            "status": "skipped",
+            "reason": "No code inspect sample"
+        },
+        {
+            "name": "is complete",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "kernel info",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "kernel info reports the running php",
+            "quantity": "messages and output",
+            "status": "pass"
+        },
+        {
+            "name": "pager",
+            "quantity": "messages and output",
+            "status": "skipped",
+            "reason": "No code page something"
+        }
+    ],
+    "exclusions": [
+        "History requests are not implemented, so jupyter_kernel_test skips its three history checks.",
+        "inspect_request is not implemented, so the inspect check is skipped.",
+        "The kernel has no clear_output or pager sample, so those checks are skipped."
+    ],
+    "reproduce": [
+        "python -m pip install -r tests/Protocol/requirements.txt",
+        "composer install",
+        "python -m pytest tests/Protocol -v"
+    ],
+    "source": "tests/Protocol/test_kernel.py",
+    "environment": {
+        "date": "2026-11-01",
+        "commit": "d506bea",
+        "php": "8.5.10",
+        "python": "3.14.7",
+        "os": "macOS 27.0.1 (arm64)"
+    }
+}

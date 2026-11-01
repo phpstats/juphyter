@@ -112,5 +112,15 @@
                 "section": "Examples"
             }
         ]
+    },
+    "verifications": [
+        "site/verifications/protocol-conformance.json",
+        "site/verifications/kernel-behavior.json",
+        "site/verifications/quarto-render.json",
+        "site/verifications/family-compatibility.json"
+    ],
+    "evidence_gaps": {
+        "benchmarks": "No benchmark has been run on Linux yet; the kernel startup and cell round-trip benchmarks are in bench/.",
+        "verification": "Not checked: inspect, history, and stdin requests, comms and widgets, and the debugger, which juphyter does not implement; JupyterLab's own rendering of outputs; and Linux on arm64."
     }
 }

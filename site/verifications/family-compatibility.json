@@ -1,0 +1,3939 @@
+{
+    "title": "Compatibility with the phibble, phplyr, and phiz releases",
+    "label": "Package compatibility",
+    "kind": "integration",
+    "checked": "juphyter's full PHP test suite, including the table and chart formatters, run with the current Packagist releases of phibble, phplyr, and phiz installed.",
+    "versions": {
+        "PHP": "8.5.10",
+        "phibble": "0.5.3",
+        "phplyr": "0.4.5",
+        "phiz": "0.5.2",
+        "vl-convert": null
+    },
+    "comparison": [
+        {
+            "id": "contract",
+            "kind": "exact",
+            "applies_to": "the values and output each test asserts"
+        }
+    ],
+    "cases": [
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it writes one JSON object per line",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it reads one line at a time, without the newline",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it reports end of input as null",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it keeps a newline inside a string from breaking the framing",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it leaves slashes and unicode readable on the wire",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "framing → it substitutes bytes that are not valid UTF-8 rather than failing",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "writing to a peer that has gone → it gives up quietly rather than throwing",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "writing to a peer that has gone → it stays quiet for every write after that",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "writing to a peer that has gone → it reads null once the peer has gone",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "writing to a peer that has gone → it is closed after close(), and writing then does nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "a line longer than it will read → it gives up on an over-long line and resumes at the next one",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "a line longer than it will read → it treats a final line with no newline as the last thing said",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "connecting → it refuses clearly when there is nothing listening",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "connecting → it connects to a socket that is listening",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the request shape task 6 writes → it reads the five request types",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the request shape task 6 writes → it reads execute's fields, with the documented defaults",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the request shape task 6 writes → it defaults the cursor to the end of the code, and clamps it",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the request shape task 6 writes → it ignores a field of the wrong type rather than trusting it",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the request shape task 6 writes → it refuses what is not a request, with a message fit for an evalue",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it puts the id and type first, then the type's own fields",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it builds each reply with the fields the contract names",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it always gives is_complete_reply an indent, even when empty",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it carries a null id for a complaint about the channel itself",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it keeps a traceback it was given rather than making one up",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ChannelTest",
+            "quantity": "the event shape task 6 reads → it reports the running PHP version in kernel_info_reply",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the connection → it connects to the socket named in JUPHYTER_SOCKET",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the connection → it keeps its own stdout and stderr clear of the protocol",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the connection → it exits 0 when the transport closes the channel without asking",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "every request ends with one terminal event → it ends a cell with nothing to show in a single ok",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "every request ends with one terminal event → it ends a cell with a value in result then ok",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "every request ends with one terminal event → it ends a thrown cell in error, with no ok",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "every request ends with one terminal event → it answers each other request with its matching reply",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "every request ends with one terminal event → it tags every event with the id of the request it answers",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "a session across requests → it carries state from one cell to the next",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "a session across requests → it carries a declared function and an import across cells",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "a session across requests → it refuses a redeclaration, so one session guards the whole process",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "streaming → it sends each print as its own event, in order, before the terminal one",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "streaming → it sends what a cell printed before the error that followed it",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "streaming → it sends a warning on stderr rather than as an error",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the execution count → it advances once per stored cell and matches what the front end shows",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the execution count → it does not advance when store_history is false",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the execution count → it reports the same count on result and ok",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the execution count → it advances for a cell that failed, as a notebook does",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the execution count → it labels a traceback with the number the front end shows",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "silent → it suppresses the result but not the terminal event",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "silent → it suppresses a display but not an error",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "silent → it does not suppress stream output, which a cell asked for explicitly",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "silent → it applies to one request only",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the display wiring → it turns a cell value into a result with a text/plain bundle",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the display wiring → it publishes nothing extra for a cell that ends in display()",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the display wiring → it turns Juphyter\\display() into a display event rather than stdout",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the display wiring → it publishes several values in the order display() was given them",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "the display wiring → it gives a display event a metadata field, as the contract says",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it calls finished source complete",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it calls source that only wanted a semicolon complete",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it calls an unclosed brace incomplete, with an indent to continue at",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it indents one level further after a line that opened a brace",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it calls a syntax error invalid",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it does not touch the session, however often a front end asks",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "is_complete → it does not advance the execution count",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "kernel_info → it reports the PHP version actually running",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "kernel_info → it carries a banner naming the version too",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a session variable after $",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a declared function by prefix",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a declared class by prefix",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a member after -> on a variable the session holds",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a dynamic property, which a notebook value often has",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it completes a static member after ::",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it offers nothing for a member of a value it does not hold",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "completion → it offers nothing rather than guessing where there is no token",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it answers a line that is not JSON and keeps serving",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it answers JSON that is not an object",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it answers a request with no id",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it answers a request with no type, against its id",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it answers an unknown type against the id it was given",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it keeps serving after several bad lines in a row",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "malformed input → it does not hang on a line with no newline at the end",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "shutdown → it replies, then exits 0",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "shutdown → it echoes the restart flag the transport sent",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "shutdown → it closes the channel, so there is nothing more to read",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "shutdown → it does not report the shutdown as a cell having ended the process",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "a cell that ends the process → it is reported as SystemExit",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "a cell that ends the process → it still delivers what the cell printed first",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "interrupts → it reports an interrupt and keeps the session usable",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "interrupts → it is not swallowed by the cell's own catch (Exception)",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/EngineTest",
+            "quantity": "interrupts → it ignores a signal that arrives between cells",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/IdleTest",
+            "quantity": "it answers a request after sitting idle for longer than a read timeout",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/IdleTest",
+            "quantity": "it exits when the transport closes the socket, timeout or no timeout",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/IdleTest",
+            "quantity": "it waits out an expired read and still obeys end of input",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "the walk up → it gives a notebook its own project with no configuration at all",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "the walk up → it finds the project from a notebook in a subdirectory",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "the walk up → it serves perfectly well with no project at all",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "JUPHYTER_AUTOLOAD → it overrides the walk",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "JUPHYTER_AUTOLOAD → it is reported as an engine error when it names nothing, rather than hanging",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it names the autoloader, and beats the walk",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it loses to the environment",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it sets the memory limit the cells run under",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it adds to the include path without losing what was there",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it applies its settings even when it names no autoloader",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter.json → it is reported as an engine error when it is not valid JSON",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "the --autoload and --directory options → it takes an autoloader from the command line",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "the --autoload and --directory options → it takes the notebook directory from the command line",
+            "status": "pass"
+        },
+        {
+            "name": "Engine/ProjectTest",
+            "quantity": "juphyter loading twice → it survives a project that carries its own copy of juphyter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it names a command from its class name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it finds the concrete commands in its directory, sorted by name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it scans its directory once, however many times it is asked",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it leaves out abstract classes and files that are not PHP",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it reports an empty directory as no commands",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it treats a missing directory as empty rather than an error",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "discovery → it reads this package's own command directory without error",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "dispatch → it runs a registered command and returns its exit code",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "dispatch → it passes on the arguments after the subcommand name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "dispatch → it dispatches a kebab-cased name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it lists a command with a required constructor argument",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it dispatches a command with a required constructor argument through make()",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it does not construct a command to list it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it reports a command it cannot build, rather than dying",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it still lists and dispatches the other commands when one cannot be built",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "construction → it keeps the unknown-command path working alongside such a command",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it lists the commands on stdout and exits 0 with no arguments",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it lists the commands for --help and -h too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it says so plainly when there is no command to list",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it still rejects an unknown command when nothing is registered",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it prints usage to stderr and exits non-zero for an unknown command",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "usage → it does not run a command when the name is unknown",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "version → it reports the version on stdout and exits 0 for --version and -V",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "version → it answers even when no command can be listed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ApplicationTest",
+            "quantity": "version → it treats a lowercase -v as an unknown command rather than the version flag",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it reads an option and its value as two arguments",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it reads an option joined to its value by an equals sign",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it reads both forms together, in any order",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it reads nothing from nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it keeps a value that contains an equals sign",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it keeps an empty value given with =",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "parsing → it lets a later option win over an earlier one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "complaints → it refuses a stray argument, and shows the usage",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "complaints → it refuses an unknown option, and shows the usage",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "complaints → it refuses an option with no value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "complaints → it refuses an option whose value is the next option",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "complaints → it includes the command's own usage in a complaint",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "help → it spots --help and -h anywhere in the arguments",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "help → it spots help even beside something malformed, so help still works",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/OptionsTest",
+            "quantity": "help → it is false when help was not asked for",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "matching → it matches by name, so it claims nothing without phiz installed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the bundle → it publishes the four representations in order when vl-convert is there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the bundle → it leaves out image/svg+xml when vl-convert is not there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the bundle → it leaves out image/svg+xml rather than failing when the conversion does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the bundle → it publishes the spec under the v5 MIME type, schema and all",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the bundle → it takes text/html from embed()",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it names the class, the mark, the rows and the Vega-Lite version",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it joins the marks of a layered plot",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it says how a composition is arranged with data set \"('hconcat', 'side by side')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it says how a composition is arranged with data set \"('vconcat', 'stacked')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it says how a composition is arranged with data set \"('concat', 'in a grid')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it finds the rows a composition carries in its first dataset",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it reads in the singular for one row",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it leaves out the rows when the data is behind a URL",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "the one-line summary → it names the class alone when the spec says nothing it can use",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real phiz chart → it matches a Plot and a Compose through their shared base",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real phiz chart → it publishes a Plot with the spec and the embed phiz produced",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real phiz chart → it describes a Compose by how it arranges its plots",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real phiz chart → it reaches a chart through the default registry",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real vl-convert binary → it publishes an SVG that vl-convert actually rendered",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real vl-convert binary → it publishes an SVG for a composition too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/ChartFormatterTest",
+            "quantity": "a real vl-convert binary → it finds the binary the way phiz does, and misses it when nothing points at one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "the exported function → it is loaded by the autoloader, not by an include",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "the exported function → it publishes one bundle for one value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "the exported function → it publishes the whole bundle a formatter built, not only its text",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "the exported function → it publishes several values in the order given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "the exported function → it formats with the current registry",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "with no publisher installed → it writes text/plain to standard output",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DisplayFunctionTest",
+            "quantity": "with no publisher installed → it goes back to that after a publisher is removed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it renders null, booleans and integers",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it keeps a float reading as a float",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it names the floats that have no digits",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it quotes a string so it cannot be read as a number",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it escapes quotes, backslashes and newlines in a string",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "scalars → it clips a long string",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it renders a list on one line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it renders keys for a map",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it nests while it fits",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it stops at the depth limit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it counts the entries past the item limit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it wraps a long list of scalars instead of giving each a line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it still gives a nested entry its own line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it expands one entry per line when the line would be too long",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it keeps an inner entry on one line while that one fits",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "arrays → it never widens past the budget by indenting",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it names an enum case",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it names a closure without trying to describe it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it renders a date as a date",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it lists the public properties of an object",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it says so when an object has no public properties",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "objects → it stops at the depth limit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/DumperTest",
+            "quantity": "everything else → it names a resource by its type",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "scalars → it supports null and every scalar, and nothing else",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "scalars → it carries text/plain and nothing else",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "arrays → it leaves a flat list as plain text alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "arrays → it offers application/json for a nested array",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "arrays → it leaves out application/json when the array cannot be encoded",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "objects → it dumps the public properties of an object as text",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "objects → it offers application/json only when the class opted in",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "throwables → it prints the class, the message and where it came from",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "throwables → it leaves out the colon when there is no message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/FallbackFormattersTest",
+            "quantity": "throwables → it supports every throwable, errors included",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "construction → it starts empty",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "construction → it carries text/plain from plain()",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "construction → it answers null for a type it does not carry",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "immutability → it leaves the original alone when a type is added",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "immutability → it leaves the original alone when a type is removed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "order → it keeps the types in insertion order",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "order → it keeps a type in place when it is set again",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "data → it carries a decoded structure, not only strings",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "data → it keeps metadata per type and only when given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/MimeBundleTest",
+            "quantity": "data → it drops the metadata along with the type",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/ArrayFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/ChartFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/Dumper.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/HtmlFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/MimeBundleFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/ObjectFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/Reflect.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/ScalarFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/TableFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Formatters/ThrowableFormatter.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Html/TableRenderer.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/MimeBundle.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/Display/Registry.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it names no package of the family at compile time with data set \"dataset \"src/functions.php\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it has the names it matches on as plain strings",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/NoSiblingAtCompileTimeTest",
+            "quantity": "it loads every class in the display layer with none of the family installed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "dispatch order → it ships the formatters in the documented order",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "dispatch order → it takes the first formatter that supports the value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "dispatch order → it stops asking once one has claimed the value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "dispatch order → it asks them in order until one claims the value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "dispatch order → it does not merge the bundles of two formatters",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "composition → it puts prepended formatters first",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "composition → it puts appended formatters last",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "composition → it leaves the registry it was built from alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(null)\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(false)\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(0)\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(1.5)\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"('')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"([])\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"([1, 2, 3])\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"([['c']])\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(Closure Object ()) #1\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(Closure Object ()) #2\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(Closure Object ()) #3\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is on every bundle the registry returns with data set \"(Closure Object ()) #4\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is filled in when a formatter left it out",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "text/plain → it is the whole bundle for a value nothing claimed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "the current registry → it defaults to the shipped formatters",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/RegistryTest",
+            "quantity": "the current registry → it can be replaced, and restored with null",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "matching → it matches by name, so it claims nothing without phibble installed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it carries text/html first, then text/plain",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it takes text/plain from the collected frame itself",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it renders the HTML when the table has none of its own",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it prefers a toHtml() the table brought itself",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it collects a lazy table once, for both representations",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "the bundle → it uses the renderer it was given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it matches a DataFrame",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it prints a DataFrame exactly as phibble prints it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it renders a DataFrame as HTML, to its snapshot",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it matches a SqlTable, and prints it as phibble does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it would match a PolarsTable, which implements the same contract",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableFormatterTest",
+            "quantity": "a real phibble table → it matches a PolarsTable instance when php_polars is loaded",
+            "status": "skipped",
+            "reason": "The php_polars extension is not loaded, so no PolarsTable can be built. See phpstats/phpolars for the prebuilt extension."
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "snapshots → it renders a small frame",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "snapshots → it renders a frame with rows and columns held back",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "snapshots → it renders a grouped frame",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "snapshots → it renders a frame with no rows",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the header → it states the dimensions as phibble does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the header → it separates the thousands in a big dimension",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the header → it gives every column its type abbreviation",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the header → it names the group columns, and says rowwise when it is",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the header → it leaves the grouping line out when the frame is ungrouped",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the footer → it counts the rows it held back",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the footer → it names the columns it held back, with their types",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the footer → it reads in the singular for one row and one column",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "the footer → it is left out when the whole frame is shown",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it marks a null as NA",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it prints booleans as phibble prints them",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it prints a date without the time",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it prints a datetime with the time",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it escapes markup in a string",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it escapes a newline rather than breaking the row",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it gives a list column its length",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it clips a long string",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it names the floats that have no digits",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it right-aligns the numeric columns and leaves the rest alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "cells → it fills in a cell the row is missing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "a table from somewhere else → it renders a type it cannot abbreviate",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/TableRendererTest",
+            "quantity": "a table from somewhere else → it holds rows back itself when the table offers no head()",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toMimeBundle() → it takes precedence over every built-in formatter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toMimeBundle() → it is first in the default registry, ahead of toHtml()",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toMimeBundle() → it fills in text/plain from __toString() when the bundle left it out",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toMimeBundle() → it accepts a MimeBundle as well as a map",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toMimeBundle() → it falls back to the dump when the return is not a MIME map",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toHtml() → it becomes the text/html of the bundle",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toHtml() → it takes text/plain from __toString() when the class has one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "toHtml() → it takes text/plain from the dump when the class has no text form",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "what does not count as a hook → it ignores a static toMimeBundle() and a toHtml() that needs an argument",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "what does not count as a hook → it asks for a public, static-free, argument-free method",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "matching by name → it never reports a class name string as an instance",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Display/UserTypesTest",
+            "quantity": "matching by name → it answers false for a class no installed package declares",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "parse errors → it refuses source that does not parse, with the parser's own message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "parse errors → it reports the line in the user's cell, not in the prelude",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "parse errors → it leaves the session untouched when it refuses a cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "parse errors → it does not record a declaration from a cell it refuses",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it accepts a bare trailing expression and captures it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it accepts a bare variable, which is how a notebook asks what something is",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it accepts a cell ending in a // comment, which the bare semicolon could not",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it accepts a cell ending in a # comment, which is what Quarto writes",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it still evals a cell that ended in a comment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it says so when it did not have to append anything",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it still refuses an unclosed brace, with the original message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it reports the original error, not the retry's, when the retry fails differently",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it keeps the original error's line when the retry fails",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it does not retry an error that is not source running out",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it leaves the line mapping untouched, because it only ever appends",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the forgiving semicolon → it produces source that really evals, semicolon and all",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it calls an unclosed brace incomplete, not invalid",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it calls an unclosed call incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it calls an unclosed string incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it calls a genuine syntax error invalid, not incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it calls a stray closing brace invalid",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it does not call a refused namespace incomplete, because it parsed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it does not call a redeclaration incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it does not call a refused declare incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it does not call an alias clash incomplete",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "incomplete versus invalid → it gives the transport all three answers without it reading a parser message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the prelude → it prepends declare(strict_types=1) to every cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the prelude → it is one line when nothing is imported",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the prelude → it enforces strict types, which is the point of prepending it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the prelude → it re-emits every accumulated import ahead of a later cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it strips declare(strict_types=1) the user wrote, which PHP would reject there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it does not let a stripped declare shift the lines below it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it survives eval with the user's own declare stripped",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it refuses declare(strict_types=0), which it cannot honour",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it refuses declare(encoding=...), which can no longer be first",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it refuses block-mode strict_types",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it refuses strict_types combined with another directive, rather than dropping it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it refuses the combination whichever order it is written in",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it names every directive it would have discarded",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the cell's own declare → it leaves declare(ticks=1) where the user put it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it lifts the cell's use into the session so later cells see it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it removes the use from the body, because the prelude now carries it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it emits the cell's own import exactly once, which PHP requires",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it handles use function and use const",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it expands a grouped use into one statement per name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it reads the per-name type out of a mixed grouped use",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it keeps a use that follows code in the same cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it refuses one cell binding the same alias to two names",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it allows one cell repeating the same import, which is harmless",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it lets a later cell rebind an alias, with the new one winning",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "imports → it does not fatal when a cell rebinds an alias an earlier cell bound",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "namespace → it refuses a namespace declaration, naming the limitation",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "namespace → it refuses a braced namespace too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it reports every kind of top-level declaration on the result",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it reports nothing for a cell that declares nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it does not put the names into the session, which is the executor's job",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses a class the session already holds, with the name in the message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses a function the session already holds",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses an interface that collides with a class, because PHP shares the namespace",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses an enum that collides with a trait, for the same reason",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it matches a held name case-insensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it allows a function and a class of the same name, which PHP allows",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses a name the one cell declares twice",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it refuses a function the one cell declares twice",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it reports the line the colliding declaration is on",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it leaves a conditional declaration alone, because PHP does not hoist it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it accepts the same conditional declaration twice",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it does not treat a method of a class as a declaration",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "redeclaration → it does not treat an anonymous class as a declaration",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it reserves nothing for a cell that was cleaned but never run",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it does not reserve a name the cell failed to declare, so the typo can be fixed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it does the same for a class whose interface does not exist",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it reserves a name the cell declared before it threw, because PHP hoists it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it reserves a function only once it exists",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it lets a subclass run again once the base class it needed arrives",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it reserves nothing when newer syntax stops the whole cell compiling",
+            "status": "skipped",
+            "reason": "The pipe operator compiles on PHP 8.5, so the cell succeeds there."
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "committing declarations → it commits nothing for a cell that declares nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it assigns a trailing expression into the reserved variable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it captures a call, which is the common notebook case",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it captures only the last statement",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture an assignment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture a compound assignment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture a reference assignment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture an increment or a decrement",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture echo, which is a statement rather than an expression",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture print",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture a declaration",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture a control structure",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not capture a return",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it captures a value that eval really does leave in the variable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "capturing the cell's value → it does not shift any line when it inserts the capture",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "cells with nothing in them → it accepts an empty cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "cells with nothing in them → it accepts a cell of only whitespace",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "cells with nothing in them → it accepts a cell of only a comment, and keeps it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "cells with nothing in them → it accepts a Quarto cell option, which is a PHP comment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the line mapping → it maps a source line back to the cell line it came from",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the line mapping → it keeps the mapping exact for every line of a cell, however it was edited",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "the line mapping → it holds for a real traceback line that eval reports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "a ten-cell round trip → it keeps the prelude line count correct as the import set grows",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/CleanerTest",
+            "quantity": "a ten-cell round trip → it produces source that evals cleanly at every step of such a session",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it ends a cell with nothing to show in a single ok",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it emits the result immediately before ok, carrying the execution count",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it emits no result for a cell the cleaner found no value in",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it ends a thrown cell in a single error and no ok",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it reports a refused cell as an error without running anything",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it reports a parse error with the cleaner's ename and the cell's line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "terminal events → it reports a refusal that has no line without inventing one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it keeps scalars, arrays and objects",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it keeps the same object, not a copy of it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it keeps a resource open across cells",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it keeps functions and classes a cell declared",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it removes a variable a cell unset, rather than merging it back",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it keeps the variables a cell bound before it threw",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it never leaks the reserved result variable into the session",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it never leaks any reserved variable into the session",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it does not carry a reference across cells, which no PHP REPL does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "variables between cells → it starts a cell with the session already in scope",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it turns what a cell prints into a stdout stream event",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it emits each print separately and in order",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it emits output as it is produced, not when the cell ends",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it delivers output before the error of a cell that printed and then threw",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it does not let the cell's output reach the real stdout",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it closes a buffer the cell left open, without taking any outer one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "output → it survives a cell that closes more buffers than it opened",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it turns a warning into a stderr stream event, not a result",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it turns a deprecation into a stderr stream event",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it turns a user notice into a stderr stream event",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it drops a diagnostic the cell suppressed with @",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it still ends a warning-producing cell with ok",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "diagnostics → it names the cell line a warning came from",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "strict types → it enforces strict types, so a weak argument is a TypeError",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "strict types → it still accepts a correctly typed argument",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "committing declarations → it holds a class a cell declared before it threw, and refuses the cell again",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "committing declarations → it does not hold a class whose parent was missing, and runs the corrected cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "committing declarations → it commits after a cell that was interrupted or failed for any reason",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it publishes a value mid-cell as a display event",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it publishes an already-formatted bundle without formatting it again",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it defaults a published bundle's metadata to empty",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it routes publish() through publishBundle, so one place builds the event",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it takes metadata for a published value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it uses an injected formatter for a result instead of the fallback",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it uses an injected formatter for a published value too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "display → it describes the common value kinds in its fallback",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a value of null → it publishes no result, and still ends in ok",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a value of null → it publishes nothing for a void call as the last statement",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a value of null → it leaves var_dump with its output and no result",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a value of null → it still advances the execution count",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a value of null → it publishes every other falsy value, which are values a cell meant",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "the session object → it uses a session it was given, so the transport can share one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "the session object → it carries accumulated imports into a later cell",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it runs cells and emits the same events there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it reports an exhausted memory limit from the shutdown handler",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it reports an interrupt and leaves the session usable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it keeps the variables an interrupted cell had already bound",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it is not swallowed by a cell's own catch (Exception)",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "in a child process → it ignores a signal that arrives between cells rather than dying",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports a bare exit as a terminal error",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports exit(0) the same way",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports exit with a non-zero code, and the code still reaches the parent",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it delivers what die() printed before the terminal error",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it stops the cells after it, since the process is gone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it says nothing extra on an ordinary shutdown",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it says nothing when the shutdown is one the engine asked for",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it still reports an unmarked exit, so the mark is what makes the difference",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it still delivers what a cell printed before an expected shutdown",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it still reports a fatal even when a shutdown was expected",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports a fatal from a cell that had already printed something",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports a fatal after a cell has printed megabytes",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it reports a fatal whose own allocation was a small one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/ExecutorTest",
+            "quantity": "a cell that ends the process → it still reports a fatal as a fatal rather than as an exit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it starts with nothing imported",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it renders a class import, and leaves out a redundant alias",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it renders function and constant imports with their keyword",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it renders an unnamespaced import",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it keeps the statements sorted, so one session always prints the same",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it replaces an earlier binding of the same alias",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it keeps the three use types apart, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it treats a class alias case-insensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it treats a function alias case-insensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it treats a constant alias case-sensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "imports → it reports nothing for an alias it does not hold",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it starts with nothing declared",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it remembers a class-like name and keeps the spelling the cell used",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it matches a class-like name case-insensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it matches a function name case-insensitively, as PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it keeps class-like names and functions apart, because PHP does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "declared names → it holds one entry for a name declared twice",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it records a name that exists in the runtime",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it ignores a name that does not exist, however valid the cell was",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it records an interface, a trait and an enum, not only a class",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it records a function that exists",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it ignores a function that does not exist",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it does not count a name only the autoloader could find",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/SessionTest",
+            "quantity": "committing declarations → it commits nothing for a cell that declares nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from cell code → it reports the cell and the line the user wrote",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from cell code → it subtracts the prelude, however long it has grown",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from cell code → it reports the class of the thrown value as the ename line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from cell code → it reports an Error as readily as an Exception",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from cell code → it stops at the executor, leaving juphyter's own frames out",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from a function an earlier cell declared → it maps the throw to the cell that declared the function",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from a function an earlier cell declared → it uses the declaring cell's prelude, not the running cell's",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from a function an earlier cell declared → it maps a method of a class an earlier cell declared",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from a function an earlier cell declared → it maps a static method too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from a function an earlier cell declared → it maps a chain through two earlier cells",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from inside vendor code → it leaves a vendor frame as its own file and line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from inside vendor code → it rewrites the cell frame while leaving the vendor frames alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from inside vendor code → it names the function a vendor frame was called from",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a throw from inside vendor code → it does not report an internal function's location twice",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a frame no cell claims → it says what a closure is without claiming to know where",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a frame no cell claims → it never shows the closure's raw name, whatever this PHP calls it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a frame no cell claims → it treats a closure declared and called in one cell the same way",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a frame no cell claims → it treats an arrow function the same way",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a frame no cell claims → it still places the cell frame that called the closure",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "an interrupt → it reports KeyboardInterrupt rather than the exception class",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "an interrupt → it does not show the kernel's own signal handler or its path",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a refused cell → it reads as the refusal and the line the user wrote",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "a refused cell → it omits the location when the refusal has no line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "describing one location → it returns null for a file that is not evaluated code",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "describing one location → it recognises evaluated code by its file name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "describing one location → it maps a line through the running cell when nothing else claims it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Engine/TracebackTest",
+            "quantity": "describing one location → it is what a warning's location comes from",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "a healthy machine → it reports every check and says both front ends are ready",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "a healthy machine → it names every usable kernel in the verdict",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "a healthy machine → it changes nothing it looked at",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "Quarto → it says it is not installed rather than not ready",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "Quarto → it fails when the interpreter Quarto will run has no Jupyter, and gives the PATH entry",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "Quarto → it takes the PATH entry from a working kernel when no interpreter is usable now",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "a Python that cannot host the kernel → it fails and prints the command that fixes it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "a Python that cannot host the kernel → it fails an ipykernel older than the kernel needs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "kernels whose recorded paths have moved → it names a PHP that no longer runs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "kernels whose recorded paths have moved → it names an engine a deleted project took with it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "kernels whose recorded paths have moved → it names a Python wrapper that is gone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "kernels whose recorded paths have moved → it names a Python that lost its ipykernel",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "what it leaves alone → it ignores a kernel juphyter did not write",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "what it leaves alone → it says so when nothing is installed, and what to run",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "what it leaves alone → it says to install a Python first when there is not one either",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "the command surface → it prints its own help for --help and -h",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "the command surface → it documents --prefix and the exit code",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "the command surface → it rejects an unknown option",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "the command surface → it is dispatched as \"doctor\" and describes itself",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/DoctorCommandTest",
+            "quantity": "it treats a default Python that cannot host a kernel as advisory once kernels work",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it writes one under the Jupyter data directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it writes one under a prefix, as jupyter kernelspec install does",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it takes an option as --name=value too",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it reports where it went",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it creates the kernels directory when it is not there yet",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it adds JUPHYTER_AUTOLOAD when --autoload is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it lowercases the kernel name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "writing the kernelspec → it refuses a name it cannot use, before writing anything",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "several PHP versions side by side → it keeps two kernels apart by --name and --display-name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "several PHP versions side by side → it replaces its own kernelspec when the same name is installed again",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "several PHP versions side by side → it leaves a kernelspec it did not write alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the Python interpreter → it names the interpreter the probe chose",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the Python interpreter → it writes nothing and prints the pip command when ipykernel is missing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the Python interpreter → it writes nothing when ipykernel is too old for the wrapper",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the Python interpreter → it writes nothing when the interpreter does not run",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it defaults to the PHP running the command, without starting a process",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it records the default PHP under the PATH symlink that reaches it, as Homebrew needs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it keeps the binary when no PATH entry reaches it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it looks only for the same name, so php8.3 is never swapped for php",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it validates --php by running it, and takes the path it reports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it keeps an absolute --php exactly as it was given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it resolves a bare name through the binary it reports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it resolves a relative path through the binary it reports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it probes the path it was given, and not the one that comes back",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it writes nothing when --php does not run",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the PHP binary → it writes nothing when --php runs but reports no version",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "running from a PHAR → it names the archive as the engine and copies the wrapper out of it",
+            "status": "skipped",
+            "reason": "Writing a PHAR needs phar.readonly=0."
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "running from a PHAR → it refuses an archive with no wrapper module in it",
+            "status": "skipped",
+            "reason": "Writing a PHAR needs phar.readonly=0."
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the missing Python wrapper → it fails and writes nothing when the package has no wrapper module",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the missing Python wrapper → it fails when the module directory is there but the module is not",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the missing Python wrapper → it asks nothing of Python when the wrapper is missing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the missing Python wrapper → it installs when the module is there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it is dispatched as \"install\" and describes itself without being built",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it prints its own help for --help and -h",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it rejects an unknown option and shows the usage",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it rejects an argument that is not an option",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it rejects an option with no value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it is built by make() without arguments, the way the dispatcher builds it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it resolves its package root to this checkout outside a PHAR",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the command surface → it writes a kernelspec that uninstall recognizes as juphyter's",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it says nothing when the target PHP can handle signals",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it warns and names the binary when it cannot, and still installs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it names the path the user gave in the warning, not the one PHP reports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it still reports the install on stdout alongside the warning",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it asks the target PHP the same question Interrupt::available() asks",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it says nothing when an older probe answers with only two lines",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the stop button → it checks the running PHP when no --php is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it says nothing about Quarto when quarto is not on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it names the interpreter and its jupyter_client when it has one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it reports no Jupyter, warns, and installs anyway",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it leaves the kernelspec naming the recorded interpreter, not Quarto's",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it takes QUARTO_PYTHON over the python3 on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it reports a QUARTO_PYTHON that does not run, and still installs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it reports that there is no python3 on PATH for Quarto to use",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it suggests no PATH entry when the recorded interpreter has no Jupyter either",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the interpreter Quarto will use → it asks the resolved interpreter for jupyter_client and nothing else",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "the Quarto check against a real interpreter → it warns and names the Jupyter-less python3 that is first on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it offers to build one and installs into it when the answer is yes",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it does not ask when --create-venv names a directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it says what it is building, because installing it takes a minute",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it declines without a terminal and names the option that would do it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it does not offer to build when --python named an interpreter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it has no default directory to offer when HOME is unset",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "building a Python when none can host the kernel → it lists --create-venv in its help",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "shell startup files → it writes to none, and offers no option that would",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/InstallCommandTest",
+            "quantity": "shell startup files → it rejects --path-file, which it no longer has",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it uses JUPYTER_DATA_DIR when it is set",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it ignores an empty JUPYTER_DATA_DIR",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it drops a trailing separator",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it puts it under ~/Library/Jupyter on macOS",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it puts it under XDG_DATA_HOME on Linux",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it falls back to ~/.local/share on Linux without XDG_DATA_HOME",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it treats BSD like Linux",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it follows JUPYTER_PLATFORM_DIRS to the platformdirs location",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it reads the words jupyter_core reads as false",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it refuses Windows, which the kernel cannot run on",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the data directory → it says what to do when HOME is not set",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it sits inside the data directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it moves under a prefix when one is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it ignores an empty prefix",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it does not need HOME or a platform when a prefix is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it names one kernelspec after the kernel",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "the kernels directory → it collapses a doubled separator from a prefix with a trailing slash",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/JupyterPathsTest",
+            "quantity": "it reads the running process in fromEnvironment",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it lowercases a name and trims it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it allows dots, dashes, and underscores",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('   ')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('php 85')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('php/85')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('../escape')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('.hidden')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('-leading-dash')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('php:85')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it rejects a name Jupyter cannot select with data set \"('php*')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the kernel name → it keeps a name out of the parent directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the document → it holds the keys Jupyter reads, in the plan's order",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the document → it leaves {connection_file} for Jupyter to substitute",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the document → it interrupts by signal, because the wrapper forwards SIGINT",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the document → it adds JUPHYTER_AUTOLOAD only when an autoloader is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the document → it reports its own name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the JSON → it round-trips through json_decode",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "the JSON → it is indented, unescaped, and ends with a newline",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it recognizes what it wrote",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"a python kernel\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"another PHP kernel\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"a PHP kernel with an empty engine\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"a PHP kernel whose env is not a map\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"nothing at all\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"a string\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/KernelSpecTest",
+            "quantity": "recognizing juphyter's own kernelspec → it does not claim a kernelspec from another kernel with data set \"dataset \"an empty document\"\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "the build → it produces a runnable archive",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "the build → it carries the production dependencies and not the dev ones",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "the build → it carries the Python wrapper, which a PHAR install copies out of it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "the build → it leaves compiled Python bytecode out, however the checkout looks",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "the build → it drops the shebang of bin/juphyter, which would otherwise be printed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "dispatching from the archive → it lists the commands it holds, because scandir() reads phar:// paths",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "dispatching from the archive → it lists every command the checkout lists",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "dispatching from the archive → it rejects an unknown command with usage and a non-zero code",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "dispatching from the archive → it dispatches a command it holds",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it writes a kernelspec that names the archive as the engine",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it copies the Python wrapper out of the archive",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it copies the real wrapper out, so the installed kernel can start",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it prints the pip command when a named interpreter has no ipykernel",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it builds an environment rather than touching an interpreter it was not given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PharTest",
+            "quantity": "installing from the archive → it uninstalls what it installed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it asks the interpreter --python names for its own path",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it reads the shebang of the jupyter on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it follows a /usr/bin/env shebang back to PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it skips env options and assignments in a shebang",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it reads a quoted shebang path, which pip writes when the path holds a space",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it falls back to python3 when the shebang names something else",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it falls back to python3 when the shebang points at a missing interpreter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it falls back to python when there is no python3",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it skips a jupyter that is not executable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it says what is missing when PATH holds no jupyter and no python",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it reports an interpreter that does not run, with its own message",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "choosing an interpreter → it reports an interpreter that exits cleanly and says nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it returns the version it finds",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it asks the interpreter to import it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it reports no version when the import fails",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it prints the exact install command when ipykernel is missing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it refuses an ipykernel below the floor the wrapper needs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it accepts the floor itself and anything above it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "requiring ipykernel → it names the floor in one place",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "the default runner → it runs a process and returns its code and both streams",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "the default runner → it reports a path that is not there rather than throwing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "the default runner → it reports an empty command",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/PythonProbeTest",
+            "quantity": "the default runner → it passes arguments without a shell, so nothing needs quoting",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "whether Quarto is installed → it finds quarto on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "whether Quarto is installed → it reports none when PATH has no quarto",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "whether Quarto is installed → it ignores a quarto that is not executable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it takes the first python3 on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it takes QUARTO_PYTHON over the python3 on PATH",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it ignores an empty QUARTO_PYTHON",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it resolves the candidate to its own sys.executable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it has nothing to resolve when PATH holds no python3",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "resolving the interpreter → it does not fall back to python",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "a candidate that cannot be asked anything → it reports a QUARTO_PYTHON that is not there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "a candidate that cannot be asked anything → it reports an exit code when the interpreter said nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "a candidate that cannot be asked anything → it reports an interpreter that ran and printed no path",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "the jupyter_client check → it reports the version when it imports",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "the jupyter_client check → it reports none when it does not import",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "the jupyter_client check → it asks the resolved interpreter, and asks only about jupyter_client",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/QuartoProbeTest",
+            "quantity": "the jupyter_client check → it can be asked of any interpreter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it removes one juphyter wrote, under a prefix",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it removes one under the Jupyter data directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it removes the copy of the Python wrapper a PHAR install left inside it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it removes only the kernel named",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it lowercases the name it is given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "removing a kernelspec → it unlinks a symlink inside the kernelspec rather than following it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it leaves a kernelspec juphyter did not write",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it leaves a Python kernelspec that happens to share the name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it leaves a kernel.json it cannot parse",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it says there is nothing there when the kernel is not installed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it says there is nothing there when the directory holds no kernel.json",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "refusing to remove → it refuses a name it cannot use",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "the command surface → it is dispatched as \"uninstall\" and describes itself without being built",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "the command surface → it prints its own help for --help and -h",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "the command surface → it rejects an unknown option, a stray argument, and a missing value",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "the command surface → it does not take install's options",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/UninstallCommandTest",
+            "quantity": "the command surface → it is built by make() without arguments, the way the dispatcher builds it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "building an environment → it creates one and installs the packages into its own interpreter",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "building an environment → it adopts an environment that already runs rather than rebuilding it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "building an environment → it installs exactly the documented packages",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "building an environment → it drops a trailing slash from the directory it was given",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "refusing to build → it refuses a directory that exists and holds something",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "refusing to build → it builds into an empty directory that is already there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "refusing to build → it refuses an empty directory name",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "refusing to build → it says so when PATH holds no Python to build with",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "reporting a failure → it reports why venv failed",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "reporting a failure → it reports a venv that claimed success and left nothing that runs",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "reporting a failure → it reports why pip failed, keeping the last lines of it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "reporting a failure → it falls back to the exit code when a failure said nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "the default directory → it is under HOME",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "the default directory → it collapses a trailing slash on HOME",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Install/VenvBuilderTest",
+            "quantity": "the default directory → it is null when HOME is unset, so the caller asks instead of guessing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it finds an autoloader beside the notebook",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it walks up until it finds one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it takes the nearest one, because a package inside a monorepo means the package",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it finds nothing when there is nothing, which is not an error",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it ignores a vendor directory with no autoloader in it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "searching upwards → it does not fall over on a directory that is not there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "precedence → it prefers the environment over everything",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "precedence → it prefers the config over the search",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "precedence → it falls back to the search when nothing names one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "precedence → it reports finding nothing, rather than failing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "precedence → it treats an empty environment variable as unset",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "an autoloader that was named but is not there → it refuses a missing path from the environment, naming the variable",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "an autoloader that was named but is not there → it refuses a missing path from the config, naming the file",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "an autoloader that was named but is not there → it says where it looked",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "loading → it requires the file it found",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/AutoloadTest",
+            "quantity": "loading → it does nothing when it found nothing",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "finding the file → it reads a juphyter.json beside the notebook",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "finding the file → it walks up, so one file at the top of a project serves its subdirectories",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "finding the file → it takes the nearest one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "finding the file → it finds nothing when there is none",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "finding the file → it does not fall over on a directory that is not there",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it reads all three settings",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it leaves out what the file does not say",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it ignores a setting of the wrong type or an empty one",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it resolves a relative autoload path against the file, not the working directory",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it leaves an absolute autoload path alone",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it refuses invalid JSON, rather than ignoring a file the user wrote on purpose",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "reading the file → it refuses a file that is not a JSON object",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "applying the settings → it sets the memory limit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "applying the settings → it prepends the include path rather than replacing it",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Project/ConfigTest",
+            "quantity": "applying the settings → it changes nothing it was not told to change",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/VersionTest",
+            "quantity": "the reported version → it reads this installation out of the Composer record",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/VersionTest",
+            "quantity": "the reported version → it identifies a branch install by its commit",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/VersionTest",
+            "quantity": "the reported version → it names the tool and the PHP running it, on one line",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/VersionTest",
+            "quantity": "the reported version → it leaves off the archive path when no archive is running",
+            "status": "pass"
+        }
+    ],
+    "reproduce": [
+        "composer install",
+        "composer require --dev --prefer-source \"phpstats/phibble:^0.5\" \"phpstats/phplyr:^0.4\" \"phpstats/phiz:^0.5\"",
+        "vendor/bin/pest"
+    ],
+    "source": ".github/workflows/family.yml",
+    "environment": {
+        "date": "2026-11-01",
+        "commit": "d506bea",
+        "php": "8.5.10",
+        "python": "3.14.7",
+        "os": "macOS 27.0.1 (arm64)"
+    }
+}
