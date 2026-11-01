@@ -82,7 +82,7 @@ describe('a real phibble table', function () {
     beforeEach(function () {
         if (! interface_exists(TableFormatter::TABLE)) {
             $this->markTestSkipped(
-                'phibble is not installed. Run: composer require --dev phpstats/phibble:^0.3'
+                'phibble is not installed. Run: composer require --dev phpstats/phibble:^0.5'
             );
         }
     });
