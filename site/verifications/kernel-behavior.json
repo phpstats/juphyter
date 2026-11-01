@@ -1,8 +1,9 @@
 {
-    "title": "Kernel behavior over the Jupyter protocol",
+    "title": "Kernel behavior",
     "label": "Kernel behavior",
     "kind": "contract",
-    "checked": "Execution state, output streaming, interrupts, completion offsets, and process cleanup, driven through a real kernel over the Jupyter protocol with jupyter_client.",
+    "checked": "Execution state across cells, stream order and completeness, output written to the engine's own descriptors, interrupts, completion offsets, and process cleanup after shutdown, kill, and engine failure.",
+    "description": "Protocol tests start a kernel registered from the tested commit and drive it through jupyter_client. Stream tests drive the PHP engine through the transport's Engine class with a slowed pipe reader.",
     "versions": {
         "PHP": "8.5.10",
         "Python": "3.14.7",
@@ -13,93 +14,93 @@
         {
             "id": "contract",
             "kind": "exact",
-            "applies_to": "the behavior each test asserts"
+            "applies_to": "Asserted behavior"
         }
     ],
     "cases": [
         {
             "name": "a cell ends only after its descriptor output has been read",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "the marker is found across a read boundary and never shown",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a nul the cell writes itself is passed through",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a cell that closes stdout still ends",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "the kernelspec starts the wrapper as a module",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "state carries from one cell to the next",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a silent cell shows nothing but still reports an error",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "an engine killed mid cell is reported rather than hanging",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "an interrupt stops a running cell",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "stdout and stderr arrive in the order they were written",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a cell that prints megabytes does not deadlock",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "what the engine writes to its own descriptors is streamed",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "the cursor is converted across a multibyte character",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a kernel killed outright leaves no engine running",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "an orphaned engine in a runaway cell stops itself",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "the watchdog leaves a long cell and its sleep alone",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         },
         {
             "name": "a shutdown leaves no engine and no temporary directory",
-            "quantity": "behavior",
+            "quantity": "Behavior",
             "status": "pass"
         }
     ],
@@ -111,7 +112,7 @@
     "source": "tests/Protocol/test_kernel.py",
     "environment": {
         "date": "2026-11-01",
-        "commit": "5b2b461",
+        "commit": "bc96cfa",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

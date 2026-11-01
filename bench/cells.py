@@ -166,6 +166,49 @@ def row(case: str, implementation: str, reps: list[float], rss: list | None, php
     return entry
 
 
+def text(cells: int = 1000, frames: int = 100) -> dict:
+    """The record's wording, kept apart from its values so bench/retext.py can apply it."""
+    return {
+        "title": "Cell round trip",
+        "label": "Cell round trip",
+        "description": (
+            f"Time per cell for {cells:,} trivial cells in one session, and for {frames} cells whose "
+            "value is a 1,000-row phibble data frame formatted into its MIME bundle. Formatting is "
+            "also timed without a kernel. The text and HTML representations each render the first "
+            "10 rows."
+        ),
+        "workload": f"{cells:,} trivial cells; {frames} cells returning a 1,000-row, 5-column data frame",
+        "implementations": {
+            "juphyter kernel": "php kernel through jupyter_client; ipykernel transport and PHP engine",
+            "PHP engine alone": "php bin/juphyter engine over its Unix socket; no Jupyter",
+            "python3 ipykernel": "stock ipykernel Python kernel; cell 1",
+            "juphyter formatter, no kernel": "Juphyter\\Display\\Registry::default()->format($frame) in one PHP process",
+            "phibble text output, no kernel": "(string) $frame in one PHP process",
+        },
+        "measure": "Elapsed time per cell",
+        "unit": "ms",
+        "statistic": "median",
+        "method": (
+            "Kernels: from execute_request to execute_reply and idle status. PHP engine alone: from "
+            "writing the request to the socket to the engine's ok event. No-kernel rows: hrtime around "
+            "the expression. Each repetition is a new session with 20 trivial or 3 data-frame warmup "
+            "cells. Value: median of the per-session median times. Data-frame construction excluded."
+        ),
+        "time_spent_in": (
+            "PHP engine alone: the PHP process, parsing, running, and formatting the cell. juphyter "
+            "kernel minus PHP engine alone: ZeroMQ messaging, ipykernel, and the transport's socket "
+            "hop. No-kernel rows: formatting in PHP."
+        ),
+        "memory_method": (
+            "Peak resident set size: VmHWM of the PHP engine process from /proc/<pid>/status after "
+            "the trivial cells; engine only, excluding the Python transport and Jupyter. PHP allocator "
+            "peak: memory_get_peak_usage(true) in the engine after the trivial cells."
+        ),
+        "reproduce": ["bench/setup", "bench/run cells"],
+        "source": "bench/cells.py",
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cells", type=int, default=1000)
@@ -177,47 +220,9 @@ def main() -> None:
     rows = trivial(arguments.repeats, arguments.cells) + frames(arguments.repeats, arguments.frames)
 
     record = {
-        "title": "Cell round trip: trivial cells and a 1,000-row data frame",
-        "label": "Cell round trip",
-        "description": (
-            f"Runs {arguments.cells:,} trivial cells in one session, and a cell whose value is a 1,000-row "
-            f"phibble data frame {arguments.frames} times. Each data-frame cell formats the frame into its "
-            "MIME bundle: text, the HTML table, and the bundle's metadata. The two no-kernel rows time "
-            "the same formatting in one PHP process. phibble's text output prints only the first rows "
-            "of a frame, as the HTML table does, so neither formats all 1,000 rows."
-        ),
-        "workload": f"{arguments.cells:,} cells of 1; and {arguments.frames} cells returning a 1,000-row, 5-column data frame",
-        "implementations": {
-            "juphyter kernel": "the php kernel through jupyter_client: ipykernel transport plus the PHP engine",
-            "PHP engine alone": "php bin/juphyter engine, driven over its Unix socket",
-            "python3 ipykernel": "a stock ipykernel Python kernel running 1",
-            "juphyter formatter, no kernel": "Juphyter\\Display\\Registry::default()->format($frame) in a plain PHP process",
-            "phibble text output, no kernel": "(string) $frame in a plain PHP process",
-        },
-        "measure": "Elapsed time per cell",
-        "unit": "ms",
-        "statistic": "median",
-        "method": (
-            "Kernel rows: from sending execute_request to receiving the execute_reply and the idle "
-            "status. PHP engine alone: from writing the execute request to the socket to the engine's ok "
-            "event. No-kernel rows: hrtime around the expression. Each repetition is a new session with "
-            "20 (trivial) or 3 (data frame) warmup cells; the value is the median over the repetitions' "
-            "per-cell medians. Building the data frame is excluded."
-        ),
-        "time_spent_in": (
-            "The PHP engine alone row is the PHP process: parsing and running the cell and formatting its "
-            "value. The juphyter kernel row adds Jupyter (ZeroMQ messaging and ipykernel) and the Python "
-            "transport's socket hop. The no-kernel rows are formatting alone, in PHP."
-        ),
-        "memory_method": (
-            "peak_rss_mib: VmHWM of the PHP engine process from /proc/<pid>/status after the trivial "
-            "cells, the engine only, without the Python transport or Jupyter. php_peak_mib: "
-            "memory_get_peak_usage(true) in the engine after the trivial cells."
-        ),
+        **text(arguments.cells, arguments.frames),
         "environment": environment("warm", arguments.repeats, None),
         "rows": rows,
-        "reproduce": ["bench/setup", "bench/run cells"],
-        "source": "bench/cells.py",
     }
     write_record("cell-round-trip", record, arguments.out)
 

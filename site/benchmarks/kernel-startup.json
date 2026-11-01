@@ -1,18 +1,18 @@
 {
-    "title": "Kernel startup: from start to the first result",
+    "title": "Kernel startup",
     "label": "Kernel startup",
-    "description": "Starts a kernel, runs one trivial cell, and stops the clock when the cell's reply and idle status have arrived. The juphyter kernel starts its PHP engine on that first cell. The PHP engine alone row spawns the same engine and runs the same cell over its socket, with no Jupyter. python3 ipykernel is a stock Python kernel started the same way.",
-    "workload": "One kernel start and one trivial cell (1;), in an empty directory and in a Composer project",
+    "description": "Time from starting a kernel to the result of its first trivial cell, in an empty directory and in a Composer project whose autoloader loads phibble, phplyr, and phiz.",
+    "workload": "One kernel start and one trivial cell",
     "implementations": {
-        "juphyter kernel": "the php kernel through jupyter_client: ipykernel transport plus the PHP engine",
-        "PHP engine alone": "php bin/juphyter engine, driven over its Unix socket",
-        "python3 ipykernel": "a stock ipykernel Python kernel, as the Jupyter baseline"
+        "juphyter kernel": "php kernel through jupyter_client; ipykernel transport and PHP engine",
+        "PHP engine alone": "php bin/juphyter engine over its Unix socket; no Jupyter",
+        "python3 ipykernel": "stock ipykernel Python kernel"
     },
     "measure": "Elapsed time",
     "unit": "ms",
     "statistic": "median",
-    "method": "juphyter kernel and python3 ipykernel: from KernelManager.start_kernel() to receiving the first cell's execute_reply and its idle status. PHP engine alone: from spawning the PHP process to its ok event for the cell. Stopping the kernel is excluded. A cold case empties the page cache with drop_caches before each repetition; a warm case runs one warmup first.",
-    "time_spent_in": "The PHP engine alone row is the PHP process: starting PHP, juphyter's engine, loading the autoloader, and the cell. The juphyter kernel row adds Jupyter and the Python transport, so the difference between the two rows is spent in jupyter_client, ipykernel, and the transport.",
+    "method": "Kernels: from KernelManager.start_kernel() to the first cell's execute_reply and idle status. PHP engine alone: from spawning the PHP process to the engine's ok event. Kernel shutdown excluded. Cold cases: page cache emptied with drop_caches before each repetition. Warm cases: one warmup run.",
+    "time_spent_in": "PHP engine alone: the PHP process, including PHP startup, the engine, the autoloader, and the cell. juphyter kernel minus PHP engine alone: jupyter_client, ipykernel, and the Python transport.",
     "environment": {
         "cpu": "AMD Ryzen 9 9955HX 16-Core Processor",
         "cores": 2,

@@ -1,8 +1,10 @@
 {
-    "title": "Quarto 1.10.18: rendering PHP documents",
+    "title": "Quarto rendering",
     "label": "Quarto rendering",
     "kind": "integration",
-    "checked": "Quarto renders the fixture documents through the kernel to HTML, ipynb, and PDF (Typst), and the output carries tables, plots, captions, state, tracebacks, and cell options as expected. The PDF figure check ran and passed in this run.",
+    "checked": "Tables, plots, figure captions, cell options, state across cells, multibyte text, tracebacks, and syntax highlighting in HTML; kernel metadata and outputs in ipynb; plot figures in PDF through Typst; kernel reuse under the Quarto daemon.",
+    "description": "pytest renders the fixture documents with Quarto 1.10.18 through a kernel registered from the tested commit and inspects the HTML, ipynb, and PDF output.",
+    "note": "PDF figure check: run, passed.",
     "versions": {
         "PHP": "8.5.10",
         "Python": "3.14.7",
@@ -17,7 +19,7 @@
     "inputs": [
         {
             "name": "report.qmd",
-            "detail": "tables, a plot, cell options, an error",
+            "detail": "tables, a plot, cell options, and an error",
             "url": "tests/Quarto/fixture/notebooks/report.qmd"
         },
         {
@@ -30,147 +32,147 @@
         {
             "id": "structure",
             "kind": "exact",
-            "applies_to": "the rendered HTML, ipynb, and PDF content each test asserts"
+            "applies_to": "Rendered content; HTML, ipynb, and PDF"
         }
     ],
     "cases": [
         {
             "name": "the kernelspec was written by juphyter into a temporary directory",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the notebook sits below the project it finds its packages in",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html renders the phibble frame as a table",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html renders the phplyr summary as a table",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html draws the plot from the vega lite specification",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html keeps the figure caption beside the plot",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html honors echo false",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html carries state from one cell to the next",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html keeps a multibyte string intact",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html shows the traceback with cell frames",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "html shows both values a cell displayed",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "php cells are syntax highlighted",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "ipynb records the kernel and the php that ran the cells",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "ipynb carries the plot the stream output and the plain text",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "ipynb holds one representation per output rather than all four",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "ipynb loses an html table the way any kernels table is lost",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "ipynb drops the error output of a failing cell",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the kernel publishes four representations of a plot",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the run says whether vl convert was found",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "pdf renders the plot as a figure from the static svg",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "a second render reuses the daemonized kernel",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the second render produces the same document",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the daemon leaves no engine or watchdog behind",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "a kept alive kernel survives a long idle period",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "skipped",
             "reason": "Set JUPHYTER_QUARTO_IDLE to a number of seconds to leave a kept-alive kernel idle between two renders. It takes that long, which is why tests/Engine/IdleTest.php covers the same ground against a one-second timeout."
         },
         {
             "name": "the process listing carries a long command line whole",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         },
         {
             "name": "the explicit kernelspec front matter needs the spec directory",
-            "quantity": "rendered document",
+            "quantity": "Rendered output",
             "status": "pass"
         }
     ],
     "exclusions": [
-        "The long-idle daemon test runs only when JUPHYTER_QUARTO_IDLE is set; tests/Engine/IdleTest.php covers the same behavior with a one-second timeout."
+        "Long-idle daemon test: runs only with JUPHYTER_QUARTO_IDLE set; tests/Engine/IdleTest.php covers the behavior with a one-second timeout."
     ],
     "known_differences": [
-        "quarto render --to ipynb drops HTML tables and error outputs. This is Quarto's conversion and happens with any kernel."
+        "quarto render --to ipynb drops HTML tables and error outputs, for any kernel."
     ],
     "reproduce": [
         "python -m pip install -r tests/Quarto/requirements.txt",
@@ -181,7 +183,7 @@
     "data": "tests/Quarto/fixture",
     "environment": {
         "date": "2026-11-01",
-        "commit": "5b2b461",
+        "commit": "bc96cfa",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

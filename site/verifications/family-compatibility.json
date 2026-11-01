@@ -1,8 +1,9 @@
 {
-    "title": "Compatibility with the phibble, phplyr, and phiz releases",
-    "label": "Package compatibility",
+    "title": "Family compatibility",
+    "label": "Family compatibility",
     "kind": "integration",
-    "checked": "juphyter's full PHP test suite, including the table and chart formatters, run with the current Packagist releases of phibble, phplyr, and phiz installed.",
+    "checked": "The full PHP test suite, including the table and chart formatters, with the current phibble, phplyr, and phiz releases installed.",
+    "description": "Pest runs in a copy of the tested commit with the three packages required from Packagist.",
     "versions": {
         "PHP": "8.5.10",
         "phibble": "0.5.3",
@@ -14,7 +15,7 @@
         {
             "id": "contract",
             "kind": "exact",
-            "applies_to": "the values and output each test asserts"
+            "applies_to": "Asserted values and output"
         }
     ],
     "cases": [
@@ -3931,7 +3932,7 @@
     "source": ".github/workflows/family.yml",
     "environment": {
         "date": "2026-11-01",
-        "commit": "5b2b461",
+        "commit": "bc96cfa",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

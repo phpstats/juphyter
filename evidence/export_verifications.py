@@ -192,29 +192,33 @@ def main() -> None:
         output,
         "protocol-conformance",
         {
-            "title": "Jupyter protocol: conformance with jupyter_kernel_test",
+            "title": "Protocol conformance",
             "label": "Protocol conformance",
             "kind": "reference",
             "checked": (
-                "The kernel answers execute, complete, is_complete, and kernel_info requests, "
-                "and every message it sends validates against the Jupyter messaging protocol "
-                "v5 schema, as checked by jupyter_kernel_test's KernelTests."
+                "Replies to execute, complete, is_complete, and kernel_info requests, and the "
+                "stdout, stderr, execute-result, display-data, and error output of each sample. "
+                "Every message validated against the Jupyter messaging protocol v5 schema."
+            ),
+            "description": (
+                "jupyter_kernel_test's KernelTests drive a kernel registered from the tested commit "
+                "through jupyter_client, with the PHP samples declared in tests/Protocol/test_kernel.py."
             ),
             "reference": f"jupyter_kernel_test {kernel_test}, Jupyter messaging protocol 5.x",
             "versions": {**python_versions, "jupyter_kernel_test": kernel_test},
-            "inputs": "The PHP samples declared on JuphyterKernelTests in tests/Protocol/test_kernel.py.",
+            "inputs": "PHP samples declared on JuphyterKernelTests, tests/Protocol/test_kernel.py",
             "comparison": [
                 {
                     "id": "schema",
                     "kind": "exact",
-                    "applies_to": "message structure against the v5 schema, and the expected output of each sample",
+                    "applies_to": "Messages and sample output; v5 schema and expected values",
                 }
             ],
-            "cases": [case(humanize(c["name"]), "messages and output", c) for c in reference],
+            "cases": [case(humanize(c["name"]), "Messages and output", c) for c in reference],
             "exclusions": [
-                "History requests are not implemented, so jupyter_kernel_test skips its three history checks.",
-                "inspect_request is not implemented, so the inspect check is skipped.",
-                "The kernel has no clear_output or pager sample, so those checks are skipped.",
+                "History requests are not implemented; the three history checks are skipped.",
+                "inspect_request is not implemented; the inspect check is skipped.",
+                "No clear_output or pager sample is declared; those checks are skipped.",
             ],
             "reproduce": REPRODUCE_PROTOCOL,
             "source": "tests/Protocol/test_kernel.py",
@@ -226,18 +230,24 @@ def main() -> None:
         output,
         "kernel-behavior",
         {
-            "title": "Kernel behavior over the Jupyter protocol",
+            "title": "Kernel behavior",
             "label": "Kernel behavior",
             "kind": "contract",
             "checked": (
-                "Execution state, output streaming, interrupts, completion offsets, and process "
-                "cleanup, driven through a real kernel over the Jupyter protocol with jupyter_client."
+                "Execution state across cells, stream order and completeness, output written to the "
+                "engine's own descriptors, interrupts, completion offsets, and process cleanup after "
+                "shutdown, kill, and engine failure."
+            ),
+            "description": (
+                "Protocol tests start a kernel registered from the tested commit and drive it through "
+                "jupyter_client. Stream tests drive the PHP engine through the transport's Engine class "
+                "with a slowed pipe reader."
             ),
             "versions": python_versions,
             "comparison": [
-                {"id": "contract", "kind": "exact", "applies_to": "the behavior each test asserts"}
+                {"id": "contract", "kind": "exact", "applies_to": "Asserted behavior"}
             ],
-            "cases": [case(humanize(c["name"]), "behavior", c) for c in behavior],
+            "cases": [case(humanize(c["name"]), "Behavior", c) for c in behavior],
             "reproduce": REPRODUCE_PROTOCOL,
             "source": "tests/Protocol/test_kernel.py",
             "environment": environment,
@@ -247,25 +257,30 @@ def main() -> None:
     quarto_cases = cases_from(junit / "quarto.xml")
     pdf = [c for c in quarto_cases if "pdf_renders_the_plot" in c["name"]]
     if pdf and pdf[0]["status"] == "pass":
-        pdf_note = "The PDF figure check ran and passed in this run."
+        pdf_note = "PDF figure check: run, passed."
     elif pdf:
-        pdf_note = f"The PDF figure check did not pass in this run: {pdf[0]['status']}, {pdf[0]['reason']}"
+        pdf_note = f"PDF figure check: {pdf[0]['status']}; {pdf[0]['reason']}"
     else:
-        pdf_note = "The PDF figure check is absent from this run."
+        pdf_note = "PDF figure check: not run."
     vl = run("vl-convert", "--version") or None
 
     write(
         output,
         "quarto-render",
         {
-            "title": f"Quarto {quarto}: rendering PHP documents",
+            "title": "Quarto rendering",
             "label": "Quarto rendering",
             "kind": "integration",
             "checked": (
-                "Quarto renders the fixture documents through the kernel to HTML, ipynb, and PDF "
-                "(Typst), and the output carries tables, plots, captions, state, tracebacks, and "
-                "cell options as expected. " + pdf_note
+                "Tables, plots, figure captions, cell options, state across cells, multibyte text, "
+                "tracebacks, and syntax highlighting in HTML; kernel metadata and outputs in ipynb; "
+                "plot figures in PDF through Typst; kernel reuse under the Quarto daemon."
             ),
+            "description": (
+                f"pytest renders the fixture documents with Quarto {quarto} through a kernel registered "
+                "from the tested commit and inspects the HTML, ipynb, and PDF output."
+            ),
+            "note": pdf_note,
             "versions": {
                 **python_versions,
                 "Quarto": quarto,
@@ -275,18 +290,18 @@ def main() -> None:
                 "phiz": composer_version(build, "phiz"),
             },
             "inputs": [
-                {"name": "report.qmd", "detail": "tables, a plot, cell options, an error", "url": "tests/Quarto/fixture/notebooks/report.qmd"},
+                {"name": "report.qmd", "detail": "tables, a plot, cell options, and an error", "url": "tests/Quarto/fixture/notebooks/report.qmd"},
                 {"name": "kernelspec.qmd", "detail": "explicit kernelspec front matter", "url": "tests/Quarto/fixture/notebooks/kernelspec.qmd"},
             ],
             "comparison": [
-                {"id": "structure", "kind": "exact", "applies_to": "the rendered HTML, ipynb, and PDF content each test asserts"}
+                {"id": "structure", "kind": "exact", "applies_to": "Rendered content; HTML, ipynb, and PDF"}
             ],
-            "cases": [case(humanize(c["name"]), "rendered document", c) for c in quarto_cases],
+            "cases": [case(humanize(c["name"]), "Rendered output", c) for c in quarto_cases],
             "exclusions": [
-                "The long-idle daemon test runs only when JUPHYTER_QUARTO_IDLE is set; tests/Engine/IdleTest.php covers the same behavior with a one-second timeout.",
+                "Long-idle daemon test: runs only with JUPHYTER_QUARTO_IDLE set; tests/Engine/IdleTest.php covers the behavior with a one-second timeout.",
             ],
             "known_differences": [
-                "quarto render --to ipynb drops HTML tables and error outputs. This is Quarto's conversion and happens with any kernel.",
+                "quarto render --to ipynb drops HTML tables and error outputs, for any kernel.",
             ],
             "reproduce": REPRODUCE_QUARTO,
             "source": "tests/Quarto/test_render.py",
@@ -319,16 +334,19 @@ def main() -> None:
         output,
         "family-compatibility",
         {
-            "title": "Compatibility with the phibble, phplyr, and phiz releases",
-            "label": "Package compatibility",
+            "title": "Family compatibility",
+            "label": "Family compatibility",
             "kind": "integration",
             "checked": (
-                "juphyter's full PHP test suite, including the table and chart formatters, run with "
-                "the current Packagist releases of phibble, phplyr, and phiz installed."
+                "The full PHP test suite, including the table and chart formatters, with the current "
+                "phibble, phplyr, and phiz releases installed."
+            ),
+            "description": (
+                "Pest runs in a copy of the tested commit with the three packages required from Packagist."
             ),
             "versions": versions,
             "comparison": [
-                {"id": "contract", "kind": "exact", "applies_to": "the values and output each test asserts"}
+                {"id": "contract", "kind": "exact", "applies_to": "Asserted values and output"}
             ],
             "cases": [case(family_group(c), family_test(c), c) for c in family],
             "reproduce": REPRODUCE_FAMILY,
