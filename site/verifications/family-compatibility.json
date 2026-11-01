@@ -8,7 +8,7 @@
         "phibble": "0.5.3",
         "phplyr": "0.4.5",
         "phiz": "0.5.2",
-        "vl-convert": null
+        "vl-convert": "vl-convert 1.9.0"
     },
     "comparison": [
         {
@@ -3931,7 +3931,7 @@
     "source": ".github/workflows/family.yml",
     "environment": {
         "date": "2026-11-01",
-        "commit": "d506bea",
+        "commit": "5b2b461",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

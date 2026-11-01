@@ -4,6 +4,15 @@ All notable changes to juphyter are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- **Output written to the engine's descriptors.** What a cell writes with
+  `fwrite(STDOUT, ...)` or `fwrite(STDERR, ...)` is published inside the cell.
+  Before, the cell's reply could overtake the pipe, and the end of a large
+  write appeared after the cell had finished.
+
 ## 0.1.1 - 2026-10-31
 
 ### Changed
