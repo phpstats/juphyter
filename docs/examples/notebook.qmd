@@ -15,7 +15,8 @@ Create a Composer project and start JupyterLab in it:
 
 ```bash
 mkdir mileage && cd mileage
-composer require phpstats/phibble phpstats/phplyr phpstats/phiz
+composer require phpstats/phibble phpstats/phplyr \
+    phpstats/phiz
 ~/.venvs/juphyter/bin/jupyter lab
 ```
 
@@ -25,8 +26,6 @@ mileage in miles per gallon (`hwy`).
 
 ## Cells
 
-- The kernel loads `vendor/autoload.php` from the notebook's directory or the
-  nearest directory above it, so cells need no `require`.
 - A `use` statement applies to its own cell and every later one.
 - phplyr's `round()` replaces PHP's built-in `round()` in the cells after the
   import.
@@ -35,7 +34,8 @@ mileage in miles per gallon (`hwy`).
 use Phibble\DataFrame;
 use Phiz\Datasets;
 use Phiz\Plot;
-use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round};
+use function Phplyr\{phplyr, group_by, summarize};
+use function Phplyr\{arrange, desc, n, mean, round};
 ```
 
 A cell's last value is its output. A phibble data frame is shown as a table.

@@ -63,7 +63,7 @@
         {
             "path": "examples/notebook",
             "title": "Show a table and a chart in a notebook",
-            "description": "Runs JupyterLab in a Composer project, where the kernel loads the project's autoloader and keeps imports and variables across cells.",
+            "description": "Starts JupyterLab in a Composer project and carries imports and variables from cell to cell.",
             "also": [
                 "phiz"
             ]
