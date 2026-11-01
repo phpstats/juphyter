@@ -54,11 +54,10 @@ A notebook kept outside the project it works on names the autoloader in a
 [Which classes a notebook sees](install.qmd#which-classes-a-notebook-sees)
 lists every way to set it.
 
-## Tables
+## Tables and plots
 
 A phibble data frame appears as an HTML table with its dimensions and column
-types. The table's styles use JupyterLab's theme variables, so it follows the
-light and dark themes.
+types. The table follows JupyterLab's light and dark themes.
 
 ```{php}
 #| echo: false
@@ -67,27 +66,21 @@ use Phibble\DataFrame;
 
 ```{php}
 DataFrame::fromRows([
-    ['front end' => 'JupyterLab', 'plot from' => 'the Vega-Lite spec', 'table from' => 'text/html'],
-    ['front end' => 'Quarto HTML', 'plot from' => 'the HTML embed', 'table from' => 'text/html'],
-    ['front end' => 'Quarto PDF', 'plot from' => 'the static SVG', 'table from' => 'the parsed table'],
+    ['city' => 'Oslo', 'month' => 'Jan', 'temp' => -4.3],
+    ['city' => 'Oslo', 'month' => 'Jul', 'temp' => 16.4],
+    ['city' => 'Lisbon', 'month' => 'Jan', 'temp' => 11.6],
 ]);
 ```
 
-## Plots
+A phiz plot appears as a chart. JupyterLab draws it from its Vega-Lite
+specification and needs no extension.
 
-JupyterLab draws a phiz plot from its Vega-Lite specification and needs no
-extension for it. phiz writes Vega-Lite 6 specifications, and juphyter
+Compatibility note: phiz writes Vega-Lite 6 specifications, and juphyter
 publishes them under `application/vnd.vegalite.v5+json`, the newest Vega-Lite
 type JupyterLab's built-in renderer accepts. On 2026-10-19, with phiz 0.3,
 JupyterLab's bundled Vega-Lite 5.6.1 compiled all sixteen phiz specifications
-tested.
-
-juphyter also publishes a static SVG and an HTML version of each plot.
-JupyterLab uses neither. It does not run scripts in HTML output, and the
-HTML version is a container with a script that draws the chart, so it would
-show as an empty box. The SVG serves Quarto's PDF and Word output, front ends
-without JavaScript, and any Vega-Lite 6 construct that the version 5 renderer
-rejects.
+tested. A plot also carries a static SVG, which JupyterLab does not use, for
+Quarto's PDF and Word output and for anything the version 5 renderer rejects.
 
 ## Converting a notebook
 

@@ -4,106 +4,61 @@ title: "Installation"
 
 ## Requirements
 
-- PHP 8.3, 8.4, or 8.5. CI tests all three.
-- The `mbstring` and `tokenizer` PHP extensions. Most PHP builds include both.
-  juphyter 0.1.1 and later declare both in composer.json, so Composer reports
-  a missing one at install time.
+- PHP 8.3, 8.4, or 8.5, with the `mbstring` and `tokenizer` extensions. Most
+  PHP builds include both, and Composer reports a missing one.
 - Composer.
 - Python 3 with the `venv` module. On Debian and Ubuntu that module is the
   `python3-venv` package.
 - macOS or Linux.
 
+The kernel runs in a Python environment with
+[ipykernel](https://pypi.org/project/ipykernel/) 7.0 or later. The current
+ipykernel release requires Python 3.11 or later. `juphyter install` uses an
+existing environment that has ipykernel, or builds one.
+
 Optional:
 
-- The `pcntl` PHP extension makes the stop button interrupt a running cell.
-  Without it the kernel runs and the stop button does nothing.
-- [Quarto](https://quarto.org/docs/get-started/) renders `.qmd` documents. CI
-  tests Quarto 1.10.18.
-- The [vl-convert](https://github.com/vega/vl-convert/releases) binary gives
-  phiz plots a static image for PDF and Word output.
-  [Quarto](quarto.qmd#what-each-format-carries) covers when it is needed.
+| Feature | Needed for |
+|---|---|
+| The `pcntl` PHP extension | Interrupting a running cell with the stop button. Without it the stop button does nothing. |
+| [Quarto](https://quarto.org/docs/get-started/) | Rendering `.qmd` documents. CI tests Quarto 1.10.18. |
+| [vl-convert](https://github.com/vega/vl-convert/releases) | Static images of phiz plots in PDF and Word output. See [Output formats](quarto.qmd#output-formats). |
+| phibble, phplyr, and phiz | Data frame tables and charts. See [The phpstats packages](#the-phpstats-packages). |
 
-juphyter does not use the `posix` or `sockets` PHP extensions.
+## Install juphyter
 
-The kernel runs inside a Python environment that has
-[ipykernel](https://pypi.org/project/ipykernel/) 7.0 or later.
-`juphyter install` uses an existing environment that has it, or builds one
-with JupyterLab in it. ipykernel 7.4, the current release, requires Python
-3.11 or later. The commands below were run on 2026-10-31 with juphyter 0.1.0,
-on macOS with Python 3.14 and on Debian 13 with Python 3.13.
-
-## Install
-
-Install juphyter once for your user. A kernel is registered for the user, so
-one install serves notebooks and documents in every directory.
+Install juphyter for your user and put Composer's bin directory on `PATH`:
 
 ```bash
 composer global require phpstats/juphyter
 export PATH="$(composer global config bin-dir --absolute):$PATH"
+```
+
+## Register the kernel
+
+```bash
 juphyter install --create-venv ~/.venvs/juphyter
 export PATH="$HOME/.venvs/juphyter/bin:$PATH"
-juphyter doctor
 ```
 
-The commands do the following:
+- `juphyter install` registers a kernel named `php` for your user, so one
+  install serves notebooks and documents in every directory.
+- It uses the Python environment that owns the `jupyter` command on `PATH`
+  when that environment has ipykernel. Otherwise it builds an environment with
+  JupyterLab at the `--create-venv` path. It changes no existing Python
+  installation.
+- The kernel records absolute paths to the PHP binary, the Python
+  interpreter, and juphyter. The PHP is the one running `juphyter install`,
+  recorded as the first path on `PATH` that leads to it, such as
+  `/opt/homebrew/bin/php`.
+- The second `export` puts the environment first on `PATH`, so `jupyter lab`
+  and `quarto render` find it. When `juphyter install` used an existing
+  environment, the directory does not exist and the line has no effect.
 
-1. `composer global require` installs juphyter into Composer's global
-   directory.
-2. The first `export` puts Composer's bin directory on `PATH` for this
-   shell, so the `juphyter` command is found.
-3. `juphyter install` registers the kernel with Jupyter under the name `php`.
-   It uses the Python environment that owns the `jupyter` command on `PATH`
-   when that environment has ipykernel. Otherwise it builds a virtual
-   environment with JupyterLab at the path `--create-venv` names, using the
-   Python already on the machine. It changes no existing Python
-   installation.
-4. The second `export` puts that environment first on `PATH` for this shell,
-   so `jupyter lab` and `quarto render` find it. When step 3 used an existing
-   environment, the directory does not exist and the line has no effect.
-5. `juphyter doctor` checks the installation. It changes nothing.
-
-Both `export` lines last until the shell closes.
-
-`juphyter install` prints what it registered:
-
-```
-Installed the juphyter kernel "php" for PHP 8.5.10.
-  kernel.json  /Users/you/Library/Jupyter/kernels/php/kernel.json
-  python       /Users/you/.venvs/juphyter/bin/python (ipykernel 7.4.0)
-  php          /opt/homebrew/Cellar/php/8.5.10/bin/php
-  engine       /Users/you/.composer/vendor/phpstats/juphyter/bin/juphyter
-  quarto       /opt/homebrew/opt/python@3.14/bin/python3.14 (no Jupyter)
-```
-
-The `quarto` line names the Python that Quarto would use from this shell. It
-appears only when Quarto is installed. Here it was printed before the second
-`export`, so it names a Python without Jupyter, and the command also printed
-a warning with the `export` line that fixes it. The kernel is still
-registered, and the command exits 0.
-
-On Homebrew, juphyter 0.1.0 recorded the versioned path under `Cellar` shown
-above, which `brew upgrade` removes. juphyter 0.1.1 and later record the first
-path on `PATH` with the same name that leads to the running PHP, such as
-`/opt/homebrew/bin/php`. With 0.1.0, pass that path explicitly:
-
-```bash
-juphyter install --php /opt/homebrew/bin/php
-```
-
-### Keeping the PATH entries
-
-To keep the `juphyter` command available in new shells, add Composer's bin
-directory to your shell startup file. This edits `~/.zshrc`, the zsh startup
-file. Use `~/.bashrc` for bash.
-
-```bash
-echo "export PATH=\"$(composer global config bin-dir --absolute):\$PATH\"" >> ~/.zshrc
-```
-
-Adding the Python environment to a startup file makes it the `python3` for
-every program in every shell, including every Quarto project on the machine.
-[Python interpreters and editors](python.qmd) describes how to select it per
-editor workspace, per shell, or per Quarto project instead.
+The command prints the kernelspec, the PHP, the Python, and the engine it
+recorded. When Quarto is installed and the Python Quarto would use has no
+Jupyter, it also prints a warning with the `export` line that fixes it. The
+kernel is still registered.
 
 ## Check the installation
 
@@ -111,67 +66,45 @@ editor workspace, per shell, or per Quarto project instead.
 juphyter doctor
 ```
 
-`juphyter doctor` checks juphyter's own files, the PHP that runs the cells,
-the Python for the kernel, the Python Quarto will use, and every kernel
-juphyter registered. It ends with two summary lines, one for each check
-below. After the install above, with Quarto installed:
+`juphyter doctor` checks juphyter's files, the PHP that runs the cells, the
+Python for the kernel, the Python Quarto will use, and every kernel juphyter
+registered. It changes nothing, and it ends with two summary lines:
 
-```
-juphyter doctor
+| Line | Meaning |
+|---|---|
+| `JupyterLab: ready, with php.` | The kernel is registered, and its PHP, Python, and juphyter files run. |
+| `Quarto: ready.` | Quarto will run a Python that has Jupyter. |
+| `Quarto: not installed.` | `quarto` is not on `PATH`. Quarto is needed only for rendering `.qmd` documents. |
+| `Quarto: not ready.` | Quarto is installed and its Python lacks Jupyter or does not run. The report ends with the `export` line that fixes it. |
 
-This package
-  ok    the Python wrapper is at /Users/you/.composer/vendor/phpstats/juphyter/kernel/juphyter_kernel
-
-PHP
-  ok    PHP 8.5.10 at /opt/homebrew/Cellar/php/8.5.10/bin/php
-  ok    pcntl is there, so the stop button interrupts a cell
-
-A Python for the kernel
-  ok    /Users/you/.venvs/juphyter/bin/python has ipykernel 7.4.0
-
-Quarto
-  ok    quarto will run /Users/you/.venvs/juphyter/bin/python3, with jupyter_client 8.10.0
-
-Kernels in /Users/you/Library/Jupyter/kernels
-  ok    php is complete
-
-JupyterLab: ready, with php.
-Quarto: ready.
-```
-
-A line marked `fail` makes the command exit 1. A line marked `warn` does not.
-A missing `pcntl` is a warning.
-
-### The kernel
-
-`JupyterLab: ready, with php.` means the `php` kernel is registered and its
-PHP, Python, and juphyter files all run. This is the line that confirms the
-installation. JupyterLab and Quarto both start the kernel from it.
-
-### Quarto
-
-Quarto is needed only for rendering `.qmd` documents. The second line reports
-whether Quarto can run the kernel from this shell:
-
-- `Quarto: ready.` means Quarto will use a Python that has Jupyter.
-- `Quarto: not installed.` means `quarto` is not on `PATH`. The Quarto section
-  reports nothing to check, and the command still exits 0.
-- `Quarto: not ready.` means Quarto is installed and the Python it would use
-  lacks Jupyter or does not run. The Quarto section fails, the command exits
-  1, and the report ends with the `export` line that fixes it. This happens
-  in a shell where the Python environment is not on `PATH`. JupyterLab still
-  works if you start it from the environment, for example
-  `~/.venvs/juphyter/bin/jupyter lab`.
+A line marked `fail` makes the command exit 1, and `Quarto: not ready.` is a
+failure. A line marked `warn`, such as a missing `pcntl`, does not change the
+exit code.
 
 Run `juphyter doctor` again after upgrading PHP or Python, or after removing a
-project or an environment. The kernel records absolute paths to a PHP binary,
-a Python interpreter, and juphyter itself, and the doctor reports any of them
-that no longer runs.
+project or an environment. [Troubleshooting](troubleshooting.qmd) covers the
+failures it reports.
+
+## Keeping the PATH entries
+
+Both `export` lines last until the shell closes. To keep the `juphyter`
+command in new shells, add Composer's bin directory to your shell startup
+file. This appends to `~/.zshrc`. Use `~/.bashrc` for bash.
+
+```bash
+echo "export PATH=\"$(composer global config bin-dir --absolute):\$PATH\"" >> ~/.zshrc
+```
+
+Putting the Python environment in a startup file makes it the `python3` for
+every program, including every Quarto project on the machine.
+[Python interpreters and editors](python.qmd) describes how to select it per
+editor workspace, per shell, or per Quarto project instead.
 
 ## The phpstats packages
 
-juphyter does not depend on phibble, phplyr, or phiz. To use them in
-notebooks outside any Composer project, install them globally and register a
+juphyter does not depend on phibble, phplyr, or phiz. A notebook inside a
+Composer project that requires them can use them with the `php` kernel. To use
+them in notebooks outside any project, install them globally and register a
 second kernel that loads Composer's global autoloader:
 
 ```bash
@@ -181,19 +114,15 @@ juphyter install --name phpstats --display-name "PHP (phpstats)" \
 ```
 
 Documents name that kernel as `jupyter: phpstats`, and JupyterLab lists it as
-"PHP (phpstats)".
-
-The `php` kernel keeps the default search for an autoloader, described below.
-A kernel installed with `--autoload` always loads the autoloader it names,
-even for a notebook inside a Composer project, which is why it has its own
-name.
+"PHP (phpstats)". A kernel installed with `--autoload` always loads the
+autoloader it names, even for a notebook inside a Composer project, which is
+why it has its own name.
 
 ## Which classes a notebook sees
 
-By default the kernel starts in the notebook's directory, looks upward for
+The kernel starts in the notebook's directory, looks upward for
 `vendor/autoload.php`, and loads the first one it finds. A notebook anywhere
-inside a Composer project can use that project's classes and packages with no
-configuration.
+inside a Composer project can use that project's classes and packages.
 
 Two settings replace that search. The more explicit one wins.
 
@@ -211,8 +140,7 @@ A `juphyter.json` can also set the memory limit and the include path:
 }
 ```
 
-Relative paths resolve against the directory that holds `juphyter.json`, so
-one file at a project's root serves every notebook below it.
+Relative paths resolve against the directory that holds `juphyter.json`.
 
 ## Installing into one project
 
@@ -223,11 +151,12 @@ composer require --dev phpstats/juphyter
 vendor/bin/juphyter install --name myproject
 ```
 
-The kernel is still registered for your user, and it runs that project's copy
-of juphyter. Without `--name`, a second project's install replaces the first
-project's `php` kernel, and the command reports it as `Replaced`. Deleting the
-project's `vendor` directory breaks the kernel, which `juphyter doctor`
-reports.
+- The kernel is still registered for your user, and it runs that project's
+  copy of juphyter.
+- Without `--name`, a second project's install replaces the first project's
+  `php` kernel, and the command reports it as `Replaced`.
+- Deleting the project's `vendor` directory breaks the kernel, which
+  `juphyter doctor` reports.
 
 ## Several PHP versions
 
@@ -238,24 +167,23 @@ juphyter install --name php83 --php /opt/homebrew/opt/php@8.3/bin/php
 juphyter install --name php85 --php /opt/homebrew/opt/php@8.5/bin/php
 ```
 
-JupyterLab then lists "PHP 8.3" and "PHP 8.5". `--display-name` sets the label
-yourself. An absolute `--php` path is recorded as written. A bare name such as
-`php8.4` is resolved to an absolute path, because a kernel cannot rely on
-`PATH`.
+JupyterLab then lists "PHP 8.3" and "PHP 8.5". An absolute `--php` path is
+recorded as written. A bare name such as `php8.4` is resolved to an absolute
+path, because a kernel cannot rely on `PATH`.
 
 ## Where the kernel is registered
 
 `juphyter install` writes a kernelspec, the `kernel.json` file Jupyter reads
-to start a kernel, into the per-user Jupyter data directory:
+to start a kernel, into the per-user Jupyter data directory. Every Jupyter
+installation on the machine searches that directory.
 
-- `~/Library/Jupyter/kernels` on macOS.
-- `$XDG_DATA_HOME/jupyter/kernels`, or `~/.local/share/jupyter/kernels`, on
-  Linux.
+| Platform | Directory |
+|---|---|
+| macOS | `~/Library/Jupyter/kernels` |
+| Linux | `$XDG_DATA_HOME/jupyter/kernels`, or `~/.local/share/jupyter/kernels` |
 
-It honors `JUPYTER_DATA_DIR` and `JUPYTER_PLATFORM_DIRS` as `jupyter --paths`
-reports them. `--prefix PATH` writes under `PATH/share/jupyter` instead. Every
-Jupyter installation on the machine searches the per-user directory, so the
-kernel is visible to all of them.
+`JUPYTER_DATA_DIR` replaces that directory, and `--prefix PATH` writes under
+`PATH/share/jupyter` instead.
 
 `juphyter uninstall --name NAME` removes a kernel that juphyter registered. It
 refuses to remove a kernel of the same name that something else wrote, and so
@@ -270,7 +198,7 @@ does a reinstall.
 | `--name NAME` | The kernel's name, which documents use in `jupyter: NAME`. Default: `php`. |
 | `--display-name TEXT` | The label JupyterLab shows. Default: the PHP version, such as `PHP 8.5`. |
 | `--php PATH` | The PHP binary that runs cells. Default: the PHP running `juphyter install`. |
-| `--python PATH` | The Python that hosts the kernel. Default: the one that owns `jupyter` on `PATH`. A named Python without ipykernel is reported, and nothing is installed into it. |
+| `--python PATH` | The Python that hosts the kernel. Default: the one that owns `jupyter` on `PATH`. |
 | `--prefix PATH` | Write under `PATH/share/jupyter`. |
 | `--autoload PATH` | Load this autoloader instead of searching above the notebook. |
 | `--create-venv PATH` | Where to build a Python environment when none can host the kernel. Without it, the command asks, and builds one at `~/.venvs/juphyter` when there is no terminal to ask. |

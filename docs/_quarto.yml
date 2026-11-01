@@ -23,6 +23,7 @@ website:
       - text: Python and editors
         href: python.qmd
       - limitations.qmd
+      - troubleshooting.qmd
       - development.qmd
       - section: Examples
         contents:

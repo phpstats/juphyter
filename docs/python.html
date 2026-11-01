@@ -190,6 +190,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./troubleshooting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./development.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributing</span></a>
   </div>
@@ -221,13 +227,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#when-quarto-cannot-find-the-kernel" id="toc-when-quarto-cannot-find-the-kernel" class="nav-link active" data-scroll-target="#when-quarto-cannot-find-the-kernel">When Quarto cannot find the kernel</a></li>
-  <li><a href="#how-quarto-chooses-an-interpreter" id="toc-how-quarto-chooses-an-interpreter" class="nav-link" data-scroll-target="#how-quarto-chooses-an-interpreter">How Quarto chooses an interpreter</a></li>
+  <li><a href="#how-quarto-chooses-an-interpreter" id="toc-how-quarto-chooses-an-interpreter" class="nav-link active" data-scroll-target="#how-quarto-chooses-an-interpreter">How Quarto chooses an interpreter</a></li>
   <li><a href="#at-a-terminal" id="toc-at-a-terminal" class="nav-link" data-scroll-target="#at-a-terminal">At a terminal</a></li>
   <li><a href="#vs-code-and-cursor" id="toc-vs-code-and-cursor" class="nav-link" data-scroll-target="#vs-code-and-cursor">VS Code and Cursor</a></li>
   <li><a href="#positron" id="toc-positron" class="nav-link" data-scroll-target="#positron">Positron</a></li>
   <li><a href="#other-editors" id="toc-other-editors" class="nav-link" data-scroll-target="#other-editors">Other editors</a></li>
-  <li><a href="#when-no-python-can-host-the-kernel" id="toc-when-no-python-can-host-the-kernel" class="nav-link" data-scroll-target="#when-no-python-can-host-the-kernel">When no Python can host the kernel</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/python.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -253,74 +257,98 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Two Python interpreters take part in running a PHP document, and they can be different ones.</p>
-<ul>
-<li>The kernel’s interpreter is the one <code>juphyter install</code> recorded. It runs juphyter’s Python transport and needs ipykernel 7.0 or later.</li>
-<li>Quarto’s interpreter is the one Quarto chooses for itself when it renders. It needs <code>jupyter_client</code>, <code>nbformat</code>, <code>nbclient</code>, and <code>pyyaml</code>, because Quarto’s Jupyter engine imports them before it starts any kernel. The environment that <code>juphyter install --create-venv</code> builds has all four, because it holds JupyterLab.</li>
-</ul>
-<p>JupyterLab uses no third interpreter. It starts each kernel with the interpreter that kernel’s kernelspec names.</p>
-<section id="when-quarto-cannot-find-the-kernel" class="level2">
-<h2 class="anchored" data-anchor-id="when-quarto-cannot-find-the-kernel">When Quarto cannot find the kernel</h2>
-<p>When Quarto’s interpreter has no Jupyter in it, Quarto can list no kernels at all, and a render stops with:</p>
-<pre><code>ERROR: Jupyter kernel 'php' not found. Known kernels: python3</code></pre>
-<p>The PHP kernel is not the problem, and reinstalling it changes nothing. A <code>jupyter: python3</code> document fails the same way with that interpreter. The fix is to point Quarto at an interpreter that has Jupyter, as described below.</p>
-<p>Two commands report the interpreter Quarto will use. <code>juphyter doctor</code> prints it in its Quarto section. <code>quarto check jupyter</code> reports it from Quarto’s side, together with the Jupyter version and the kernels it can see:</p>
-<pre><code>Path: /Users/you/.venvs/juphyter/bin/python
-Jupyter: 5.9.1
-Kernels: php, python3</code></pre>
-<p>A <code>Jupyter: (None)</code> line means Quarto’s interpreter has no Jupyter. <code>quarto check</code> writes to standard error, so add <code>2&gt;&amp;1</code> before piping it to <code>grep</code>.</p>
-</section>
+<p>Two Python interpreters take part in running a PHP document:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Interpreter</th>
+<th>Chosen by</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>The kernel’s</td>
+<td><code>juphyter install</code>, recorded in the kernelspec</td>
+<td>ipykernel 7.0 or later</td>
+</tr>
+<tr class="even">
+<td>Quarto’s</td>
+<td>Quarto, at each render</td>
+<td><code>jupyter_client</code>, <code>nbformat</code>, <code>nbclient</code>, and <code>pyyaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>The environment that <code>juphyter install --create-venv</code> builds has all of these, because it holds JupyterLab. JupyterLab starts each kernel with the interpreter its kernelspec names, so it needs no further setup.</p>
+<p>When Quarto’s interpreter has no Jupyter, a render stops with <code>Jupyter kernel 'php' not found</code>. Point Quarto at the environment with one of the fixes below.</p>
 <section id="how-quarto-chooses-an-interpreter" class="level2">
 <h2 class="anchored" data-anchor-id="how-quarto-chooses-an-interpreter">How Quarto chooses an interpreter</h2>
-<p>Measured with Quarto 1.10.18, in order of precedence:</p>
-<ol type="1">
-<li><code>QUARTO_PYTHON</code>, when the environment sets it.</li>
-<li><code>QUARTO_PYTHON</code> from a project <code>_environment</code> file. Quarto reads that file only when it sits beside <code>_quarto.yml</code>, and the file does not override a value the environment already sets.</li>
-<li>The first <code>python3</code> on <code>PATH</code>.</li>
-</ol>
-<p>Quarto does not read <code>VIRTUAL_ENV</code>, so an environment that is active only through that variable is ignored. There is no fallback to <code>python</code>, and <code>RETICULATE_PYTHON</code> has no effect.</p>
+<p>Measured with Quarto 1.10.18. The first match wins:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Order</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>QUARTO_PYTHON</code> in the environment</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>QUARTO_PYTHON</code> in a project <code>_environment</code> file beside <code>_quarto.yml</code></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>The first <code>python3</code> on <code>PATH</code></td>
+</tr>
+</tbody>
+</table>
+<p>Quarto does not read <code>VIRTUAL_ENV</code>, does not fall back to <code>python</code>, and ignores <code>RETICULATE_PYTHON</code>.</p>
+<p><code>juphyter doctor</code> prints the interpreter Quarto will use in its Quarto section. <code>quarto check jupyter 2&gt;&amp;1</code> reports it from Quarto’s side, and a <code>Jupyter: (None)</code> line means that interpreter has no Jupyter.</p>
 </section>
 <section id="at-a-terminal" class="level2">
 <h2 class="anchored" data-anchor-id="at-a-terminal">At a terminal</h2>
-<p>Put the environment first on <code>PATH</code> for the current shell, either with the <code>export</code> line that <code>juphyter install</code> and <code>juphyter doctor</code> print or by activating the environment:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.venvs/juphyter/bin/activate</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render notebook.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For a single command:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span>~/.venvs/juphyter/bin/python <span class="ex">quarto</span> render notebook.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For every render in one Quarto project, put an <code>_environment</code> file beside <code>_quarto.yml</code>. It needs an absolute path:</p>
+<p>For the current shell, put the environment first on <code>PATH</code> with the <code>export</code> line that <code>juphyter doctor</code> prints, or activate it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.venvs/juphyter/bin/activate</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render notebook.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For one command:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">QUARTO_PYTHON</span><span class="op">=</span>~/.venvs/juphyter/bin/python <span class="ex">quarto</span> render notebook.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For every render in one Quarto project, put an <code>_environment</code> file beside <code>_quarto.yml</code>, with an absolute path:</p>
 <pre><code>QUARTO_PYTHON=/Users/you/.venvs/juphyter/bin/python</code></pre>
-<p>Exporting <code>QUARTO_PYTHON</code> or the environment’s <code>PATH</code> entry from a shell startup file changes the interpreter for every Quarto project on the machine, including projects that do not use PHP. juphyter writes neither to a startup file.</p>
+<p>Setting <code>QUARTO_PYTHON</code> or the environment’s <code>PATH</code> entry in a shell startup file changes the interpreter for every Quarto project on the machine. juphyter writes neither to a startup file.</p>
 </section>
 <section id="vs-code-and-cursor" class="level2">
 <h2 class="anchored" data-anchor-id="vs-code-and-cursor">VS Code and Cursor</h2>
-<p>Open the document’s folder as a workspace. The Quarto extension asks the Python extension for the interpreter of the workspace folder that holds the document, and a <code>.qmd</code> opened on its own has no workspace folder to ask about.</p>
-<p>Run <strong>Python: Select Interpreter</strong> from the command palette and choose an environment that has Jupyter, such as <code>~/.venvs/juphyter</code>. The Quarto extension passes that choice to Quarto as <code>QUARTO_PYTHON</code> on every render in the workspace. Nothing outside the workspace changes.</p>
-<p>Because the extension sets <code>QUARTO_PYTHON</code>, a project <code>_environment</code> file cannot override the selection. A wrong selection is corrected in the interpreter picker.</p>
+<ol type="1">
+<li>Open the document’s folder as a workspace. A <code>.qmd</code> opened on its own has no workspace folder for the Quarto extension to ask about.</li>
+<li>Run <strong>Python: Select Interpreter</strong> and choose an environment that has Jupyter, such as <code>~/.venvs/juphyter</code>.</li>
+</ol>
+<p>The Quarto extension passes that choice to Quarto as <code>QUARTO_PYTHON</code> on every render in the workspace, so a project <code>_environment</code> file cannot override it. Correct a wrong selection in the interpreter picker.</p>
 </section>
 <section id="positron" class="level2">
 <h2 class="anchored" data-anchor-id="positron">Positron</h2>
-<p>Positron bundles the same Python extension and the same Quarto extension, so the steps are the same: open the folder, then run <strong>Python: Select Interpreter</strong>.</p>
-<p>A workspace that already has an interpreter stored keeps it. <code>python.defaultInterpreterPath</code> in <code>.vscode/settings.json</code> applies only when no interpreter has been selected, so a stored choice is replaced through the picker. A change to that setting takes effect after <strong>Developer: Reload Window</strong>.</p>
-<p>Positron opens a new terminal for each render, so the interpreter it passed to Quarto can be read there:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"QUARTO_PYTHON=[</span><span class="va">$QUARTO_PYTHON</span><span class="st">]"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>An empty value means no interpreter is selected for the workspace.</p>
+<p>The steps are the same as in VS Code: open the folder, then run <strong>Python: Select Interpreter</strong>.</p>
+<ul>
+<li>A workspace that already has an interpreter stored keeps it. <code>python.defaultInterpreterPath</code> in <code>.vscode/settings.json</code> applies only when none has been selected.</li>
+<li>A change to that setting takes effect after <strong>Developer: Reload Window</strong>.</li>
+<li>Each render opens a new terminal, where <code>echo "QUARTO_PYTHON=[$QUARTO_PYTHON]"</code> shows the interpreter Positron passed. An empty value means none is selected.</li>
+</ul>
 </section>
 <section id="other-editors" class="level2">
 <h2 class="anchored" data-anchor-id="other-editors">Other editors</h2>
-<p>An editor without Quarto integration, such as PhpStorm, leaves the choice to <code>PATH</code>. Activate the environment before starting the editor, or set <code>QUARTO_PYTHON</code> in its terminal or run configuration.</p>
-<p>RStudio is in this group. It sets no <code>QUARTO_PYTHON</code> of its own, and Quarto does not read the Python preference that RStudio stores.</p>
-</section>
-<section id="when-no-python-can-host-the-kernel" class="level2">
-<h2 class="anchored" data-anchor-id="when-no-python-can-host-the-kernel">When no Python can host the kernel</h2>
-<p><code>juphyter install</code> looks for an interpreter in this order: the one named by <code>--python</code>, then the one that owns the <code>jupyter</code> command on <code>PATH</code>, read from that script’s first line. When the interpreter it found has no ipykernel 7, it builds a virtual environment with JupyterLab instead of installing into the existing interpreter.</p>
-<p>System and Homebrew Python builds are marked as externally managed, and <code>pip install</code> into them refuses. A virtual environment avoids that.</p>
-<ul>
-<li><code>--create-venv PATH</code> names where to build it.</li>
-<li>Without <code>--create-venv</code>, the command asks before building one at <code>~/.venvs/juphyter</code>, and builds it without asking when there is no terminal.</li>
-<li>An environment that already exists at that path is reused, and its packages are installed again, so a second run finishes an interrupted one.</li>
-<li>A directory that exists and holds something other than an environment is refused.</li>
-<li>With <code>--python</code>, the command builds nothing. When the named interpreter has no ipykernel, it prints the <code>pip install</code> command for that interpreter and writes no kernel.</li>
-</ul>
+<p>An editor without Quarto integration, such as PhpStorm or RStudio, leaves the choice to <code>PATH</code>. Activate the environment before starting the editor, or set <code>QUARTO_PYTHON</code> in its terminal or run configuration. Quarto does not read the Python preference that RStudio stores.</p>
 
 
 </section>

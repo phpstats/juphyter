@@ -102,6 +102,10 @@
                 "path": "limitations.qmd"
             },
             {
+                "title": "Troubleshooting",
+                "path": "troubleshooting.qmd"
+            },
+            {
                 "title": "Contributing",
                 "path": "development.qmd"
             },

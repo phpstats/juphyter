@@ -4,22 +4,18 @@ subtitle: "A Jupyter and Quarto kernel for PHP"
 jupyter: php
 ---
 
-juphyter runs PHP code in notebooks and in Quarto documents.
+Run PHP in Jupyter notebooks and Quarto documents, with tables and charts
+displayed alongside code.
 
-A notebook is a file of cells. Each cell holds a few lines of code, and its
-output appears directly beneath it: text, a table, or a chart. The program
-that runs the cells is called a kernel, and it keeps one PHP session open, so a
-variable set in one cell is available in the next.
-[JupyterLab](https://jupyter.org/) is the usual application for editing and
-running notebooks. [Quarto](https://quarto.org/) renders a Markdown document
-with code cells into HTML, PDF, or Word, running each cell and placing its
-output in the document.
+A notebook is a file of cells, each holding a few lines of code with its
+output beneath it. The program that runs the cells is a kernel. juphyter is a
+kernel for PHP, and it keeps one PHP session open, so a variable set in one
+cell is available in the next.
 
-juphyter is that kernel for PHP. After `juphyter install`, JupyterLab lists PHP
-in its launcher, and Quarto runs the `{php}` cells of any `.qmd` that names
-the kernel in its front matter. It is meant for statistical and exploratory
-work with the phpstats packages: load data, try a pipeline, look at the
-table or the plot it produces, and change the code until the result is right.
+- **JupyterLab:** after `juphyter install`, JupyterLab lists PHP in its
+  launcher. See [JupyterLab](jupyter.qmd).
+- **Quarto:** a `.qmd` that names `jupyter: php` in its front matter renders
+  its `{php}` cells to HTML, PDF, or Word. See [Quarto](quarto.qmd).
 
 ## What a cell shows
 
@@ -39,8 +35,8 @@ using them outside a project.
 composer require phpstats/phibble phpstats/phplyr phpstats/phiz
 ```
 
-The first cell imports the phplyr functions that the pipeline calls. phplyr's
-`round()` replaces PHP's built-in `round()` in the cells after this import.
+phplyr's `round()` replaces PHP's built-in `round()` in the cells after this
+import.
 
 ```{php}
 use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round};
@@ -102,12 +98,10 @@ installed.
 
 ## How it works
 
-The kernel has two processes. A small Python program built on
-[ipykernel](https://github.com/ipython/ipykernel) handles the Jupyter
-protocol, and a PHP process runs the cells. They talk over a Unix socket. This
-is why an install needs a Python with ipykernel as well as PHP, and why the
+A Python program built on [ipykernel](https://github.com/ipython/ipykernel)
+handles the Jupyter protocol, and a PHP process runs the cells. They talk over
+a Unix socket. That is why an install needs Python as well as PHP, and why the
 kernel runs on macOS and Linux only.
 
-[Installation](install.qmd) covers the requirements and the install
-commands, and [Getting started](get-started.qmd) walks through a first
-notebook.
+[Installation](install.qmd) covers the requirements and the install commands,
+and [Getting started](get-started.qmd) walks through a first notebook.

@@ -193,6 +193,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./troubleshooting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Troubleshooting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./development.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributing</span></a>
   </div>
@@ -253,23 +259,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>juphyter runs PHP code in notebooks and in Quarto documents.</p>
-<p>A notebook is a file of cells. Each cell holds a few lines of code, and its output appears directly beneath it: text, a table, or a chart. The program that runs the cells is called a kernel, and it keeps one PHP session open, so a variable set in one cell is available in the next. <a href="https://jupyter.org/">JupyterLab</a> is the usual application for editing and running notebooks. <a href="https://quarto.org/">Quarto</a> renders a Markdown document with code cells into HTML, PDF, or Word, running each cell and placing its output in the document.</p>
-<p>juphyter is that kernel for PHP. After <code>juphyter install</code>, JupyterLab lists PHP in its launcher, and Quarto runs the <code>{php}</code> cells of any <code>.qmd</code> that names the kernel in its front matter. It is meant for statistical and exploratory work with the phpstats packages: load data, try a pipeline, look at the table or the plot it produces, and change the code until the result is right.</p>
+<p>Run PHP in Jupyter notebooks and Quarto documents, with tables and charts displayed alongside code.</p>
+<p>A notebook is a file of cells, each holding a few lines of code with its output beneath it. The program that runs the cells is a kernel. juphyter is a kernel for PHP, and it keeps one PHP session open, so a variable set in one cell is available in the next.</p>
+<ul>
+<li><strong>JupyterLab:</strong> after <code>juphyter install</code>, JupyterLab lists PHP in its launcher. See <a href="./jupyter.html">JupyterLab</a>.</li>
+<li><strong>Quarto:</strong> a <code>.qmd</code> that names <code>jupyter: php</code> in its front matter renders its <code>{php}</code> cells to HTML, PDF, or Word. See <a href="./quarto.html">Quarto</a>.</li>
+</ul>
 <section id="what-a-cell-shows" class="level2">
 <h2 class="anchored" data-anchor-id="what-a-cell-shows">What a cell shows</h2>
 <p>The value of a cell’s last expression is its output. A <a href="https://phibble.phpstats.org">phibble</a> data frame appears as an HTML table with its dimensions and column types, and a <a href="https://phiz.phpstats.org">phiz</a> plot appears as a chart. Other values appear as a compact dump.</p>
 <p>The examples below use phibble, phplyr, and phiz. In a Composer project, install them with the command below. The <code>php</code> kernel then loads the project’s <code>vendor/autoload.php</code> for any notebook or document inside the project. <a href="./install.html#the-phpstats-packages">The phpstats packages</a> covers using them outside a project.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require phpstats/phibble phpstats/phplyr phpstats/phiz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first cell imports the phplyr functions that the pipeline calls. phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after this import.</p>
-<div id="4acc6374" class="cell" data-execution_count="1">
+<p>phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after this import.</p>
+<div id="7f123814" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize<span class="ot">,</span> arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="syntax">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">PHP 8.5+</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PHP 8.3–8.4</a></li></ul>
 <div class="tab-content" data-group="syntax">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div id="4f828bb2" class="cell" data-execution_count="2">
+<div id="244fda0c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">|&gt;</span></span>
@@ -341,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div id="a749e75e" class="cell" data-execution_count="3">
+<div id="4319371b" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>phplyr(<span class="va">$mpg</span>)</span>
@@ -415,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="79b1fe2f" class="cell" data-execution_count="4">
+<div id="03daecd8" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>\Phiz\Plot::of(\Phiz\Datasets::mpg())</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'displ'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span><span class="ot">,</span> color<span class="ot">:</span> <span class="st">'drv'</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;point(opacity<span class="ot">:</span> <span class="fl">0.7</span>)</span>
@@ -541,7 +550,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="how-it-works" class="level2">
 <h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
-<p>The kernel has two processes. A small Python program built on <a href="https://github.com/ipython/ipykernel">ipykernel</a> handles the Jupyter protocol, and a PHP process runs the cells. They talk over a Unix socket. This is why an install needs a Python with ipykernel as well as PHP, and why the kernel runs on macOS and Linux only.</p>
+<p>A Python program built on <a href="https://github.com/ipython/ipykernel">ipykernel</a> handles the Jupyter protocol, and a PHP process runs the cells. They talk over a Unix socket. That is why an install needs Python as well as PHP, and why the kernel runs on macOS and Linux only.</p>
 <p><a href="./install.html">Installation</a> covers the requirements and the install commands, and <a href="./get-started.html">Getting started</a> walks through a first notebook.</p>
 
 

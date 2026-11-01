@@ -107,14 +107,16 @@ $widths['narrow'] + $widths['medium'];
 
 ## Rich output
 
-The kernel sends each value in every format it can produce, and the front end
-picks the one it can draw. A phibble data frame comes as an HTML table and as
-the text phibble prints at a terminal. A phiz plot comes as a Vega-Lite
-specification, as HTML, as a static SVG when vl-convert is installed, and as a
-one-line text description.
+A phibble data frame is shown as a table and a phiz plot as a chart. The
+kernel sends each value in every format it can produce, and the front end
+picks one. [Output formats](quarto.qmd#output-formats) lists which one each
+Quarto format uses.
 
-Any class can provide its own output. A `toHtml(): string` method supplies
-HTML, and a `toMimeBundle(): array` method supplies every format at once.
+Any class can provide its own output:
+
+- `toHtml(): string` supplies HTML.
+- `toMimeBundle(): array` supplies several formats at once, keyed by MIME
+  type.
 
 ```{php}
 final class Progress
