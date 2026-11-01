@@ -314,7 +314,8 @@ final class Engine
      * Send one of the executor's events, tagged with the request it answers.
      *
      * This is where `silent` is applied, because it is the engine's rule and
-     * not the executor's.
+     * not the executor's. A cell's terminal event follows the barrier on the
+     * engine's own descriptors, see {@see barrier()}.
      *
      * @param  array<string, mixed>  $event
      */
@@ -324,7 +325,37 @@ final class Engine
             return;
         }
 
+        if (in_array($event['type'] ?? '', ['ok', 'error'], true)) {
+            $this->barrier();
+        }
+
         $this->channel->send(Event::fromExecutor($event, $this->currentId));
+    }
+
+    /**
+     * Mark the end of a cell's output on the engine's stdout and stderr.
+     *
+     * What a cell writes with `fwrite(STDOUT, ...)` reaches the transport
+     * through a pipe, and its terminal event through the socket, and nothing
+     * orders the two. The transport strips this marker from each pipe and holds
+     * the terminal event until it has read both markers, so the cell's last
+     * output is published inside the cell. Only a transport that asks for it,
+     * through JUPHYTER_STREAM_BARRIER, gets one: a test harness reading the
+     * descriptors as files does not.
+     */
+    private function barrier(): void
+    {
+        if (getenv('JUPHYTER_STREAM_BARRIER') !== '1') {
+            return;
+        }
+
+        $marker = "\0juphyter-barrier:".$this->currentId."\0";
+
+        foreach ([STDOUT, STDERR] as $stream) {
+            if (is_resource($stream)) {
+                @fwrite($stream, $marker);
+            }
+        }
     }
 
     /**

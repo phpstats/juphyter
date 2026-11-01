@@ -112,6 +112,13 @@ except OSError:
 #: The event types that answer a request and nothing follows them.
 _TERMINAL = ("ok", "error")
 
+#: What the engine writes to its stdout and stderr before a cell's terminal
+#: event, followed by the request id and a NUL. See Engine._pump.
+_BARRIER = b"\0juphyter-barrier:"
+
+#: The longest request id a barrier can carry, so a held-back tail stays small.
+_BARRIER_ID = 64
+
 #: The errors that mean the engine process is gone, whatever its exit status.
 _FATAL_ENAMES = ("SystemExit", "FatalError")
 
@@ -198,6 +205,13 @@ class Engine:
         self._started = False
         self._stopped = False
         self._finished = False
+
+        # Which executions are waiting on their stream barriers, which barriers
+        # each pipe has reached, and which pipes have ended.
+        self._executions: set[str] = set()
+        self._barriers: dict[str, set[str]] = {"stdout": set(), "stderr": set()}
+        self._ended: dict[str, bool] = {"stdout": False, "stderr": False}
+        self._streams = threading.Condition()
 
     @staticmethod
     def _bundled_engine() -> str:
@@ -307,7 +321,9 @@ class Engine:
         is killed outright. The engine also returns from its loop by itself
         when the socket reaches end of input, which covers an idle one.
         """
-        environment = dict(os.environ, JUPHYTER_SOCKET=str(self._path))
+        environment = dict(
+            os.environ, JUPHYTER_SOCKET=str(self._path), JUPHYTER_STREAM_BARRIER="1"
+        )
 
         try:
             self._process = subprocess.Popen(
@@ -461,7 +477,13 @@ class Engine:
                     if not text:
                         continue
 
-                    self._events.put(self._decode(text))
+                    event = self._decode(text)
+
+                    if event.get("type") in _TERMINAL and event.get("id") in self._executions:
+                        self._executions.discard(event["id"])
+                        self._await_barriers(event["id"])
+
+                    self._events.put(event)
         except OSError:
             # The socket was closed under us, which is how a stop ends this
             # thread and is not worth reporting.
@@ -490,6 +512,36 @@ class Engine:
             "traceback": [f"ProtocolError: {complaint}"],
         }
 
+    #: How long a cell's terminal event waits for its stream barriers.
+    BARRIER_TIMEOUT = 10.0
+
+    def _await_barriers(self, request: str) -> None:
+        """Hold a cell's terminal event until both pipes are read up to its end.
+
+        The engine writes a barrier to its stdout and stderr just before the
+        terminal event, after everything the cell wrote there. Each pump
+        queues the output before a barrier and then records it, so once both
+        are recorded, all of the cell's output is in the queue ahead of the
+        terminal event. A pipe that has ended counts as reached, which covers a
+        cell that closed STDOUT and an engine that exited.
+        """
+        def reached() -> bool:
+            return all(
+                request in self._barriers[name] or self._ended[name]
+                for name in self._barriers
+            )
+
+        with self._streams:
+            if not self._streams.wait_for(reached, timeout=self.BARRIER_TIMEOUT):
+                self.log.warning(
+                    "juphyter: the engine's output for %s did not finish within %.0f s.",
+                    request,
+                    self.BARRIER_TIMEOUT,
+                )
+
+            for barriers in self._barriers.values():
+                barriers.discard(request)
+
     def _pump(self, stream: Any, name: str) -> None:
         """Queue what the engine writes to one of its own descriptors.
 
@@ -497,8 +549,20 @@ class Engine:
         appears as the cell produces it rather than when the buffer fills. The
         decoder is incremental because a chunk boundary can fall inside a
         multibyte character.
+
+        A barrier the engine wrote at the end of a cell is taken out of the
+        output and recorded, see :meth:`_await_barriers`. A NUL near the end of
+        a chunk may be the start of one, so it is held back until the next
+        chunk shows whether it is. The cell's own NULs come through.
         """
         decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+        pending = b""
+
+        def queue_text(data: bytes, final: bool = False) -> None:
+            text = decoder.decode(data, final)
+
+            if text:
+                self._events.put({"id": None, "type": "stream", "name": name, "text": text})
 
         try:
             while True:
@@ -507,24 +571,61 @@ class Engine:
                 if not chunk:
                     break
 
-                text = decoder.decode(chunk)
+                data, pending = pending + chunk, b""
 
-                if text:
-                    self._events.put(
-                        {"id": None, "type": "stream", "name": name, "text": text}
-                    )
+                while (start := data.find(_BARRIER)) >= 0:
+                    end = data.find(b"\0", start + len(_BARRIER))
+
+                    if end < 0:
+                        break
+
+                    queue_text(data[:start])
+                    request = data[start + len(_BARRIER) : end].decode("ascii", "replace")
+                    data = data[end + 1 :]
+
+                    with self._streams:
+                        self._barriers[name].add(request)
+                        self._streams.notify_all()
+
+                data, pending = self._hold_back(data)
+                queue_text(data)
         except (OSError, ValueError):
             pass
         finally:
-            text = decoder.decode(b"", True)
+            queue_text(pending, final=True)
 
-            if text:
-                self._events.put({"id": None, "type": "stream", "name": name, "text": text})
+            with self._streams:
+                self._ended[name] = True
+                self._streams.notify_all()
+
+    @staticmethod
+    def _hold_back(data: bytes) -> tuple[bytes, bytes]:
+        """Split off a tail that could be the start of a barrier."""
+        nul = data.rfind(b"\0")
+
+        if nul < 0:
+            return data, b""
+
+        tail = data[nul:]
+
+        if _BARRIER.startswith(tail):
+            return data[:nul], tail
+
+        # A barrier whose closing NUL has not arrived yet starts earlier.
+        start = data.rfind(_BARRIER)
+
+        if start >= 0 and b"\0" not in data[start + 1 :] and len(data) - start <= len(_BARRIER) + _BARRIER_ID:
+            return data[:start], data[start:]
+
+        return data, b""
 
     def send(self, type: str, **fields: Any) -> str:
         """Write one request, and return the id its events will carry."""
         request_id = f"j{next(self._ids)}"
         line = json.dumps({"id": request_id, "type": type, **fields}, ensure_ascii=False)
+
+        if type == "execute":
+            self._executions.add(request_id)
 
         with self._writing:
             connection = self._connection
