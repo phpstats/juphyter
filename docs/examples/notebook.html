@@ -225,10 +225,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
-  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The data</a></li>
-  <li><a href="#a-table" id="toc-a-table" class="nav-link" data-scroll-target="#a-table">A table</a></li>
-  <li><a href="#a-chart" id="toc-a-chart" class="nav-link" data-scroll-target="#a-chart">A chart</a></li>
-  <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
+  <li><a href="#cells" id="toc-cells" class="nav-link" data-scroll-target="#cells">Cells</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/phpstats/juphyter/blob/main/examples/notebook.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/phpstats/juphyter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -254,35 +251,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This example summarizes a data frame in one cell and plots the summary in the next, with each result shown beneath its cell.</p>
-<p>Prerequisites: the <code>php</code> kernel from <a href="../install.html">Installation</a>, and PHP 8.5 for the pipe version or PHP 8.3 for the method chain.</p>
+<p>Summarize a phibble data frame in one notebook cell and plot the result in the next.</p>
+<p>Requires the <code>php</code> kernel from <a href="../install.html">Installation</a>. The pipe tab needs PHP 8.5, and the method chain runs on PHP 8.3 and later.</p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>Create a Composer project with phibble, phplyr, and phiz, and start JupyterLab in that directory:</p>
+<p>Create a Composer project and start JupyterLab in it:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> mileage <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> mileage</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require phpstats/phibble phpstats/phplyr phpstats/phiz</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.venvs/juphyter/bin/jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Choose the PHP kernel in the launcher. The kernel loads the project’s <code>vendor/autoload.php</code> before the first cell runs, so a cell needs no <code>&lt;?php</code> tag and no <code>require</code>. The same cells run in a Quarto document that sits in the project and names <code>jupyter: php</code> in its front matter.</p>
+<p>Create a notebook with the PHP kernel from the launcher. The data is the <code>mpg</code> dataset that ships with phiz: 234 cars, with each car’s class and its highway mileage in miles per gallon (<code>hwy</code>).</p>
 </section>
-<section id="the-data" class="level2">
-<h2 class="anchored" data-anchor-id="the-data">The data</h2>
-<p>The cells use the <code>mpg</code> dataset that ships with phiz: 234 cars, with each car’s class and its highway fuel economy in miles per gallon (<code>hwy</code>).</p>
-</section>
-<section id="a-table" class="level2">
-<h2 class="anchored" data-anchor-id="a-table">A table</h2>
-<p>The first cell imports the classes and functions that the later cells use. A <code>use</code> statement in a cell applies to every cell after it. phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in those cells.</p>
-<div id="68006166" class="cell" data-execution_count="1">
+<section id="cells" class="level2">
+<h2 class="anchored" data-anchor-id="cells">Cells</h2>
+<ul>
+<li>The kernel loads <code>vendor/autoload.php</code> from the notebook’s directory or the nearest directory above it, so cells need no <code>require</code>.</li>
+<li>A <code>use</code> statement applies to its own cell and every later one.</li>
+<li>phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after the import.</li>
+</ul>
+<div id="b34ff3ae" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phiz\Datasets<span class="ot">;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phiz\Plot<span class="ot">;</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize<span class="ot">,</span> arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The second cell counts the cars in each class and their mean highway mileage. A cell’s last value is its output, and a phibble data frame appears as an HTML table.</p>
+<p>A cell’s last value is its output. A phibble data frame is shown as a table.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="syntax">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">PHP 8.5+</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PHP 8.3–8.4</a></li></ul>
 <div class="tab-content" data-group="syntax">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div id="9ffcd9e8" class="cell" data-execution_count="2">
+<div id="911baf3e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromRows(Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span> <span class="op">=</span> <span class="va">$mpg</span> <span class="op">|&gt;</span></span>
@@ -356,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div id="e4b8e5a0" class="cell" data-execution_count="3">
+<div id="0d0ce6ae" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromRows(Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span> <span class="op">=</span> phplyr(<span class="va">$mpg</span>)</span>
@@ -432,11 +429,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-</section>
-<section id="a-chart" class="level2">
-<h2 class="anchored" data-anchor-id="a-chart">A chart</h2>
-<p><code>$byClass</code> is still defined, because the kernel keeps one PHP session across cells. A phiz plot appears as an interactive chart.</p>
-<div id="0cf38077" class="cell" data-execution_count="4">
+<p>Variables persist across cells, so the next cell plots <code>$byClass</code>. A phiz plot is shown as a chart.</p>
+<div id="07ade55c" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Plot::of(<span class="va">$byClass</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'class'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;col()</span>
@@ -542,13 +536,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   window.addEventListener('load', function () { if (pending) start(); });
 })();</script>
-<p>Mean highway mileage by vehicle class.</p>
 </div>
 </div>
-</section>
-<section id="how-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
-<p>The kernel sends each value in every format it can produce, and JupyterLab or Quarto shows the richest one it supports. A data frame comes as HTML and as text. A plot comes as a Vega-Lite specification, as HTML, and as text, and also as SVG when vl-convert is installed. <a href="../get-started.html#rich-output">Getting started</a> describes the formats, and <a href="../jupyter.html">JupyterLab</a> and <a href="../quarto.html">Quarto</a> cover each front end. The verbs come from <a href="https://phplyr.phpstats.org">phplyr</a>, the data frame from <a href="https://phibble.phpstats.org">phibble</a>, and the chart from <a href="https://phiz.phpstats.org">phiz</a>.</p>
+<p>See also: <a href="../get-started.html#rich-output">Rich output</a>, <a href="../jupyter.html">JupyterLab</a>, <a href="https://phplyr.phpstats.org">phplyr</a>, and <a href="https://phiz.phpstats.org">phiz</a>.</p>
 
 
 </section>

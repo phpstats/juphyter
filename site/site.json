@@ -63,7 +63,7 @@
         {
             "path": "examples/notebook",
             "title": "Show a table and a chart in a notebook",
-            "description": "Summarizes a data frame in one notebook cell and plots the summary in the next, with each result shown beneath its cell.",
+            "description": "Runs JupyterLab in a Composer project, where the kernel loads the project's autoloader and keeps imports and variables across cells.",
             "also": [
                 "phiz"
             ]

@@ -414,7 +414,7 @@
     "href": "examples/notebook.html",
     "title": "Show a table and a chart in a notebook",
     "section": "",
-    "text": "This example summarizes a data frame in one cell and plots the summary in the next, with each result shown beneath its cell.\nPrerequisites: the php kernel from Installation, and PHP 8.5 for the pipe version or PHP 8.3 for the method chain.",
+    "text": "Summarize a phibble data frame in one notebook cell and plot the result in the next.\nRequires the php kernel from Installation. The pipe tab needs PHP 8.5, and the method chain runs on PHP 8.3 and later.",
     "crumbs": [
       "Examples",
       "Show a table and a chart in a notebook"
@@ -425,51 +425,18 @@
     "href": "examples/notebook.html#setup",
     "title": "Show a table and a chart in a notebook",
     "section": "Setup",
-    "text": "Setup\nCreate a Composer project with phibble, phplyr, and phiz, and start JupyterLab in that directory:\nmkdir mileage && cd mileage\ncomposer require phpstats/phibble phpstats/phplyr phpstats/phiz\n~/.venvs/juphyter/bin/jupyter lab\nChoose the PHP kernel in the launcher. The kernel loads the project’s vendor/autoload.php before the first cell runs, so a cell needs no &lt;?php tag and no require. The same cells run in a Quarto document that sits in the project and names jupyter: php in its front matter.",
+    "text": "Setup\nCreate a Composer project and start JupyterLab in it:\nmkdir mileage && cd mileage\ncomposer require phpstats/phibble phpstats/phplyr phpstats/phiz\n~/.venvs/juphyter/bin/jupyter lab\nCreate a notebook with the PHP kernel from the launcher. The data is the mpg dataset that ships with phiz: 234 cars, with each car’s class and its highway mileage in miles per gallon (hwy).",
     "crumbs": [
       "Examples",
       "Show a table and a chart in a notebook"
     ]
   },
   {
-    "objectID": "examples/notebook.html#the-data",
-    "href": "examples/notebook.html#the-data",
+    "objectID": "examples/notebook.html#cells",
+    "href": "examples/notebook.html#cells",
     "title": "Show a table and a chart in a notebook",
-    "section": "The data",
-    "text": "The data\nThe cells use the mpg dataset that ships with phiz: 234 cars, with each car’s class and its highway fuel economy in miles per gallon (hwy).",
-    "crumbs": [
-      "Examples",
-      "Show a table and a chart in a notebook"
-    ]
-  },
-  {
-    "objectID": "examples/notebook.html#a-table",
-    "href": "examples/notebook.html#a-table",
-    "title": "Show a table and a chart in a notebook",
-    "section": "A table",
-    "text": "A table\nThe first cell imports the classes and functions that the later cells use. A use statement in a cell applies to every cell after it. phplyr’s round() replaces PHP’s built-in round() in those cells.\n\nuse Phibble\\DataFrame;\nuse Phiz\\Datasets;\nuse Phiz\\Plot;\nuse function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\nThe second cell counts the cars in each class and their mean highway mileage. A cell’s last value is its output, and a phibble data frame appears as an HTML table.\n\nPHP 8.5+PHP 8.3–8.4\n\n\n\n$mpg = DataFrame::fromRows(Datasets::mpg());\n\n$byClass = $mpg |&gt;\n    group_by('class') |&gt;\n    summarize(cars: n(), hwy: round(mean('hwy'), 1)) |&gt;\n    arrange(desc('hwy'));\n\n$byClass;\n\n\n\nA tibble: 7 × 3\n\n\n\n\n\nclass &lt;chr&gt;\ncars &lt;int&gt;\nhwy &lt;dbl&gt;\n\n\n\n\n1\ncompact\n47\n28.3\n\n\n2\nsubcompact\n35\n28.1\n\n\n3\nmidsize\n41\n27.3\n\n\n4\n2seater\n5\n24.8\n\n\n5\nminivan\n11\n22.4\n\n\n6\nsuv\n62\n18.1\n\n\n7\npickup\n33\n16.9\n\n\n\n\n\n\n\n\n\n\n$mpg = DataFrame::fromRows(Datasets::mpg());\n\n$byClass = phplyr($mpg)\n    -&gt;groupBy('class')\n    -&gt;summarize(cars: n(), hwy: round(mean('hwy'), 1))\n    -&gt;arrange(desc('hwy'))\n    -&gt;get();\n\n$byClass;\n\n\n\nA tibble: 7 × 3\n\n\n\n\n\nclass &lt;chr&gt;\ncars &lt;int&gt;\nhwy &lt;dbl&gt;\n\n\n\n\n1\ncompact\n47\n28.3\n\n\n2\nsubcompact\n35\n28.1\n\n\n3\nmidsize\n41\n27.3\n\n\n4\n2seater\n5\n24.8\n\n\n5\nminivan\n11\n22.4\n\n\n6\nsuv\n62\n18.1\n\n\n7\npickup\n33\n16.9",
-    "crumbs": [
-      "Examples",
-      "Show a table and a chart in a notebook"
-    ]
-  },
-  {
-    "objectID": "examples/notebook.html#a-chart",
-    "href": "examples/notebook.html#a-chart",
-    "title": "Show a table and a chart in a notebook",
-    "section": "A chart",
-    "text": "A chart\n$byClass is still defined, because the kernel keeps one PHP session across cells. A phiz plot appears as an interactive chart.\n\nPlot::of($byClass)\n    -&gt;aes(x: 'class', y: 'hwy')\n    -&gt;col()\n    -&gt;labs(x: 'Vehicle class', y: 'Mean highway mpg');\n\n\n\n\n\n\nMean highway mileage by vehicle class.",
-    "crumbs": [
-      "Examples",
-      "Show a table and a chart in a notebook"
-    ]
-  },
-  {
-    "objectID": "examples/notebook.html#how-it-works",
-    "href": "examples/notebook.html#how-it-works",
-    "title": "Show a table and a chart in a notebook",
-    "section": "How it works",
-    "text": "How it works\nThe kernel sends each value in every format it can produce, and JupyterLab or Quarto shows the richest one it supports. A data frame comes as HTML and as text. A plot comes as a Vega-Lite specification, as HTML, and as text, and also as SVG when vl-convert is installed. Getting started describes the formats, and JupyterLab and Quarto cover each front end. The verbs come from phplyr, the data frame from phibble, and the chart from phiz.",
+    "section": "Cells",
+    "text": "Cells\n\nThe kernel loads vendor/autoload.php from the notebook’s directory or the nearest directory above it, so cells need no require.\nA use statement applies to its own cell and every later one.\nphplyr’s round() replaces PHP’s built-in round() in the cells after the import.\n\n\nuse Phibble\\DataFrame;\nuse Phiz\\Datasets;\nuse Phiz\\Plot;\nuse function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\nA cell’s last value is its output. A phibble data frame is shown as a table.\n\nPHP 8.5+PHP 8.3–8.4\n\n\n\n$mpg = DataFrame::fromRows(Datasets::mpg());\n\n$byClass = $mpg |&gt;\n    group_by('class') |&gt;\n    summarize(cars: n(), hwy: round(mean('hwy'), 1)) |&gt;\n    arrange(desc('hwy'));\n\n$byClass;\n\n\n\nA tibble: 7 × 3\n\n\n\n\n\nclass &lt;chr&gt;\ncars &lt;int&gt;\nhwy &lt;dbl&gt;\n\n\n\n\n1\ncompact\n47\n28.3\n\n\n2\nsubcompact\n35\n28.1\n\n\n3\nmidsize\n41\n27.3\n\n\n4\n2seater\n5\n24.8\n\n\n5\nminivan\n11\n22.4\n\n\n6\nsuv\n62\n18.1\n\n\n7\npickup\n33\n16.9\n\n\n\n\n\n\n\n\n\n\n$mpg = DataFrame::fromRows(Datasets::mpg());\n\n$byClass = phplyr($mpg)\n    -&gt;groupBy('class')\n    -&gt;summarize(cars: n(), hwy: round(mean('hwy'), 1))\n    -&gt;arrange(desc('hwy'))\n    -&gt;get();\n\n$byClass;\n\n\n\nA tibble: 7 × 3\n\n\n\n\n\nclass &lt;chr&gt;\ncars &lt;int&gt;\nhwy &lt;dbl&gt;\n\n\n\n\n1\ncompact\n47\n28.3\n\n\n2\nsubcompact\n35\n28.1\n\n\n3\nmidsize\n41\n27.3\n\n\n4\n2seater\n5\n24.8\n\n\n5\nminivan\n11\n22.4\n\n\n6\nsuv\n62\n18.1\n\n\n7\npickup\n33\n16.9\n\n\n\n\n\n\n\n\n\n\nVariables persist across cells, so the next cell plots $byClass. A phiz plot is shown as a chart.\n\nPlot::of($byClass)\n    -&gt;aes(x: 'class', y: 'hwy')\n    -&gt;col()\n    -&gt;labs(x: 'Vehicle class', y: 'Mean highway mpg');\n\n\n\n\n\n\n\n\nSee also: Rich output, JupyterLab, phplyr, and phiz.",
     "crumbs": [
       "Examples",
       "Show a table and a chart in a notebook"
