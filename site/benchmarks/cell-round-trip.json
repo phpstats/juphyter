@@ -1,0 +1,143 @@
+{
+    "title": "Cell round trip: trivial cells and a 1,000-row data frame",
+    "label": "Cell round trip",
+    "description": "Runs 1,000 trivial cells in one session, and a cell whose value is a 1,000-row phibble data frame 100 times. Each data-frame cell formats the frame into its MIME bundle: text, the HTML table, and the bundle's metadata. The two no-kernel rows time the same formatting in one PHP process. phibble's text output prints only the first rows of a frame, as the HTML table does, so neither formats all 1,000 rows.",
+    "workload": "1,000 cells of 1; and 100 cells returning a 1,000-row, 5-column data frame",
+    "implementations": {
+        "juphyter kernel": "the php kernel through jupyter_client: ipykernel transport plus the PHP engine",
+        "PHP engine alone": "php bin/juphyter engine, driven over its Unix socket",
+        "python3 ipykernel": "a stock ipykernel Python kernel running 1",
+        "juphyter formatter, no kernel": "Juphyter\\Display\\Registry::default()->format($frame) in a plain PHP process",
+        "phibble text output, no kernel": "(string) $frame in a plain PHP process"
+    },
+    "measure": "Elapsed time per cell",
+    "unit": "ms",
+    "statistic": "median",
+    "method": "Kernel rows: from sending execute_request to receiving the execute_reply and the idle status. PHP engine alone: from writing the execute request to the socket to the engine's ok event. No-kernel rows: hrtime around the expression. Each repetition is a new session with 20 (trivial) or 3 (data frame) warmup cells; the value is the median over the repetitions' per-cell medians. Building the data frame is excluded.",
+    "time_spent_in": "The PHP engine alone row is the PHP process: parsing and running the cell and formatting its value. The juphyter kernel row adds Jupyter (ZeroMQ messaging and ipykernel) and the Python transport's socket hop. The no-kernel rows are formatting alone, in PHP.",
+    "memory_method": "peak_rss_mib: VmHWM of the PHP engine process from /proc/<pid>/status after the trivial cells, the engine only, without the Python transport or Jupyter. php_peak_mib: memory_get_peak_usage(true) in the engine after the trivial cells.",
+    "environment": {
+        "cpu": "AMD Ryzen 9 9955HX 16-Core Processor",
+        "cores": 2,
+        "memory_gb": 7.8,
+        "os": "Linux, Ubuntu 24.04.5 LTS (x86_64)",
+        "php": "8.5.12",
+        "versions": {
+            "juphyter": "v0.1.1-14-g058bee5",
+            "Python": "3.14.10",
+            "ipykernel": "7.4.0",
+            "jupyter_client": "8.10.0",
+            "pyzmq": "27.2.0",
+            "phibble": "0.5.3",
+            "phiz": "0.5.2",
+            "phplyr": "0.4.5"
+        },
+        "threads": 1,
+        "cache": "warm",
+        "repeats": 5,
+        "warmups": null,
+        "date": "2026-11-01",
+        "commit": "058bee5"
+    },
+    "rows": [
+        {
+            "case": "1,000 trivial cells",
+            "implementation": "juphyter kernel",
+            "value": 3.014,
+            "reps": [
+                3.029,
+                3.008,
+                3.014,
+                3.026,
+                3.012
+            ],
+            "peak_rss_mib": 34.4,
+            "reps_peak_rss_mib": [
+                34.4,
+                34.4,
+                34.4,
+                34.3,
+                34.4
+            ],
+            "php_peak_mib": 14.0
+        },
+        {
+            "case": "1,000 trivial cells",
+            "implementation": "PHP engine alone",
+            "value": 0.121,
+            "reps": [
+                0.121,
+                0.121,
+                0.122,
+                0.122,
+                0.121
+            ],
+            "php_peak_mib": 14.0
+        },
+        {
+            "case": "1,000 trivial cells",
+            "implementation": "python3 ipykernel",
+            "value": 3.92,
+            "reps": [
+                3.916,
+                3.903,
+                3.939,
+                3.92,
+                3.923
+            ]
+        },
+        {
+            "case": "1,000-row data frame",
+            "implementation": "juphyter kernel",
+            "value": 3.294,
+            "reps": [
+                3.294,
+                3.242,
+                3.303,
+                3.302,
+                3.277
+            ]
+        },
+        {
+            "case": "1,000-row data frame",
+            "implementation": "PHP engine alone",
+            "value": 0.356,
+            "reps": [
+                0.354,
+                0.352,
+                0.359,
+                0.357,
+                0.356
+            ]
+        },
+        {
+            "case": "1,000-row data frame",
+            "implementation": "juphyter formatter, no kernel",
+            "value": 0.188,
+            "reps": [
+                0.189,
+                0.184,
+                0.189,
+                0.188,
+                0.187
+            ]
+        },
+        {
+            "case": "1,000-row data frame",
+            "implementation": "phibble text output, no kernel",
+            "value": 0.137,
+            "reps": [
+                0.137,
+                0.138,
+                0.138,
+                0.137,
+                0.137
+            ]
+        }
+    ],
+    "reproduce": [
+        "bench/setup",
+        "bench/run cells"
+    ],
+    "source": "bench/cells.py"
+}

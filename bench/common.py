@@ -226,7 +226,12 @@ def run(*command: str) -> str:
         return ""
 
 
-def environment(cache: str | dict, repeats: int, warmups: int) -> dict[str, Any]:
+def environment(cache: str | dict, repeats: int, warmups: int | None) -> dict[str, Any]:
+    """The machine and software of a run.
+
+    warmups is None when it differs between cases; the record's method says
+    what each case warms up with.
+    """
     from importlib.metadata import version
 
     cpu = None

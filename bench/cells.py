@@ -214,7 +214,7 @@ def main() -> None:
             "cells, the engine only, without the Python transport or Jupyter. php_peak_mib: "
             "memory_get_peak_usage(true) in the engine after the trivial cells."
         ),
-        "environment": environment("warm", arguments.repeats, 1),
+        "environment": environment("warm", arguments.repeats, None),
         "rows": rows,
         "reproduce": ["bench/setup", "bench/run cells"],
         "source": "bench/cells.py",

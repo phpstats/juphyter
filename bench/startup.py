@@ -122,7 +122,7 @@ def main() -> None:
             "autoloader, and the cell. The juphyter kernel row adds Jupyter and the Python transport, so "
             "the difference between the two rows is spent in jupyter_client, ipykernel, and the transport."
         ),
-        "environment": environment(cache, arguments.repeats, 0 if arguments.cache == "cold" else 1),
+        "environment": environment(cache, arguments.repeats, None),
         "rows": rows,
         "reproduce": ["bench/setup", "bench/run startup"],
         "source": "bench/startup.py",

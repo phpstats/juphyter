@@ -113,6 +113,10 @@
             }
         ]
     },
+    "benchmarks": [
+        "site/benchmarks/kernel-startup.json",
+        "site/benchmarks/cell-round-trip.json"
+    ],
     "verifications": [
         "site/verifications/protocol-conformance.json",
         "site/verifications/kernel-behavior.json",
@@ -120,7 +124,7 @@
         "site/verifications/family-compatibility.json"
     ],
     "evidence_gaps": {
-        "benchmarks": "No benchmark has been run on Linux yet; the kernel startup and cell round-trip benchmarks are in bench/.",
+        "benchmarks": "No benchmark covers Quarto render time, which Quarto and Pandoc dominate, or a cell that streams large output.",
         "verification": "Not checked: inspect, history, and stdin requests, comms and widgets, and the debugger, which juphyter does not implement; JupyterLab's own rendering of outputs; and Linux on arm64."
     }
 }
