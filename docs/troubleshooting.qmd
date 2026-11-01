@@ -17,18 +17,6 @@ juphyter itself. Upgrading or removing any of them breaks the kernel, and
   directory is deleted. Run `composer install` in the project, or uninstall
   the kernel.
 
-### Homebrew PHP and juphyter 0.1.0
-
-juphyter 0.1.0 recorded Homebrew's versioned path, such as
-`/opt/homebrew/Cellar/php/8.5.10/bin/php`, which `brew upgrade` removes.
-juphyter 0.1.1 and later record the path on `PATH`, such as
-`/opt/homebrew/bin/php`. Upgrade juphyter and run `juphyter install` again,
-or pass the stable path to 0.1.0:
-
-```bash
-juphyter install --php /opt/homebrew/bin/php
-```
-
 ## No Python can host the kernel
 
 `juphyter install` looks for an interpreter in this order: the one named by
@@ -98,17 +86,8 @@ same absence is why ipywidgets are unsupported.
 
 Quarto keeps a kernel alive between renders only for languages it can write a
 setup or cleanup cell for. It has none for PHP, and `juphyter install` writes
-none, so each render starts a new PHP session even with
-`--execute-daemon`. To keep that behavior if a later Quarto release changes
-it, set:
-
-```yaml
-execute:
-  daemon: false
-```
-
-A document that declares a class or a function depends on it, because PHP
-cannot redeclare either in a kept-alive session.
+none, so each render starts a new PHP session, including with
+`--execute-daemon`.
 
 ### Rendering frozen documents
 

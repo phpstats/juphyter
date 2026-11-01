@@ -75,12 +75,10 @@ DataFrame::fromRows([
 A phiz plot appears as a chart. JupyterLab draws it from its Vega-Lite
 specification and needs no extension.
 
-Compatibility note: phiz writes Vega-Lite 6 specifications, and juphyter
-publishes them under `application/vnd.vegalite.v5+json`, the newest Vega-Lite
-type JupyterLab's built-in renderer accepts. On 2026-10-19, with phiz 0.3,
-JupyterLab's bundled Vega-Lite 5.6.1 compiled all sixteen phiz specifications
-tested. A plot also carries a static SVG, which JupyterLab does not use, for
-Quarto's PDF and Word output and for anything the version 5 renderer rejects.
+juphyter publishes a plot's specification under
+`application/vnd.vegalite.v5+json`, the Vega-Lite type that JupyterLab's
+built-in renderer reads. A plot also carries a static SVG, which JupyterLab
+does not use, for Quarto's PDF and Word output.
 
 ## Converting a notebook
 

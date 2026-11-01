@@ -19,7 +19,7 @@ the fixes below.
 
 ## How Quarto chooses an interpreter
 
-Measured with Quarto 1.10.18. The first match wins:
+In Quarto 1.10.18, the version CI tests, the first match wins:
 
 | Order | Source |
 |---|---|

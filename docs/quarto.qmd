@@ -38,8 +38,8 @@ such as `--to typst` for a PDF.
 
 Quarto runs its Jupyter engine in a Python interpreter of its own choosing,
 which needs Jupyter in it. `juphyter doctor` reports whether it has one, and
-[Python interpreters and editors](python.qmd) covers how to choose it. This
-page was checked with Quarto 1.10.18, the version CI tests.
+[Python interpreters and editors](python.qmd) covers how to choose it. CI tests
+Quarto 1.10.18.
 
 ## Output formats
 

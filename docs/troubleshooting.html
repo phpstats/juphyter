@@ -227,10 +227,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#a-kernel-stopped-working" id="toc-a-kernel-stopped-working" class="nav-link active" data-scroll-target="#a-kernel-stopped-working">A kernel stopped working</a>
-  <ul class="collapse">
-  <li><a href="#homebrew-php-and-juphyter-0.1.0" id="toc-homebrew-php-and-juphyter-0.1.0" class="nav-link" data-scroll-target="#homebrew-php-and-juphyter-0.1.0">Homebrew PHP and juphyter 0.1.0</a></li>
-  </ul></li>
+  <li><a href="#a-kernel-stopped-working" id="toc-a-kernel-stopped-working" class="nav-link active" data-scroll-target="#a-kernel-stopped-working">A kernel stopped working</a></li>
   <li><a href="#no-python-can-host-the-kernel" id="toc-no-python-can-host-the-kernel" class="nav-link" data-scroll-target="#no-python-can-host-the-kernel">No Python can host the kernel</a></li>
   <li><a href="#the-stop-button-does-nothing" id="toc-the-stop-button-does-nothing" class="nav-link" data-scroll-target="#the-stop-button-does-nothing">The stop button does nothing</a></li>
   <li><a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto">Quarto</a>
@@ -274,11 +271,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Run <code>juphyter install</code> again with the same <code>--name</code> to record the current paths.</li>
 <li>A kernel installed into a project breaks when the project’s <code>vendor</code> directory is deleted. Run <code>composer install</code> in the project, or uninstall the kernel.</li>
 </ul>
-<section id="homebrew-php-and-juphyter-0.1.0" class="level3">
-<h3 class="anchored" data-anchor-id="homebrew-php-and-juphyter-0.1.0">Homebrew PHP and juphyter 0.1.0</h3>
-<p>juphyter 0.1.0 recorded Homebrew’s versioned path, such as <code>/opt/homebrew/Cellar/php/8.5.10/bin/php</code>, which <code>brew upgrade</code> removes. juphyter 0.1.1 and later record the path on <code>PATH</code>, such as <code>/opt/homebrew/bin/php</code>. Upgrade juphyter and run <code>juphyter install</code> again, or pass the stable path to 0.1.0:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--php</span> /opt/homebrew/bin/php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
 </section>
 <section id="no-python-can-host-the-kernel" class="level2">
 <h2 class="anchored" data-anchor-id="no-python-can-host-the-kernel">No Python can host the kernel</h2>
@@ -304,14 +296,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="keyerror-path-with-a-kernelspec-block" class="level3">
 <h3 class="anchored" data-anchor-id="keyerror-path-with-a-kernelspec-block"><code>KeyError: 'path'</code> with a <code>kernelspec</code> block</h3>
 <p>Quarto accepts the fuller front matter that Jupyter writes into a notebook, but for juphyter it also needs <code>path</code>, the directory that holds <code>kernel.json</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jupyter</span><span class="kw">:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kernelspec</span><span class="kw">:</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> php85</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">language</span><span class="kw">:</span><span class="at"> php</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">display_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"PHP 8.5"</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /Users/you/Library/Jupyter/kernels/php85</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jupyter</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kernelspec</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> php85</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">language</span><span class="kw">:</span><span class="at"> php</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">display_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"PHP 8.5"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /Users/you/Library/Jupyter/kernels/php85</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Quarto reads <code>path</code> to look for a setup cell beside the kernelspec, which it does for any language it has no built-in support for. <code>jupyter: php85</code> fills it in, so name the kernel instead of describing it.</p>
 </section>
 <section id="unknown-message-type-comm_open" class="level3">
@@ -320,10 +312,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="a-new-php-session-on-every-render" class="level3">
 <h3 class="anchored" data-anchor-id="a-new-php-session-on-every-render">A new PHP session on every render</h3>
-<p>Quarto keeps a kernel alive between renders only for languages it can write a setup or cleanup cell for. It has none for PHP, and <code>juphyter install</code> writes none, so each render starts a new PHP session even with <code>--execute-daemon</code>. To keep that behavior if a later Quarto release changes it, set:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">daemon</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>A document that declares a class or a function depends on it, because PHP cannot redeclare either in a kept-alive session.</p>
+<p>Quarto keeps a kernel alive between renders only for languages it can write a setup or cleanup cell for. It has none for PHP, and <code>juphyter install</code> writes none, so each render starts a new PHP session, including with <code>--execute-daemon</code>.</p>
 </section>
 <section id="rendering-frozen-documents" class="level3">
 <h3 class="anchored" data-anchor-id="rendering-frozen-documents">Rendering frozen documents</h3>
