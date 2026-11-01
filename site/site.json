@@ -72,44 +72,58 @@
         "nav": [
             {
                 "title": "Overview",
-                "path": "index.qmd"
+                "path": "index.qmd",
+                "section": "Getting started"
             },
             {
                 "title": "Installation",
-                "path": "install.qmd"
+                "path": "install.qmd",
+                "section": "Getting started"
             },
             {
-                "title": "Getting started",
-                "path": "get-started.qmd"
-            },
-            {
-                "title": "Quarto",
-                "path": "quarto.qmd"
+                "title": "First steps",
+                "path": "get-started.qmd",
+                "section": "Getting started"
             },
             {
                 "title": "JupyterLab",
-                "path": "jupyter.qmd"
+                "path": "jupyter.qmd",
+                "section": "Guides"
+            },
+            {
+                "title": "Quarto",
+                "path": "quarto.qmd",
+                "section": "Guides"
             },
             {
                 "title": "Python and editors",
-                "path": "python.qmd"
+                "path": "python.qmd",
+                "section": "Guides"
             },
             {
                 "title": "Limitations",
-                "path": "limitations.qmd"
+                "path": "limitations.qmd",
+                "section": "Guides"
             },
             {
                 "title": "Troubleshooting",
-                "path": "troubleshooting.qmd"
+                "path": "troubleshooting.qmd",
+                "section": "Guides"
             },
             {
-                "title": "Contributing",
-                "path": "development.qmd"
+                "title": "Reference",
+                "path": "reference.qmd",
+                "section": "Reference"
             },
             {
                 "title": "Show a table and a chart in a notebook",
                 "path": "examples/notebook.qmd",
                 "section": "Examples"
+            },
+            {
+                "title": "Contributing",
+                "path": "development.qmd",
+                "section": "Contributing"
             }
         ]
     },

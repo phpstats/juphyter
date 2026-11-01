@@ -14,20 +14,29 @@ website:
     style: docked
     search: true
     contents:
-      - text: Overview
-        href: index.qmd
-      - install.qmd
-      - get-started.qmd
-      - quarto.qmd
-      - jupyter.qmd
-      - text: Python and editors
-        href: python.qmd
-      - limitations.qmd
-      - troubleshooting.qmd
-      - development.qmd
+      - section: Getting started
+        contents:
+          - text: Overview
+            href: index.qmd
+          - install.qmd
+          - get-started.qmd
+      - section: Guides
+        contents:
+          - jupyter.qmd
+          - quarto.qmd
+          - text: Python and editors
+            href: python.qmd
+          - limitations.qmd
+          - troubleshooting.qmd
+      - section: Reference
+        contents:
+          - reference.qmd
       - section: Examples
         contents:
           - examples/notebook.qmd
+      - section: Contributing
+        contents:
+          - development.qmd
 
 format:
   html:

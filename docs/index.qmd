@@ -103,5 +103,10 @@ handles the Jupyter protocol, and a PHP process runs the cells. They talk over
 a Unix socket. That is why an install needs Python as well as PHP, and why the
 kernel runs on macOS and Linux only.
 
-[Installation](install.qmd) covers the requirements and the install commands,
-and [Getting started](get-started.qmd) walks through a first notebook.
+## Documentation
+
+- [Installation](install.qmd): requirements, install commands, and the
+  installation check.
+- [First steps](get-started.qmd): cells, state, imports, errors, and rich
+  output.
+- [Reference](reference.qmd): commands, the display API, and configuration.

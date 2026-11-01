@@ -1,0 +1,233 @@
+---
+title: "Reference"
+toc-depth: 3
+---
+
+| Name | Kind | Purpose |
+|---|---|---|
+| [`juphyter install`](#juphyter-install) | Command | Register a PHP kernel with Jupyter. |
+| [`juphyter uninstall`](#juphyter-uninstall) | Command | Remove a kernel juphyter registered. |
+| [`juphyter doctor`](#juphyter-doctor) | Command | Check installed kernels and Quarto. |
+| [`juphyter engine`](#juphyter-engine) | Command | The execution engine the kernel starts. |
+| [`juphyter --version`](#juphyter-version) | Command | Print the version and the PHP running it. |
+| [`Juphyter\display()`](#display) | Function | Show values part way through a cell. |
+| [`toHtml()`](#tohtml) | Method a class declares | Supply a value's HTML output. |
+| [`toMimeBundle()`](#tomimebundle) | Method a class declares | Supply every output format of a value. |
+| [`Juphyter\Display\MimeBundle`](#mimebundle) | Class | Build the return value of `toMimeBundle()`. |
+| [`juphyter.json`](#juphyter-json) | Configuration file | Autoloader, memory limit, and include path for notebooks. |
+| [Kernel environment](#kernel-environment) | Environment variables | What a kernelspec passes to the kernel. |
+| [Quarto settings](#quarto-settings) | Front matter | Kernel name and cell options. |
+
+## Commands
+
+Every command prints its options with `--help` or `-h`.
+
+### `juphyter install` {#juphyter-install}
+
+```bash
+juphyter install [options]
+```
+
+Writes a kernelspec so that JupyterLab and Quarto can run PHP cells.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--name NAME` | `php` | The kernel's name and directory, used in `jupyter: NAME`. |
+| `--display-name TEXT` | The PHP version, such as `PHP 8.5` | The label JupyterLab shows. |
+| `--php PATH` | The PHP running the command, as the first path on `PATH` that leads to it | The PHP binary that runs cells. A bare name is resolved to an absolute path. |
+| `--python PATH` | The interpreter that owns `jupyter` on `PATH` | The Python that runs the kernel. It needs ipykernel 7.0 or later. |
+| `--prefix PATH` | The per-user Jupyter data directory | Write under `PATH/share/jupyter`. |
+| `--autoload PATH` | Search upward from the notebook | The autoloader the engine loads, recorded as `JUPHYTER_AUTOLOAD`. |
+| `--create-venv PATH` | Ask, or `~/.venvs/juphyter` without a terminal | Where to build a Python environment with JupyterLab when no interpreter can host the kernel. |
+
+- A kernel of the same name that juphyter wrote is replaced, and the command reports `Replaced`. One that something else wrote is refused.
+- With `--python`, the command builds no environment. An interpreter without ipykernel is reported with the `pip install` command for it.
+- [Installation](install.qmd#register-the-kernel) describes the default path.
+
+### `juphyter uninstall` {#juphyter-uninstall}
+
+```bash
+juphyter uninstall [options]
+```
+
+Removes a kernelspec that juphyter installed. A kernelspec of the same name that something else wrote is refused.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--name NAME` | `php` | The kernel to remove. |
+| `--prefix PATH` | The per-user Jupyter data directory | Look under `PATH/share/jupyter`. |
+
+### `juphyter doctor` {#juphyter-doctor}
+
+```bash
+juphyter doctor [options]
+```
+
+Checks juphyter's files, the PHP that runs cells, the Python for the kernel, the Python Quarto will use, and every kernel juphyter registered. Changes nothing.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--prefix PATH` | The per-user Jupyter data directory | Look under `PATH/share/jupyter`. |
+
+| Exit code | Meaning |
+|---|---|
+| 0 | No line is marked `fail`. Lines marked `warn`, such as a missing `pcntl`, are allowed. |
+| 1 | At least one line is marked `fail`, including `Quarto: not ready.` |
+
+[Check the installation](install.qmd#check-the-installation) lists the summary lines.
+
+### `juphyter engine` {#juphyter-engine}
+
+```bash
+juphyter engine [options]
+```
+
+Runs the execution engine. The kernel's Python transport starts it and talks to it over the Unix socket named in `JUPHYTER_SOCKET`. It is not run by hand.
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--socket PATH` | `$JUPHYTER_SOCKET` | The socket to connect to. |
+| `--autoload PATH` | Search upward from the directory | The autoloader to load. |
+| `--directory PATH` | The working directory | The notebook's directory, where the autoloader and `juphyter.json` search starts. |
+
+### `juphyter --version` {#juphyter-version}
+
+```bash
+juphyter --version
+```
+
+Prints the installed version and the PHP running it.
+
+## Display API
+
+A cell's last value is displayed. These functions and methods control how a value is displayed and when.
+
+### `Juphyter\display()` {#display}
+
+```php
+Juphyter\display(mixed $value, mixed ...$more): void
+```
+
+Publishes each value as its own output, in order, part way through a cell.
+
+- Each value is formatted the same way as a cell's last value.
+- Returns nothing, so a cell that ends with `display()` has no `Out[N]`.
+- Outside a kernel, the `text/plain` form is written to standard output.
+
+```php
+Juphyter\display($summary, $plot);
+```
+
+### `toHtml()` {#tohtml}
+
+```php
+public function toHtml(): string
+```
+
+A class that declares `toHtml()` is displayed as that HTML.
+
+- `text/plain` comes from `__toString()` when the class is `Stringable`, and from a compact dump otherwise.
+- `toMimeBundle()` takes precedence when a class declares both.
+- [Rich output](get-started.qmd#rich-output) has an example.
+
+### `toMimeBundle()` {#tomimebundle}
+
+```php
+public function toMimeBundle(): Juphyter\Display\MimeBundle|array
+```
+
+A class that declares `toMimeBundle()` supplies every output format of its values. It takes precedence over every built-in format, including phibble tables and phiz plots.
+
+- The return value is a `MimeBundle`, or an array of MIME type to data, such as `['text/html' => '<b>7</b>', 'text/plain' => '7']`.
+- An array with any key that is not a MIME type, or an empty array, is ignored, and the value is shown as a compact dump.
+- When `text/plain` is missing, it comes from `__toString()` or a compact dump.
+- `application/json` and Vega-Lite data are PHP arrays, which the kernel encodes as JSON.
+
+```php
+final class Score
+{
+    public function __construct(private readonly int $value) {}
+
+    public function toMimeBundle(): array
+    {
+        return [
+            'text/html' => "<strong>{$this->value}</strong> points",
+            'text/plain' => "{$this->value} points",
+        ];
+    }
+}
+```
+
+### `Juphyter\Display\MimeBundle` {#mimebundle}
+
+An immutable, ordered map of MIME type to data, with metadata per type. Every method that changes it returns a new bundle.
+
+| Member | Returns | Purpose |
+|---|---|---|
+| `new MimeBundle(array $data = [], array $metadata = [])` | `MimeBundle` | A bundle from MIME type to data, and MIME type to metadata. |
+| `MimeBundle::plain(string $text)` | `MimeBundle` | A bundle holding only `text/plain`. |
+| `with(string $type, mixed $data, ?array $metadata = null)` | `MimeBundle` | Add or replace one type. A replaced type keeps its position. |
+| `without(string $type)` | `MimeBundle` | Remove one type and its metadata. |
+| `has(string $type)` | `bool` | Whether the bundle holds the type. |
+| `get(string $type)` | `mixed` | The type's data, or `null`. |
+| `types()` | `list<string>` | The MIME types, in order. |
+| `data()` | `array` | MIME type to data. |
+| `metadata()` | `array` | MIME type to metadata. |
+| `count()` | `int` | The number of types. |
+| `isEmpty()` | `bool` | Whether the bundle holds no type. |
+
+| Constant | Value |
+|---|---|
+| `MimeBundle::PLAIN` | `text/plain` |
+| `MimeBundle::HTML` | `text/html` |
+| `MimeBundle::MARKDOWN` | `text/markdown` |
+| `MimeBundle::JSON` | `application/json` |
+| `MimeBundle::SVG` | `image/svg+xml` |
+| `MimeBundle::VEGALITE` | `application/vnd.vegalite.v5+json` |
+
+Types keep the order they were added in.
+
+## Configuration
+
+### `juphyter.json` {#juphyter-json}
+
+A JSON object in the notebook's directory or any directory above it. The nearest file applies. Every key is optional.
+
+| Key | Type | Effect |
+|---|---|---|
+| `autoload` | string | The autoloader to load, in place of the upward search for `vendor/autoload.php`. |
+| `memory_limit` | string | PHP's `memory_limit`, such as `"512M"`. |
+| `include_path` | string | Prepended to PHP's `include_path`. |
+
+- Relative paths resolve against the directory that holds the file.
+- `JUPHYTER_AUTOLOAD` in the kernel's environment takes precedence over `autoload`.
+- A file that is not valid JSON, or not a JSON object, is reported as an error.
+
+### Kernel environment {#kernel-environment}
+
+`juphyter install` writes these variables into the kernelspec's `env`.
+
+| Variable | Set by | Meaning |
+|---|---|---|
+| `JUPHYTER_PHP` | Always | The PHP binary that runs the engine. |
+| `JUPHYTER_ENGINE` | Always | The `juphyter` script, or PHAR, the engine runs from. |
+| `JUPHYTER_AUTOLOAD` | `--autoload` | The autoloader to load. Takes precedence over `juphyter.json`. |
+
+### Quarto settings {#quarto-settings}
+
+| Setting | Where | Effect |
+|---|---|---|
+| `jupyter: NAME` | Front matter | Runs the document's `{php}` cells with the kernel named `NAME`. |
+| `execute: freeze: auto` | Front matter or `_quarto.yml` | Re-executes a document only when its source changes. |
+
+Cell options, as `#|` comments on a cell's first lines:
+
+- `#| echo: false` runs the cell and hides its source.
+- `#| eval: false` shows the source without running it.
+- `#| output: false` runs the cell and hides its output.
+- `#| error: true` continues the render past an exception, and keeps the
+  traceback.
+- `#| fig-cap: "..."` captions the cell's figure.
+- `#| label: fig-NAME` gives the figure a cross-reference label.
+
+[Quarto](quarto.qmd) covers output formats and projects.
