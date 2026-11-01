@@ -316,11 +316,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>The kernel records absolute paths to the PHP binary, the Python interpreter, and juphyter. The PHP is the one running <code>juphyter install</code>, recorded as the first path on <code>PATH</code> that leads to it, such as <code>/opt/homebrew/bin/php</code>.</li>
 <li>The second <code>export</code> puts the environment first on <code>PATH</code>, so <code>jupyter lab</code> and <code>quarto render</code> find it. When <code>juphyter install</code> used an existing environment, the directory does not exist and the line has no effect.</li>
 </ul>
+<p>Without Composer’s bin directory on <code>PATH</code>, Composer can run the same command:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global exec juphyter <span class="at">--</span> install <span class="at">--create-venv</span> ~/.venvs/juphyter</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The command prints the kernelspec, the PHP, the Python, and the engine it recorded. When Quarto is installed and the Python Quarto would use has no Jupyter, it also prints a warning with the <code>export</code> line that fixes it. The kernel is still registered.</p>
 </section>
 <section id="check-the-installation" class="level2">
 <h2 class="anchored" data-anchor-id="check-the-installation">Check the installation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> doctor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> doctor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>juphyter doctor</code> checks juphyter’s files, the PHP that runs the cells, the Python for the kernel, the Python Quarto will use, and every kernel juphyter registered. It changes nothing, and it ends with two summary lines:</p>
 <table class="caption-top table">
 <colgroup>
@@ -358,15 +360,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="keeping-the-path-entries" class="level2">
 <h2 class="anchored" data-anchor-id="keeping-the-path-entries">Keeping the PATH entries</h2>
 <p>Both <code>export</code> lines last until the shell closes. To keep the <code>juphyter</code> command in new shells, add Composer’s bin directory to your shell startup file. This appends to <code>~/.zshrc</code>. Use <code>~/.bashrc</code> for bash.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export PATH=</span><span class="dt">\"</span><span class="va">$(</span><span class="ex">composer</span> global config bin-dir <span class="at">--absolute</span><span class="va">)</span><span class="st">:</span><span class="dt">\$</span><span class="st">PATH</span><span class="dt">\"</span><span class="st">"</span> <span class="op">&gt;&gt;</span> ~/.zshrc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export PATH=</span><span class="dt">\"</span><span class="va">$(</span><span class="ex">composer</span> global config bin-dir <span class="at">--absolute</span><span class="va">)</span><span class="st">:</span><span class="dt">\$</span><span class="st">PATH</span><span class="dt">\"</span><span class="st">"</span> <span class="op">&gt;&gt;</span> ~/.zshrc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Putting the Python environment in a startup file makes it the <code>python3</code> for every program, including every Quarto project on the machine. <a href="./python.html">Python interpreters and editors</a> describes how to select it per editor workspace, per shell, or per Quarto project instead.</p>
 </section>
 <section id="the-phpstats-packages" class="level2">
 <h2 class="anchored" data-anchor-id="the-phpstats-packages">The phpstats packages</h2>
 <p>juphyter does not depend on phibble, phplyr, or phiz. A notebook inside a Composer project that requires them can use them with the <code>php</code> kernel. To use them in notebooks outside any project, install them globally and register a second kernel that loads Composer’s global autoloader:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global require phpstats/phibble phpstats/phplyr phpstats/phiz</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (phpstats)"</span> <span class="dt">\</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--autoload</span> <span class="st">"</span><span class="va">$(</span><span class="ex">composer</span> global config home<span class="va">)</span><span class="st">/vendor/autoload.php"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global require phpstats/phibble phpstats/phplyr phpstats/phiz</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (phpstats)"</span> <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--autoload</span> <span class="st">"</span><span class="va">$(</span><span class="ex">composer</span> global config home<span class="va">)</span><span class="st">/vendor/autoload.php"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Documents name that kernel as <code>jupyter: phpstats</code>, and JupyterLab lists it as “PHP (phpstats)”. A kernel installed with <code>--autoload</code> always loads the autoloader it names, even for a notebook inside a Composer project, which is why it has its own name.</p>
 </section>
 <section id="which-classes-a-notebook-sees" class="level2">
@@ -378,18 +380,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>A <code>juphyter.json</code> in the notebook’s directory or any directory above it.</li>
 </ol>
 <p>A <code>juphyter.json</code> can also set the memory limit and the include path:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"autoload"</span><span class="fu">:</span> <span class="st">"vendor/autoload.php"</span><span class="fu">,</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"memory_limit"</span><span class="fu">:</span> <span class="st">"512M"</span><span class="fu">,</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"include_path"</span><span class="fu">:</span> <span class="st">"lib"</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"autoload"</span><span class="fu">:</span> <span class="st">"vendor/autoload.php"</span><span class="fu">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"memory_limit"</span><span class="fu">:</span> <span class="st">"512M"</span><span class="fu">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"include_path"</span><span class="fu">:</span> <span class="st">"lib"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Relative paths resolve against the directory that holds <code>juphyter.json</code>.</p>
 </section>
 <section id="installing-into-one-project" class="level2">
 <h2 class="anchored" data-anchor-id="installing-into-one-project">Installing into one project</h2>
 <p>juphyter can also be a development dependency of a project:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require <span class="at">--dev</span> phpstats/juphyter</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install <span class="at">--name</span> myproject</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require <span class="at">--dev</span> phpstats/juphyter</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vendor/bin/juphyter</span> install <span class="at">--name</span> myproject</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>The kernel is still registered for your user, and it runs that project’s copy of juphyter.</li>
 <li>Without <code>--name</code>, a second project’s install replaces the first project’s <code>php</code> kernel, and the command reports it as <code>Replaced</code>.</li>
@@ -399,8 +401,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="several-php-versions" class="level2">
 <h2 class="anchored" data-anchor-id="several-php-versions">Several PHP versions</h2>
 <p>Give each kernel its own name:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> php83 <span class="at">--php</span> /opt/homebrew/opt/php@8.3/bin/php</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> php85 <span class="at">--php</span> /opt/homebrew/opt/php@8.5/bin/php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> php83 <span class="at">--php</span> /opt/homebrew/opt/php@8.3/bin/php</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> php85 <span class="at">--php</span> /opt/homebrew/opt/php@8.5/bin/php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>JupyterLab then lists “PHP 8.3” and “PHP 8.5”. An absolute <code>--php</code> path is recorded as written. A bare name such as <code>php8.4</code> is resolved to an absolute path, because a kernel cannot rely on <code>PATH</code>.</p>
 </section>
 <section id="where-the-kernel-is-registered" class="level2">

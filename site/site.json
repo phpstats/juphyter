@@ -3,15 +3,12 @@
     "title": "juphyter",
     "tagline": "A Jupyter and Quarto kernel for PHP.",
     "summary": [
-        "juphyter runs PHP cells in JupyterLab notebooks and in Quarto documents. It registers a Jupyter kernel, so JupyterLab lists PHP in its launcher and Quarto runs the {php} cells of a .qmd that names the kernel. It corresponds to IRkernel, which runs R in Jupyter.",
-        "One PHP session lasts across cells, including use imports and declared functions and classes. A cell's last value is its output: a phibble data frame appears as an HTML table and a phiz plot as a chart, and tracebacks name the cell and the line. A notebook inside a Composer project can use that project's classes and packages, because the kernel loads the nearest vendor/autoload.php above it."
+        "Run PHP in Jupyter notebooks and Quarto documents, with tables and charts displayed alongside code.",
+        "One PHP session lasts across cells. phibble data frames appear as tables and phiz plots as charts, and a notebook inside a Composer project can use that project's classes."
     ],
     "install": [
         "composer global require phpstats/juphyter",
-        "export PATH=\"$(composer global config bin-dir --absolute):$PATH\"",
-        "juphyter install --create-venv ~/.venvs/juphyter",
-        "export PATH=\"$HOME/.venvs/juphyter/bin:$PATH\"",
-        "juphyter doctor"
+        "composer global exec juphyter -- install --create-venv ~/.venvs/juphyter"
     ],
     "installation": "install",
     "php": [
@@ -48,7 +45,7 @@
         "Linux"
     ],
     "verify": {
-        "command": "juphyter doctor",
+        "command": "composer global exec juphyter -- doctor",
         "output": "JupyterLab: ready, with php.",
         "note": "Checks kernel readiness and optional Quarto support."
     },

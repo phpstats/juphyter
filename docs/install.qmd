@@ -55,6 +55,13 @@ export PATH="$HOME/.venvs/juphyter/bin:$PATH"
   and `quarto render` find it. When `juphyter install` used an existing
   environment, the directory does not exist and the line has no effect.
 
+Without Composer's bin directory on `PATH`, Composer can run the same
+command:
+
+```bash
+composer global exec juphyter -- install --create-venv ~/.venvs/juphyter
+```
+
 The command prints the kernelspec, the PHP, the Python, and the engine it
 recorded. When Quarto is installed and the Python Quarto would use has no
 Jupyter, it also prints a warning with the `export` line that fixes it. The
