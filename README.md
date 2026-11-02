@@ -79,4 +79,4 @@ tests, the documentation build, and the PHAR.
 
 ## License
 
-MIT
+juphyter is released under the MIT license. See [LICENSE](LICENSE).
