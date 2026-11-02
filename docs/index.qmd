@@ -35,8 +35,10 @@ using them outside a project.
 composer require phpstats/phibble phpstats/phplyr phpstats/phiz
 ```
 
-phplyr's `round()` replaces PHP's built-in `round()` in the cells after this
-import.
+The examples read [mtcars](https://github.com/phpstats/datasets#mtcars) from
+the phpstats datasets repository: fuel economy and design measures of 32 cars
+from R's `datasets` package. phplyr's `round()` replaces PHP's built-in
+`round()` in the cells after this import.
 
 ```{php}
 use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round};
@@ -47,35 +49,41 @@ use function Phplyr\{phplyr, group_by, summarize, arrange, desc, n, mean, round}
 ## PHP 8.5+
 
 ```{php}
-$mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
+$mtcars = \Phibble\DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
 
-$mpg |>
-    group_by('class') |>
-    summarize(models: n(), hwy: round(mean('hwy'), 1)) |>
-    arrange(desc('hwy'));
+$mtcars |>
+    group_by('gear') |>
+    summarize(cars: n(), mpg: round(mean('mpg'), 1)) |>
+    arrange(desc('mpg'));
 ```
 
 ## PHP 8.3–8.4
 
 ```{php}
-$mpg = \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg());
+$mtcars = \Phibble\DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
 
-phplyr($mpg)
-    ->groupBy('class')
-    ->summarize(models: n(), hwy: round(mean('hwy'), 1))
-    ->arrange(desc('hwy'))
+phplyr($mtcars)
+    ->groupBy('gear')
+    ->summarize(cars: n(), mpg: round(mean('mpg'), 1))
+    ->arrange(desc('mpg'))
     ->get();
 ```
 
 :::
 
 ```{php}
-#| fig-cap: "Highway mileage against engine displacement."
-\Phiz\Plot::of(\Phiz\Datasets::mpg())
-    ->aes(x: 'displ', y: 'hwy', color: 'drv')
-    ->point(opacity: 0.7)
+#| fig-cap: "Fuel economy against weight, with a least-squares line."
+\Phiz\Plot::of($mtcars)
+    ->aes(x: 'wt', y: 'mpg')
+    ->point()
     ->smooth(method: 'lm')
-    ->labs(x: 'Displacement (L)', y: 'Highway mpg', color: 'Drive');
+    ->labs(x: 'Weight (1,000 lb)', y: 'Miles per gallon');
 ```
 
 ## What the kernel provides

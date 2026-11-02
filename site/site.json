@@ -52,9 +52,9 @@
     "quickstart": "get-started",
     "repository": "https://github.com/phpstats/juphyter",
     "example": {
-        "chain": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\nphplyr($mpg)\n    ->groupBy('class')\n    ->summarize(models: n(), hwy: round(mean('hwy'), 1))\n    ->arrange(desc('hwy'))\n    ->get();",
-        "pipe": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mpg = \\Phibble\\DataFrame::fromRows(\\Phiz\\Datasets::mpg());\n\n$mpg |>\n    group_by('class') |>\n    summarize(models: n(), hwy: round(mean('hwy'), 1)) |>\n    arrange(desc('hwy'));",
-        "output": "# A tibble: 7 × 3\n  class      models   hwy\n  <chr>       <int> <dbl>\n1 compact        47  28.3\n2 subcompact     35  28.1\n3 midsize        41  27.3\n4 2seater         5  24.8\n5 minivan        11  22.4\n6 suv            62  18.1\n7 pickup         33  16.9"
+        "chain": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mtcars = \\Phibble\\DataFrame::fromCsv(\n    'https://raw.githubusercontent.com/'\n    .'phpstats/datasets/main/csv/mtcars.csv'\n);\n\nphplyr($mtcars)\n    ->groupBy('gear')\n    ->summarize(cars: n(), mpg: round(mean('mpg'), 1))\n    ->arrange(desc('mpg'))\n    ->get();",
+        "pipe": "use function Phplyr\\{phplyr, group_by, summarize, arrange, desc, n, mean, round};\n\n$mtcars = \\Phibble\\DataFrame::fromCsv(\n    'https://raw.githubusercontent.com/'\n    .'phpstats/datasets/main/csv/mtcars.csv'\n);\n\n$mtcars |>\n    group_by('gear') |>\n    summarize(cars: n(), mpg: round(mean('mpg'), 1)) |>\n    arrange(desc('mpg'));",
+        "output": "# A tibble: 3 × 3\n   gear  cars   mpg\n  <int> <int> <dbl>\n1     4    12  24.5\n2     5     5  21.4\n3     3    15  16.1"
     },
     "examples": [
         {

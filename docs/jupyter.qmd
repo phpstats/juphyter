@@ -64,12 +64,15 @@ types. The table follows JupyterLab's light and dark themes.
 use Phibble\DataFrame;
 ```
 
+The table below is [weather](https://github.com/phpstats/datasets#weather):
+hourly observations at New York's three airports in 2013, from R's
+`nycflights13` package.
+
 ```{php}
-DataFrame::fromRows([
-    ['city' => 'Oslo', 'month' => 'Jan', 'temp' => -4.3],
-    ['city' => 'Oslo', 'month' => 'Jul', 'temp' => 16.4],
-    ['city' => 'Lisbon', 'month' => 'Jan', 'temp' => 11.6],
-]);
+DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/weather.csv'
+);
 ```
 
 A phiz plot appears as a chart. JupyterLab draws it from its Vega-Lite

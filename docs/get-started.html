@@ -324,7 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a-first-cell" class="level2">
 <h2 class="anchored" data-anchor-id="a-first-cell">A first cell</h2>
 <p>A cell holds PHP without an opening <code>&lt;?php</code> tag. Whatever the cell prints with <code>echo</code> appears first, and the value of its last expression appears after it.</p>
-<div id="2ecb2e83" class="cell" data-execution_count="1">
+<div id="4b9ad152" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span> <span class="op">=</span> [<span class="dv">2</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">5</span><span class="ot">,</span> <span class="dv">7</span><span class="ot">,</span> <span class="dv">11</span><span class="ot">,</span> <span class="dv">13</span>]<span class="ot">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">echo</span> <span class="fu">count</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">" primes, summing to "</span><span class="ot">,</span> <span class="fu">array_sum</span>(<span class="va">$primes</span>)<span class="ot">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="ot">;</span></span>
@@ -342,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="state-between-cells" class="level2">
 <h2 class="anchored" data-anchor-id="state-between-cells">State between cells</h2>
 <p>Variables, objects, functions, and classes carry from one cell to the next.</p>
-<div id="898ae36c" class="cell" data-execution_count="2">
+<div id="8e10b425" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span>[] <span class="op">=</span> <span class="dv">17</span><span class="ot">;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">$primes</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -355,53 +355,107 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="imports" class="level2">
 <h2 class="anchored" data-anchor-id="imports">Imports</h2>
 <p>A <code>use</code> statement applies to its own cell and to every later cell. A notebook can put its imports in its first cell and use short names afterward. This example uses <a href="https://phibble.phpstats.org">phibble</a>, which the <code>php</code> kernel finds when the document sits inside a Composer project that requires it, or which the <code>phpstats</code> kernel from <a href="./install.html#the-phpstats-packages">Installation</a> provides.</p>
-<div id="88d15bed" class="cell" data-execution_count="3">
+<div id="6dd19d6d" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="0d4dde57" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">$orders</span> <span class="op">=</span> DataFrame::fromRows([</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'web'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">120.50</span>]<span class="ot">,</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'store'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'north'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">80.00</span>]<span class="ot">,</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'channel'</span> =&gt; <span class="st">'web'</span><span class="ot">,</span> <span class="st">'region'</span> =&gt; <span class="st">'south'</span><span class="ot">,</span> <span class="st">'total'</span> =&gt; <span class="fl">42.25</span>]<span class="ot">,</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>])<span class="ot">;</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="va">$orders</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The next cell reads <a href="https://github.com/phpstats/datasets#sleepstudy">sleepstudy</a> from the phpstats datasets repository: reaction times in milliseconds of 18 subjects over ten days of sleep deprivation, from R’s <code>lme4</code> package.</p>
+<div id="7bf36ed8" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">$sleep</span> <span class="op">=</span> DataFrame::fromCsv(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/sleepstudy.csv'</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)<span class="ot">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="va">$sleep</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div class="juphyter-table">
 <style>.juphyter-table{font-family:var(--jp-code-font-family,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:var(--jp-code-font-size,0.85em);color:var(--jp-content-font-color1,#111827)}.juphyter-table .juphyter-note{color:var(--jp-content-font-color2,#6b7280);margin:0.15em 0}.juphyter-table table{border-collapse:collapse;margin:0.3em 0}.juphyter-table th,.juphyter-table td{padding:0.1em 0.75em 0.1em 0;text-align:left;white-space:nowrap}.juphyter-table thead th{border-bottom:1px solid var(--jp-border-color2,#d1d5db)}.juphyter-table .juphyter-num{text-align:right}.juphyter-table .juphyter-rowid{color:var(--jp-content-font-color3,#9ca3af);font-weight:normal;text-align:right}.juphyter-table .juphyter-type{color:var(--jp-content-font-color2,#6b7280);font-weight:normal}.juphyter-table .juphyter-na{color:var(--jp-content-font-color3,#9ca3af)}</style>
-<div class="juphyter-note">A tibble: 3 × 3</div>
+<div class="juphyter-note">A tibble: 180 × 4</div>
 
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">channel <span class="juphyter-type">&lt;chr&gt;</span></th>
-<th data-quarto-table-cell-role="th">region <span class="juphyter-type">&lt;chr&gt;</span></th>
-<th class="juphyter-num" data-quarto-table-cell-role="th">total <span class="juphyter-type">&lt;dbl&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">rownames <span class="juphyter-type">&lt;int&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">Reaction <span class="juphyter-type">&lt;dbl&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">Days <span class="juphyter-type">&lt;int&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">Subject <span class="juphyter-type">&lt;int&gt;</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">1</th>
-<td>web</td>
-<td>north</td>
-<td class="juphyter-num">120.5</td>
+<td class="juphyter-num">1</td>
+<td class="juphyter-num">249.56</td>
+<td class="juphyter-num">0</td>
+<td class="juphyter-num">308</td>
 </tr>
 <tr class="even">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">2</th>
-<td>store</td>
-<td>north</td>
-<td class="juphyter-num">80</td>
+<td class="juphyter-num">2</td>
+<td class="juphyter-num">258.7047</td>
+<td class="juphyter-num">1</td>
+<td class="juphyter-num">308</td>
 </tr>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">3</th>
-<td>web</td>
-<td>south</td>
-<td class="juphyter-num">42.25</td>
+<td class="juphyter-num">3</td>
+<td class="juphyter-num">250.8006</td>
+<td class="juphyter-num">2</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="even">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">4</th>
+<td class="juphyter-num">4</td>
+<td class="juphyter-num">321.4398</td>
+<td class="juphyter-num">3</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="odd">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">5</th>
+<td class="juphyter-num">5</td>
+<td class="juphyter-num">356.8519</td>
+<td class="juphyter-num">4</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="even">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">6</th>
+<td class="juphyter-num">6</td>
+<td class="juphyter-num">414.6901</td>
+<td class="juphyter-num">5</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="odd">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">7</th>
+<td class="juphyter-num">7</td>
+<td class="juphyter-num">382.2038</td>
+<td class="juphyter-num">6</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="even">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">8</th>
+<td class="juphyter-num">8</td>
+<td class="juphyter-num">290.1486</td>
+<td class="juphyter-num">7</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="odd">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">9</th>
+<td class="juphyter-num">9</td>
+<td class="juphyter-num">430.5853</td>
+<td class="juphyter-num">8</td>
+<td class="juphyter-num">308</td>
+</tr>
+<tr class="even">
+<th class="juphyter-rowid" data-quarto-table-cell-role="th">10</th>
+<td class="juphyter-num">10</td>
+<td class="juphyter-num">466.3535</td>
+<td class="juphyter-num">9</td>
+<td class="juphyter-num">308</td>
 </tr>
 </tbody>
 </table>
 
+<div class="juphyter-note">… with 170 more rows</div>
 </div>
 </div>
 </div>
@@ -410,7 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="errors" class="level2">
 <h2 class="anchored" data-anchor-id="errors">Errors</h2>
 <p>A cell that throws shows the exception, its message, and a traceback whose lines name the cell and the line number.</p>
-<div id="a0718dcd" class="cell" data-execution_count="5">
+<div id="ddf609c1" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span> <span class="op">=</span> <span class="kw">fn</span> (<span class="dt">array</span> <span class="va">$values</span>) =&gt; <span class="fu">array_sum</span>(<span class="va">$values</span>) <span class="op">/</span> <span class="fu">count</span>(<span class="va">$values</span>)<span class="ot">;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mean</span>([])<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -423,7 +477,7 @@ DivisionByZeroError: Division by zero
 </div>
 <p>The session survives the exception. Variables defined before it keep their values.</p>
 <p>Warnings, notices, and deprecations appear in the cell’s error output, and the cell keeps running.</p>
-<div id="d7143a74" class="cell" data-execution_count="6">
+<div id="416b45ad" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span> <span class="op">=</span> [<span class="st">'narrow'</span> =&gt; <span class="dv">4</span><span class="ot">,</span> <span class="st">'wide'</span> =&gt; <span class="dv">12</span>]<span class="ot">;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">$widths</span>[<span class="st">'narrow'</span>] <span class="op">+</span> <span class="va">$widths</span>[<span class="st">'medium'</span>]<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -443,7 +497,7 @@ DivisionByZeroError: Division by zero
 <li><code>toHtml(): string</code> supplies HTML.</li>
 <li><code>toMimeBundle(): array</code> supplies several formats at once, keyed by MIME type.</li>
 </ul>
-<div id="f5d2687b" class="cell" data-execution_count="7">
+<div id="1b84a2f6" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">final</span> <span class="kw">class</span> Progress</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>{</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">function</span> <span class="bu">__construct</span>(<span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$done</span><span class="ot">,</span> <span class="kw">private</span> <span class="dt">readonly</span> <span class="dt">int</span> <span class="va">$total</span>) {}</span>
@@ -471,7 +525,7 @@ DivisionByZeroError: Division by zero
 </div>
 </div>
 <p><code>Juphyter\display()</code> shows a value part way through a cell, so one cell can show several tables or plots.</p>
-<div id="803eda8a" class="cell" data-execution_count="8">
+<div id="40599153" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">3</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>Juphyter\display(<span class="kw">new</span> Progress(<span class="dv">9</span><span class="ot">,</span> <span class="dv">9</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">

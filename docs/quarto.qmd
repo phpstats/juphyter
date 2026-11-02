@@ -10,13 +10,16 @@ matter. No Quarto extension or other configuration is needed.
 
 ````markdown
 ---
-title: "Highway mileage"
+title: "Fuel economy"
 jupyter: php
 ---
 
 ```{{php}}
-$mpg = \Phibble\DataFrame::fromCsv('mpg.csv');
-$mpg;
+$mtcars = \Phibble\DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
+$mtcars;
 ```
 ````
 
@@ -74,7 +77,6 @@ as line comments.
 ```{php}
 #| echo: false
 use Phibble\DataFrame;
-use Phiz\Datasets;
 use Phiz\Plot;
 ```
 
@@ -86,11 +88,16 @@ use Phiz\Plot;
 - `#| fig-cap: "..."` captions the cell's figure.
 - `#| label: fig-mileage` gives the figure a cross-reference label.
 
-A captioned plot:
+A captioned plot of [mtcars](https://github.com/phpstats/datasets#mtcars):
 
 ```{php}
-#| fig-cap: "City against highway mileage."
-Plot::of(Datasets::mpg())->aes(x: 'cty', y: 'hwy')->point(opacity: 0.5);
+#| fig-cap: "Fuel economy against horsepower."
+$mtcars = DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
+
+Plot::of($mtcars)->aes(x: 'hp', y: 'mpg')->point();
 ```
 
 ## Projects and autoloading

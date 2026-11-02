@@ -67,14 +67,18 @@ which the `phpstats` kernel from
 use Phibble\DataFrame;
 ```
 
-```{php}
-$orders = DataFrame::fromRows([
-    ['channel' => 'web', 'region' => 'north', 'total' => 120.50],
-    ['channel' => 'store', 'region' => 'north', 'total' => 80.00],
-    ['channel' => 'web', 'region' => 'south', 'total' => 42.25],
-]);
+The next cell reads
+[sleepstudy](https://github.com/phpstats/datasets#sleepstudy) from the phpstats
+datasets repository: reaction times in milliseconds of 18 subjects over ten
+days of sleep deprivation, from R's `lme4` package.
 
-$orders;
+```{php}
+$sleep = DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/sleepstudy.csv'
+);
+
+$sleep;
 ```
 
 A cell cannot declare a `namespace`, and it cannot declare a class or a
