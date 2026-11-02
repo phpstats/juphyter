@@ -22,12 +22,6 @@
     ],
     "cases": [
         {
-            "name": "clear output",
-            "quantity": "Messages and output",
-            "status": "skipped",
-            "reason": "No code clear output"
-        },
-        {
             "name": "completion",
             "quantity": "Messages and output",
             "status": "pass"
@@ -58,30 +52,6 @@
             "status": "pass"
         },
         {
-            "name": "history",
-            "quantity": "Messages and output, check 1",
-            "status": "skipped",
-            "reason": "History tail not supported"
-        },
-        {
-            "name": "history",
-            "quantity": "Messages and output, check 2",
-            "status": "skipped",
-            "reason": "History range not supported"
-        },
-        {
-            "name": "history",
-            "quantity": "Messages and output, check 3",
-            "status": "skipped",
-            "reason": "No code history pattern"
-        },
-        {
-            "name": "inspect",
-            "quantity": "Messages and output",
-            "status": "skipped",
-            "reason": "No code inspect sample"
-        },
-        {
             "name": "is complete",
             "quantity": "Messages and output",
             "status": "pass"
@@ -95,18 +65,13 @@
             "name": "kernel info reports the running php",
             "quantity": "Messages and output",
             "status": "pass"
-        },
-        {
-            "name": "pager",
-            "quantity": "Messages and output",
-            "status": "skipped",
-            "reason": "No code page something"
         }
     ],
     "exclusions": [
-        "History requests are not implemented; the three history checks are skipped.",
-        "inspect_request is not implemented; the inspect check is skipped.",
-        "No clear_output or pager sample is declared; those checks are skipped."
+        "juphyter does not send clear_output messages.",
+        "juphyter does not implement the history request.",
+        "juphyter does not implement the inspect request.",
+        "juphyter does not send pager payloads."
     ],
     "reproduce": [
         "python -m pip install -r tests/Protocol/requirements.txt",
@@ -116,7 +81,7 @@
     "source": "tests/Protocol/test_kernel.py",
     "environment": {
         "date": "2026-11-01",
-        "commit": "bc96cfa",
+        "commit": "46349a3",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

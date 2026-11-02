@@ -13,7 +13,7 @@
         "Quarto": "1.10.18",
         "vl-convert": "vl-convert 1.9.0",
         "phibble": "0.5.3",
-        "phplyr": "0.4.5",
+        "phplyr": "0.4.6",
         "phiz": "0.5.2"
     },
     "inputs": [
@@ -154,8 +154,7 @@
         {
             "name": "a kept alive kernel survives a long idle period",
             "quantity": "Rendered output",
-            "status": "skipped",
-            "reason": "Set JUPHYTER_QUARTO_IDLE to a number of seconds to leave a kept-alive kernel idle between two renders. It takes that long, which is why tests/Engine/IdleTest.php covers the same ground against a one-second timeout."
+            "status": "pass"
         },
         {
             "name": "the process listing carries a long command line whole",
@@ -168,22 +167,20 @@
             "status": "pass"
         }
     ],
-    "exclusions": [
-        "Long-idle daemon test: runs only with JUPHYTER_QUARTO_IDLE set; tests/Engine/IdleTest.php covers the behavior with a one-second timeout."
-    ],
+    "exclusions": [],
     "known_differences": [
         "quarto render --to ipynb drops HTML tables and error outputs, for any kernel."
     ],
     "reproduce": [
         "python -m pip install -r tests/Quarto/requirements.txt",
         "composer install",
-        "python -m pytest tests/Quarto -v"
+        "JUPHYTER_QUARTO_IDLE=180 python -m pytest tests/Quarto -v"
     ],
     "source": "tests/Quarto/test_render.py",
     "data": "tests/Quarto/fixture",
     "environment": {
         "date": "2026-11-01",
-        "commit": "bc96cfa",
+        "commit": "46349a3",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"

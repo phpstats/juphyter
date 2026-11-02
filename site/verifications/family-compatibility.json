@@ -7,7 +7,7 @@
     "versions": {
         "PHP": "8.5.10",
         "phibble": "0.5.3",
-        "phplyr": "0.4.5",
+        "phplyr": "0.4.6",
         "phiz": "0.5.2",
         "vl-convert": "vl-convert 1.9.0"
     },
@@ -735,6 +735,31 @@
             "status": "pass"
         },
         {
+            "name": "Unit/Console/ReferenceTest",
+            "quantity": "it documents every option a command prints with data set \"('install')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ReferenceTest",
+            "quantity": "it documents every option a command prints with data set \"('uninstall')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ReferenceTest",
+            "quantity": "it documents every option a command prints with data set \"('doctor')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ReferenceTest",
+            "quantity": "it documents every option a command prints with data set \"('engine')\"",
+            "status": "pass"
+        },
+        {
+            "name": "Unit/Console/ReferenceTest",
+            "quantity": "it documents every command the application lists",
+            "status": "pass"
+        },
+        {
             "name": "Unit/Display/ChartFormatterTest",
             "quantity": "matching → it matches by name, so it claims nothing without phiz installed",
             "status": "pass"
@@ -1362,8 +1387,7 @@
         {
             "name": "Unit/Display/TableFormatterTest",
             "quantity": "a real phibble table → it matches a PolarsTable instance when php_polars is loaded",
-            "status": "skipped",
-            "reason": "The php_polars extension is not loaded, so no PolarsTable can be built. See phpstats/phpolars for the prebuilt extension."
+            "status": "pass"
         },
         {
             "name": "Unit/Display/TableRendererTest",
@@ -1929,12 +1953,6 @@
             "name": "Unit/Engine/CleanerTest",
             "quantity": "committing declarations → it lets a subclass run again once the base class it needed arrives",
             "status": "pass"
-        },
-        {
-            "name": "Unit/Engine/CleanerTest",
-            "quantity": "committing declarations → it reserves nothing when newer syntax stops the whole cell compiling",
-            "status": "skipped",
-            "reason": "The pipe operator compiles on PHP 8.5, so the cell succeeds there."
         },
         {
             "name": "Unit/Engine/CleanerTest",
@@ -2894,14 +2912,12 @@
         {
             "name": "Unit/Install/InstallCommandTest",
             "quantity": "running from a PHAR → it names the archive as the engine and copies the wrapper out of it",
-            "status": "skipped",
-            "reason": "Writing a PHAR needs phar.readonly=0."
+            "status": "pass"
         },
         {
             "name": "Unit/Install/InstallCommandTest",
             "quantity": "running from a PHAR → it refuses an archive with no wrapper module in it",
-            "status": "skipped",
-            "reason": "Writing a PHAR needs phar.readonly=0."
+            "status": "pass"
         },
         {
             "name": "Unit/Install/InstallCommandTest",
@@ -3924,15 +3940,18 @@
             "status": "pass"
         }
     ],
+    "exclusions": [
+        "The case for syntax newer than the running PHP applies below PHP 8.5; the run uses PHP 8.5."
+    ],
     "reproduce": [
         "composer install",
         "composer require --dev --prefer-source \"phpstats/phibble:^0.5\" \"phpstats/phplyr:^0.4\" \"phpstats/phiz:^0.5\"",
-        "vendor/bin/pest"
+        "php -d phar.readonly=0 -d extension=<path to php_polars> vendor/bin/pest"
     ],
     "source": ".github/workflows/family.yml",
     "environment": {
         "date": "2026-11-01",
-        "commit": "bc96cfa",
+        "commit": "46349a3",
         "php": "8.5.10",
         "python": "3.14.7",
         "os": "macOS 27.0.1 (arm64)"
