@@ -10,7 +10,7 @@ use ReflectionMethod;
  * The two duck-typing checks the formatters share.
  *
  * Both exist so that nothing in `src/Display/` names a class from another
- * package at compile time. juphyter installs with any subset of the phpstats
+ * package at compile time. juphyter installs with any subset of the PHPstats
  * family present, including none of it, so a formatter for a phibble table or a
  * phiz chart has to ask about a name rather than import one.
  */

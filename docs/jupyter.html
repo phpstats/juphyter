@@ -314,7 +314,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="starting-a-notebook">Starting a notebook</h2>
 <p>Start JupyterLab from the Python environment that has it:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.venvs/juphyter/bin/jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The launcher lists each kernel juphyter registered under its display name, such as “PHP 8.5” for the default <code>php</code> kernel and “PHP (phpstats)” for the kernel from <a href="./install.html#the-phpstats-packages">Installation</a>. A notebook that is already open changes kernel through <strong>Kernel &gt; Change Kernel</strong>.</p>
+<p>The launcher lists each kernel juphyter registered under its display name, such as “PHP 8.5” for the default <code>php</code> kernel and “PHP (PHPstats)” for the kernel from <a href="./install.html#the-phpstats-packages">Installation</a>. A notebook that is already open changes kernel through <strong>Kernel &gt; Change Kernel</strong>.</p>
 <p>JupyterLab finds kernels in the per-user Jupyter data directory and in <code>JUPYTER_DATA_DIR</code> when it is set. <code>jupyter kernelspec list</code> shows the kernels a JupyterLab started from the same environment will find.</p>
 </section>
 <section id="running-cells" class="level2">
@@ -341,7 +341,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="tables-and-plots">Tables and plots</h2>
 <p>A phibble data frame appears as an HTML table with its dimensions and column types. The table follows JupyterLab’s light and dark themes.</p>
 <p>The table below is <a href="https://github.com/phpstats/datasets#weather">weather</a>: hourly observations at New York’s three airports in 2013, from R’s <code>nycflights13</code> package.</p>
-<div id="0aba85ab" class="cell" data-execution_count="2">
+<div id="f76c1e09" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DataFrame::fromCsv(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/weather.csv'</span></span>

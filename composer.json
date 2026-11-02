@@ -1,6 +1,6 @@
 {
     "name": "phpstats/juphyter",
-    "description": "A Jupyter and Quarto kernel for PHP, built for statistical work with the phpstats packages",
+    "description": "A Jupyter and Quarto kernel for PHP, built for statistical work with the PHPstats packages",
     "type": "library",
     "license": "MIT",
     "keywords": [

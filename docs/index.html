@@ -319,17 +319,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="what-a-cell-shows" class="level2">
 <h2 class="anchored" data-anchor-id="what-a-cell-shows">What a cell shows</h2>
 <p>The value of a cell’s last expression is its output. A <a href="https://phibble.phpstats.org">phibble</a> data frame appears as an HTML table with its dimensions and column types, and a <a href="https://phiz.phpstats.org">phiz</a> plot appears as a chart. Other values appear as a compact dump.</p>
-<p>The examples below use phibble, phplyr, and phiz. In a Composer project, install them with the command below. The <code>php</code> kernel then loads the project’s <code>vendor/autoload.php</code> for any notebook or document inside the project. <a href="./install.html#the-phpstats-packages">The phpstats packages</a> covers using them outside a project.</p>
+<p>The examples below use phibble, phplyr, and phiz. In a Composer project, install them with the command below. The <code>php</code> kernel then loads the project’s <code>vendor/autoload.php</code> for any notebook or document inside the project. <a href="./install.html#the-phpstats-packages">The PHPstats packages</a> covers using them outside a project.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require phpstats/phibble phpstats/phplyr phpstats/phiz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The examples read <a href="https://github.com/phpstats/datasets#mtcars">mtcars</a> from the phpstats datasets repository: fuel economy and design measures of 32 cars from R’s <code>datasets</code> package. phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after this import.</p>
-<div id="1ee21992" class="cell" data-execution_count="1">
+<p>The examples read <a href="https://github.com/phpstats/datasets#mtcars">mtcars</a> from the PHPstats datasets repository: fuel economy and design measures of 32 cars from R’s <code>datasets</code> package. phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after this import.</p>
+<div id="e39f0cba" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize<span class="ot">,</span> arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="syntax">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">PHP 8.5+</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PHP 8.3–8.4</a></li></ul>
 <div class="tab-content" data-group="syntax">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div id="ce693f93" class="cell" data-execution_count="2">
+<div id="0acda34d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mtcars</span> <span class="op">=</span> \Phibble\DataFrame::fromCsv(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/mtcars.csv'</span></span>
@@ -380,7 +380,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div id="29cd243a" class="cell" data-execution_count="3">
+<div id="0ea1f724" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mtcars</span> <span class="op">=</span> \Phibble\DataFrame::fromCsv(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/mtcars.csv'</span></span>
@@ -433,7 +433,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="4f8309e6" class="cell" data-execution_count="4">
+<div id="00eab6e8" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>\Phiz\Plot::of(<span class="va">$mtcars</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'wt'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'mpg'</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;point()</span>
@@ -589,7 +589,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Interrupting a running cell with the stop button, when PHP has the <code>pcntl</code> extension.</li>
 <li>Loading the nearest <code>vendor/autoload.php</code> above the notebook, so a notebook inside a Composer project can use that project’s classes and packages.</li>
 </ul>
-<p>juphyter requires none of the phpstats packages. It runs plain PHP, and it formats a phibble data frame or a phiz plot when those packages are installed.</p>
+<p>juphyter requires none of the PHPstats packages. It runs plain PHP, and it formats a phibble data frame or a phiz plot when those packages are installed.</p>
 </section>
 <section id="how-it-works" class="level2">
 <h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>

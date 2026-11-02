@@ -24,7 +24,7 @@ Create a notebook with the PHP kernel from the launcher. The data is
 [mtcars](https://github.com/phpstats/datasets#mtcars) from R's `datasets`
 package: fuel economy (`mpg`, miles per gallon), cylinders (`cyl`), weight
 (`wt`, in 1,000 lb), and other design measures of 32 cars tested by *Motor
-Trend* in 1974. The notebook reads it from the phpstats datasets repository by
+Trend* in 1974. The notebook reads it from the PHPstats datasets repository by
 URL.
 
 ## Cells

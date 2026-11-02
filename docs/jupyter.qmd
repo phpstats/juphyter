@@ -12,7 +12,7 @@ Start JupyterLab from the Python environment that has it:
 ```
 
 The launcher lists each kernel juphyter registered under its display name,
-such as "PHP 8.5" for the default `php` kernel and "PHP (phpstats)" for the
+such as "PHP 8.5" for the default `php` kernel and "PHP (PHPstats)" for the
 kernel from [Installation](install.qmd#the-phpstats-packages). A notebook
 that is already open changes kernel through **Kernel > Change Kernel**.
 

@@ -282,7 +282,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#register-the-kernel" id="toc-register-the-kernel" class="nav-link" data-scroll-target="#register-the-kernel">Register the kernel</a></li>
   <li><a href="#check-the-installation" id="toc-check-the-installation" class="nav-link" data-scroll-target="#check-the-installation">Check the installation</a></li>
   <li><a href="#keeping-the-path-entries" id="toc-keeping-the-path-entries" class="nav-link" data-scroll-target="#keeping-the-path-entries">Keeping the PATH entries</a></li>
-  <li><a href="#the-phpstats-packages" id="toc-the-phpstats-packages" class="nav-link" data-scroll-target="#the-phpstats-packages">The phpstats packages</a></li>
+  <li><a href="#the-phpstats-packages" id="toc-the-phpstats-packages" class="nav-link" data-scroll-target="#the-phpstats-packages">The PHPstats packages</a></li>
   <li><a href="#which-classes-a-notebook-sees" id="toc-which-classes-a-notebook-sees" class="nav-link" data-scroll-target="#which-classes-a-notebook-sees">Which classes a notebook sees</a></li>
   <li><a href="#installing-into-one-project" id="toc-installing-into-one-project" class="nav-link" data-scroll-target="#installing-into-one-project">Installing into one project</a></li>
   <li><a href="#several-php-versions" id="toc-several-php-versions" class="nav-link" data-scroll-target="#several-php-versions">Several PHP versions</a></li>
@@ -345,7 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td>phibble, phplyr, and phiz</td>
-<td>Data frame tables and charts. See <a href="#the-phpstats-packages">The phpstats packages</a>.</td>
+<td>Data frame tables and charts. See <a href="#the-phpstats-packages">The PHPstats packages</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -414,12 +414,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Putting the Python environment in a startup file makes it the <code>python3</code> for every program, including every Quarto project on the machine. <a href="./python.html">Python interpreters and editors</a> describes how to select it per editor workspace, per shell, or per Quarto project instead.</p>
 </section>
 <section id="the-phpstats-packages" class="level2">
-<h2 class="anchored" data-anchor-id="the-phpstats-packages">The phpstats packages</h2>
+<h2 class="anchored" data-anchor-id="the-phpstats-packages">The PHPstats packages</h2>
 <p>juphyter does not depend on phibble, phplyr, or phiz. A notebook inside a Composer project that requires them can use them with the <code>php</code> kernel. To use them in notebooks outside any project, install them globally and register a second kernel that loads Composer’s global autoloader:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> global require phpstats/phibble phpstats/phplyr phpstats/phiz</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (phpstats)"</span> <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">juphyter</span> install <span class="at">--name</span> phpstats <span class="at">--display-name</span> <span class="st">"PHP (PHPstats)"</span> <span class="dt">\</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--autoload</span> <span class="st">"</span><span class="va">$(</span><span class="ex">composer</span> global config home<span class="va">)</span><span class="st">/vendor/autoload.php"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Documents name that kernel as <code>jupyter: phpstats</code>, and JupyterLab lists it as “PHP (phpstats)”. A kernel installed with <code>--autoload</code> always loads the autoloader it names, even for a notebook inside a Composer project, which is why it has its own name.</p>
+<p>Documents name that kernel as <code>jupyter: phpstats</code>, and JupyterLab lists it as “PHP (PHPstats)”. A kernel installed with <code>--autoload</code> always loads the autoloader it names, even for a notebook inside a Composer project, which is why it has its own name.</p>
 </section>
 <section id="which-classes-a-notebook-sees" class="level2">
 <h2 class="anchored" data-anchor-id="which-classes-a-notebook-sees">Which classes a notebook sees</h2>

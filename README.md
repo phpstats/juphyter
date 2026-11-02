@@ -32,7 +32,7 @@ environment that has ipykernel 7, or builds one with JupyterLab at
 `~/.venvs/juphyter`. The `export` lines last for the current shell.
 `juphyter doctor` checks the installation and exits 1 when something is
 broken. The [installation guide](https://juphyter.phpstats.org/docs/install)
-covers keeping the `PATH` entries, the phpstats packages, and per-project
+covers keeping the `PATH` entries, the PHPstats packages, and per-project
 installs.
 
 ## Use

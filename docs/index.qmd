@@ -28,7 +28,7 @@ as a compact dump.
 The examples below use phibble, phplyr, and phiz. In a Composer project,
 install them with the command below. The `php` kernel then loads the
 project's `vendor/autoload.php` for any notebook or document inside the
-project. [The phpstats packages](install.qmd#the-phpstats-packages) covers
+project. [The PHPstats packages](install.qmd#the-phpstats-packages) covers
 using them outside a project.
 
 ```bash
@@ -36,7 +36,7 @@ composer require phpstats/phibble phpstats/phplyr phpstats/phiz
 ```
 
 The examples read [mtcars](https://github.com/phpstats/datasets#mtcars) from
-the phpstats datasets repository: fuel economy and design measures of 32 cars
+the PHPstats datasets repository: fuel economy and design measures of 32 cars
 from R's `datasets` package. phplyr's `round()` replaces PHP's built-in
 `round()` in the cells after this import.
 
@@ -100,7 +100,7 @@ phplyr($mtcars)
 - Loading the nearest `vendor/autoload.php` above the notebook, so a notebook
   inside a Composer project can use that project's classes and packages.
 
-juphyter requires none of the phpstats packages. It runs plain PHP, and it
+juphyter requires none of the PHPstats packages. It runs plain PHP, and it
 formats a phibble data frame or a phiz plot when those packages are
 installed.
 

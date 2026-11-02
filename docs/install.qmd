@@ -23,7 +23,7 @@ Optional:
 | The `pcntl` PHP extension | Interrupting a running cell with the stop button. Without it the stop button does nothing. |
 | [Quarto](https://quarto.org/docs/get-started/) | Rendering `.qmd` documents. CI tests Quarto 1.10.18. |
 | [vl-convert](https://github.com/vega/vl-convert/releases) | Static images of phiz plots in PDF and Word output. See [Output formats](quarto.qmd#output-formats). |
-| phibble, phplyr, and phiz | Data frame tables and charts. See [The phpstats packages](#the-phpstats-packages). |
+| phibble, phplyr, and phiz | Data frame tables and charts. See [The PHPstats packages](#the-phpstats-packages). |
 
 ## Install juphyter
 
@@ -107,7 +107,7 @@ every program, including every Quarto project on the machine.
 [Python interpreters and editors](python.qmd) describes how to select it per
 editor workspace, per shell, or per Quarto project instead.
 
-## The phpstats packages
+## The PHPstats packages {#the-phpstats-packages}
 
 juphyter does not depend on phibble, phplyr, or phiz. A notebook inside a
 Composer project that requires them can use them with the `php` kernel. To use
@@ -116,12 +116,12 @@ second kernel that loads Composer's global autoloader:
 
 ```bash
 composer global require phpstats/phibble phpstats/phplyr phpstats/phiz
-juphyter install --name phpstats --display-name "PHP (phpstats)" \
+juphyter install --name phpstats --display-name "PHP (PHPstats)" \
   --autoload "$(composer global config home)/vendor/autoload.php"
 ```
 
 Documents name that kernel as `jupyter: phpstats`, and JupyterLab lists it as
-"PHP (phpstats)". A kernel installed with `--autoload` always loads the
+"PHP (PHPstats)". A kernel installed with `--autoload` always loads the
 autoloader it names, even for a notebook inside a Composer project, which is
 why it has its own name.
 
