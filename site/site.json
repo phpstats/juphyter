@@ -60,7 +60,7 @@
         {
             "path": "examples/notebook",
             "title": "Show a table and a chart in a notebook",
-            "description": "Starts JupyterLab in a Composer project and carries imports and variables from cell to cell.",
+            "description": "Reads mtcars by URL in a JupyterLab notebook, summarizes fuel economy by cylinder count, and plots it against weight.",
             "also": [
                 "phiz"
             ]

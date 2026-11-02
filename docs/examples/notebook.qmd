@@ -3,8 +3,8 @@ title: "Show a table and a chart in a notebook"
 jupyter: php
 ---
 
-Summarize a phibble data frame in one notebook cell and plot the result in the
-next.
+Read a CSV file into a phibble data frame, summarize it in one notebook cell,
+and plot it in the next.
 
 Requires the `php` kernel from [Installation](../install.qmd). The pipe tab
 needs PHP 8.5, and the method chain runs on PHP 8.3 and later.
@@ -14,15 +14,18 @@ needs PHP 8.5, and the method chain runs on PHP 8.3 and later.
 Create a Composer project and start JupyterLab in it:
 
 ```bash
-mkdir mileage && cd mileage
+mkdir mtcars && cd mtcars
 composer require phpstats/phibble phpstats/phplyr \
     phpstats/phiz
 ~/.venvs/juphyter/bin/jupyter lab
 ```
 
-Create a notebook with the PHP kernel from the launcher. The data is the `mpg`
-dataset that ships with phiz: 234 cars, with each car's class and its highway
-mileage in miles per gallon (`hwy`).
+Create a notebook with the PHP kernel from the launcher. The data is
+[mtcars](https://github.com/phpstats/datasets#mtcars) from R's `datasets`
+package: fuel economy (`mpg`, miles per gallon), cylinders (`cyl`), weight
+(`wt`, in 1,000 lb), and other design measures of 32 cars tested by *Motor
+Trend* in 1974. The notebook reads it from the phpstats datasets repository by
+URL.
 
 ## Cells
 
@@ -32,53 +35,56 @@ mileage in miles per gallon (`hwy`).
 
 ```{php}
 use Phibble\DataFrame;
-use Phiz\Datasets;
 use Phiz\Plot;
 use function Phplyr\{phplyr, group_by, summarize};
 use function Phplyr\{arrange, desc, n, mean, round};
 ```
 
 A cell's last value is its output. A phibble data frame is shown as a table.
+The summary counts the cars with each number of cylinders and averages their
+fuel economy.
 
 ::: {.panel-tabset group="syntax"}
 
 ## PHP 8.5+
 
 ```{php}
-$mpg = DataFrame::fromRows(Datasets::mpg());
+$mtcars = DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
 
-$byClass = $mpg |>
-    group_by('class') |>
-    summarize(cars: n(), hwy: round(mean('hwy'), 1)) |>
-    arrange(desc('hwy'));
-
-$byClass;
+$mtcars |>
+    group_by('cyl') |>
+    summarize(cars: n(), mpg: round(mean('mpg'), 1)) |>
+    arrange(desc('mpg'));
 ```
 
 ## PHP 8.3–8.4
 
 ```{php}
-$mpg = DataFrame::fromRows(Datasets::mpg());
+$mtcars = DataFrame::fromCsv(
+    'https://raw.githubusercontent.com/'
+    .'phpstats/datasets/main/csv/mtcars.csv'
+);
 
-$byClass = phplyr($mpg)
-    ->groupBy('class')
-    ->summarize(cars: n(), hwy: round(mean('hwy'), 1))
-    ->arrange(desc('hwy'))
+phplyr($mtcars)
+    ->groupBy('cyl')
+    ->summarize(cars: n(), mpg: round(mean('mpg'), 1))
+    ->arrange(desc('mpg'))
     ->get();
-
-$byClass;
 ```
 
 :::
 
-Variables persist across cells, so the next cell plots `$byClass`. A phiz plot
-is shown as a chart.
+Variables persist across cells, so the next cell plots `$mtcars` from the cell
+before. A phiz plot is shown as a chart, here fuel economy against weight.
 
 ```{php}
-Plot::of($byClass)
-    ->aes(x: 'class', y: 'hwy')
-    ->col()
-    ->labs(x: 'Vehicle class', y: 'Mean highway mpg');
+Plot::of($mtcars)
+    ->aes(x: 'wt', y: 'mpg')
+    ->point()
+    ->labs(x: 'Weight (1,000 lb)', y: 'Miles per gallon');
 ```
 
 See also: [Rich output](../get-started.qmd#rich-output),

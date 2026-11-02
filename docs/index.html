@@ -322,14 +322,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The examples below use phibble, phplyr, and phiz. In a Composer project, install them with the command below. The <code>php</code> kernel then loads the project’s <code>vendor/autoload.php</code> for any notebook or document inside the project. <a href="./install.html#the-phpstats-packages">The phpstats packages</a> covers using them outside a project.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require phpstats/phibble phpstats/phplyr phpstats/phiz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after this import.</p>
-<div id="078a98ec" class="cell" data-execution_count="1">
+<div id="da25f860" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize<span class="ot">,</span> arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="syntax">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">PHP 8.5+</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PHP 8.3–8.4</a></li></ul>
 <div class="tab-content" data-group="syntax">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div id="32b96b2a" class="cell" data-execution_count="2">
+<div id="a45c7e73" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">|&gt;</span></span>
@@ -401,7 +401,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div id="b01b2c91" class="cell" data-execution_count="3">
+<div id="b0660839" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> \Phibble\DataFrame::fromRows(\Phiz\Datasets::mpg())<span class="ot">;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>phplyr(<span class="va">$mpg</span>)</span>
@@ -475,7 +475,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="bf85d880" class="cell" data-execution_count="4">
+<div id="ac220014" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>\Phiz\Plot::of(\Phiz\Datasets::mpg())</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'displ'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span><span class="ot">,</span> color<span class="ot">:</span> <span class="st">'drv'</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;point(opacity<span class="ot">:</span> <span class="fl">0.7</span>)</span>
@@ -486,7 +486,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js" integrity="sha384-VKdcJr3ZaBIJMbVcopTAI/JEuUkSY6qnwVu9iLuw0DnQ9gQ1JjsfZJhXFQAgNi43" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js" integrity="sha384-9/70gNCfOu6G7xXvkdreMfuqAEsoaGJVXV2BN/JLRXkSmcGvnMqtsRx8HZtUWAvI" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js" integrity="sha384-Muy1QRxYFeNrA1zShc1KtN4OfipkR/61gt+HWqN57c1Zxu3Oe16TsilsruVVjfKL" crossorigin="anonymous"></script>
-<script>/* phiz: renders [data-phiz] elements with vega-embed, and re-renders when their spec changes (Livewire morphs). */
+<script>/*
+ * phiz: renders [data-phiz] elements with vega-embed, and re-renders when their spec changes (Livewire morphs).
+ * A [data-phiz-deferred] element fetches its spec from its [data-phiz-spec] link when it nears the viewport, then
+ * renders like any other.
+ */
 (function () {
   if (window.Phiz) return;
   var views = new WeakMap();
@@ -542,10 +546,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     });
   }
 
+  function load(el) {
+    if (el.hasAttribute('data-phiz') || el.getAttribute('data-phiz-deferred') === 'loading') return;
+    var link = el.querySelector('a[data-phiz-spec]');
+    if (!link) return;
+    el.setAttribute('data-phiz-deferred', 'loading');
+    fetch(link.href).then(function (response) {
+      if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+      return response.text();
+    }).then(function (json) {
+      el.setAttribute('data-phiz-deferred', 'loaded');
+      el.setAttribute('data-phiz', json);
+    }).catch(function (error) {
+      el.setAttribute('data-phiz-deferred', 'failed');
+      console.error('phiz: cannot load ' + link.href, error);
+    });
+  }
+
+  var nearby = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { nearby.unobserve(entry.target); load(entry.target); }
+    });
+  }, { rootMargin: '200px' }) : null;
+
+  function defer(el) {
+    if (el.hasAttribute('data-phiz') || el.getAttribute('data-phiz-deferred')) return;
+    if (nearby) nearby.observe(el); else load(el);
+  }
+
   function scan(root) {
     if (root.nodeType !== 1) return;
     if (root.hasAttribute('data-phiz')) render(root);
     root.querySelectorAll('[data-phiz]').forEach(render);
+    if (root.hasAttribute('data-phiz-deferred')) defer(root);
+    root.querySelectorAll('[data-phiz-deferred]').forEach(defer);
   }
 
   function release(root) {

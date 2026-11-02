@@ -307,16 +307,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Summarize a phibble data frame in one notebook cell and plot the result in the next.</p>
+<p>Read a CSV file into a phibble data frame, summarize it in one notebook cell, and plot it in the next.</p>
 <p>Requires the <code>php</code> kernel from <a href="../install.html">Installation</a>. The pipe tab needs PHP 8.5, and the method chain runs on PHP 8.3 and later.</p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <p>Create a Composer project and start JupyterLab in it:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> mileage <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> mileage</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> mtcars <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> mtcars</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> require phpstats/phibble phpstats/phplyr <span class="dt">\</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    phpstats/phiz</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.venvs/juphyter/bin/jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Create a notebook with the PHP kernel from the launcher. The data is the <code>mpg</code> dataset that ships with phiz: 234 cars, with each car’s class and its highway mileage in miles per gallon (<code>hwy</code>).</p>
+<p>Create a notebook with the PHP kernel from the launcher. The data is <a href="https://github.com/phpstats/datasets#mtcars">mtcars</a> from R’s <code>datasets</code> package: fuel economy (<code>mpg</code>, miles per gallon), cylinders (<code>cyl</code>), weight (<code>wt</code>, in 1,000 lb), and other design measures of 32 cars tested by <em>Motor Trend</em> in 1974. The notebook reads it from the phpstats datasets repository by URL.</p>
 </section>
 <section id="cells" class="level2">
 <h2 class="anchored" data-anchor-id="cells">Cells</h2>
@@ -324,83 +324,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>A <code>use</code> statement applies to its own cell and every later one.</li>
 <li>phplyr’s <code>round()</code> replaces PHP’s built-in <code>round()</code> in the cells after the import.</li>
 </ul>
-<div id="eb76cbb1" class="cell" data-execution_count="1">
+<div id="663d1497" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phibble\DataFrame<span class="ot">;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phiz\Datasets<span class="ot">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phiz\Plot<span class="ot">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize}<span class="ot">;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> Phiz\Plot<span class="ot">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{phplyr<span class="ot">,</span> group_by<span class="ot">,</span> summarize}<span class="ot">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="kw">function</span> Phplyr\{arrange<span class="ot">,</span> desc<span class="ot">,</span> n<span class="ot">,</span> mean<span class="ot">,</span> <span class="fu">round</span>}<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>A cell’s last value is its output. A phibble data frame is shown as a table.</p>
+<p>A cell’s last value is its output. A phibble data frame is shown as a table. The summary counts the cars with each number of cylinders and averages their fuel economy.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="syntax">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">PHP 8.5+</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">PHP 8.3–8.4</a></li></ul>
 <div class="tab-content" data-group="syntax">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div id="4736cdae" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromRows(Datasets::mpg())<span class="ot">;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span> <span class="op">=</span> <span class="va">$mpg</span> <span class="op">|&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    group_by(<span class="st">'class'</span>) <span class="op">|&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    summarize(cars<span class="ot">:</span> n()<span class="ot">,</span> hwy<span class="ot">:</span> <span class="fu">round</span>(mean(<span class="st">'hwy'</span>)<span class="ot">,</span> <span class="dv">1</span>)) <span class="op">|&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    arrange(desc(<span class="st">'hwy'</span>))<span class="ot">;</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="1518e36b" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mtcars</span> <span class="op">=</span> DataFrame::fromCsv(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/mtcars.csv'</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)<span class="ot">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">$mtcars</span> <span class="op">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    group_by(<span class="st">'cyl'</span>) <span class="op">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    summarize(cars<span class="ot">:</span> n()<span class="ot">,</span> mpg<span class="ot">:</span> <span class="fu">round</span>(mean(<span class="st">'mpg'</span>)<span class="ot">,</span> <span class="dv">1</span>)) <span class="op">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    arrange(desc(<span class="st">'mpg'</span>))<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div class="juphyter-table">
 <style>.juphyter-table{font-family:var(--jp-code-font-family,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:var(--jp-code-font-size,0.85em);color:var(--jp-content-font-color1,#111827)}.juphyter-table .juphyter-note{color:var(--jp-content-font-color2,#6b7280);margin:0.15em 0}.juphyter-table table{border-collapse:collapse;margin:0.3em 0}.juphyter-table th,.juphyter-table td{padding:0.1em 0.75em 0.1em 0;text-align:left;white-space:nowrap}.juphyter-table thead th{border-bottom:1px solid var(--jp-border-color2,#d1d5db)}.juphyter-table .juphyter-num{text-align:right}.juphyter-table .juphyter-rowid{color:var(--jp-content-font-color3,#9ca3af);font-weight:normal;text-align:right}.juphyter-table .juphyter-type{color:var(--jp-content-font-color2,#6b7280);font-weight:normal}.juphyter-table .juphyter-na{color:var(--jp-content-font-color3,#9ca3af)}</style>
-<div class="juphyter-note">A tibble: 7 × 3</div>
+<div class="juphyter-note">A tibble: 3 × 3</div>
 
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">class <span class="juphyter-type">&lt;chr&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">cyl <span class="juphyter-type">&lt;int&gt;</span></th>
 <th class="juphyter-num" data-quarto-table-cell-role="th">cars <span class="juphyter-type">&lt;int&gt;</span></th>
-<th class="juphyter-num" data-quarto-table-cell-role="th">hwy <span class="juphyter-type">&lt;dbl&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">mpg <span class="juphyter-type">&lt;dbl&gt;</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">1</th>
-<td>compact</td>
-<td class="juphyter-num">47</td>
-<td class="juphyter-num">28.3</td>
+<td class="juphyter-num">4</td>
+<td class="juphyter-num">11</td>
+<td class="juphyter-num">26.7</td>
 </tr>
 <tr class="even">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">2</th>
-<td>subcompact</td>
-<td class="juphyter-num">35</td>
-<td class="juphyter-num">28.1</td>
+<td class="juphyter-num">6</td>
+<td class="juphyter-num">7</td>
+<td class="juphyter-num">19.7</td>
 </tr>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">3</th>
-<td>midsize</td>
-<td class="juphyter-num">41</td>
-<td class="juphyter-num">27.3</td>
-</tr>
-<tr class="even">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">4</th>
-<td>2seater</td>
-<td class="juphyter-num">5</td>
-<td class="juphyter-num">24.8</td>
-</tr>
-<tr class="odd">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">5</th>
-<td>minivan</td>
-<td class="juphyter-num">11</td>
-<td class="juphyter-num">22.4</td>
-</tr>
-<tr class="even">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">6</th>
-<td>suv</td>
-<td class="juphyter-num">62</td>
-<td class="juphyter-num">18.1</td>
-</tr>
-<tr class="odd">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">7</th>
-<td>pickup</td>
-<td class="juphyter-num">33</td>
-<td class="juphyter-num">16.9</td>
+<td class="juphyter-num">8</td>
+<td class="juphyter-num">14</td>
+<td class="juphyter-num">15.1</td>
 </tr>
 </tbody>
 </table>
@@ -410,72 +386,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div id="57f99775" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mpg</span> <span class="op">=</span> DataFrame::fromRows(Datasets::mpg())<span class="ot">;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span> <span class="op">=</span> phplyr(<span class="va">$mpg</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    -&gt;groupBy(<span class="st">'class'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    -&gt;summarize(cars<span class="ot">:</span> n()<span class="ot">,</span> hwy<span class="ot">:</span> <span class="fu">round</span>(mean(<span class="st">'hwy'</span>)<span class="ot">,</span> <span class="dv">1</span>))</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    -&gt;arrange(desc(<span class="st">'hwy'</span>))</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    -&gt;get()<span class="ot">;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="va">$byClass</span><span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="874f6576" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">$mtcars</span> <span class="op">=</span> DataFrame::fromCsv(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'https://raw.githubusercontent.com/'</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="st">'phpstats/datasets/main/csv/mtcars.csv'</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)<span class="ot">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>phplyr(<span class="va">$mtcars</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    -&gt;groupBy(<span class="st">'cyl'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    -&gt;summarize(cars<span class="ot">:</span> n()<span class="ot">,</span> mpg<span class="ot">:</span> <span class="fu">round</span>(mean(<span class="st">'mpg'</span>)<span class="ot">,</span> <span class="dv">1</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    -&gt;arrange(desc(<span class="st">'mpg'</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    -&gt;get()<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div class="juphyter-table">
 <style>.juphyter-table{font-family:var(--jp-code-font-family,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:var(--jp-code-font-size,0.85em);color:var(--jp-content-font-color1,#111827)}.juphyter-table .juphyter-note{color:var(--jp-content-font-color2,#6b7280);margin:0.15em 0}.juphyter-table table{border-collapse:collapse;margin:0.3em 0}.juphyter-table th,.juphyter-table td{padding:0.1em 0.75em 0.1em 0;text-align:left;white-space:nowrap}.juphyter-table thead th{border-bottom:1px solid var(--jp-border-color2,#d1d5db)}.juphyter-table .juphyter-num{text-align:right}.juphyter-table .juphyter-rowid{color:var(--jp-content-font-color3,#9ca3af);font-weight:normal;text-align:right}.juphyter-table .juphyter-type{color:var(--jp-content-font-color2,#6b7280);font-weight:normal}.juphyter-table .juphyter-na{color:var(--jp-content-font-color3,#9ca3af)}</style>
-<div class="juphyter-note">A tibble: 7 × 3</div>
+<div class="juphyter-note">A tibble: 3 × 3</div>
 
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">class <span class="juphyter-type">&lt;chr&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">cyl <span class="juphyter-type">&lt;int&gt;</span></th>
 <th class="juphyter-num" data-quarto-table-cell-role="th">cars <span class="juphyter-type">&lt;int&gt;</span></th>
-<th class="juphyter-num" data-quarto-table-cell-role="th">hwy <span class="juphyter-type">&lt;dbl&gt;</span></th>
+<th class="juphyter-num" data-quarto-table-cell-role="th">mpg <span class="juphyter-type">&lt;dbl&gt;</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">1</th>
-<td>compact</td>
-<td class="juphyter-num">47</td>
-<td class="juphyter-num">28.3</td>
+<td class="juphyter-num">4</td>
+<td class="juphyter-num">11</td>
+<td class="juphyter-num">26.7</td>
 </tr>
 <tr class="even">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">2</th>
-<td>subcompact</td>
-<td class="juphyter-num">35</td>
-<td class="juphyter-num">28.1</td>
+<td class="juphyter-num">6</td>
+<td class="juphyter-num">7</td>
+<td class="juphyter-num">19.7</td>
 </tr>
 <tr class="odd">
 <th class="juphyter-rowid" data-quarto-table-cell-role="th">3</th>
-<td>midsize</td>
-<td class="juphyter-num">41</td>
-<td class="juphyter-num">27.3</td>
-</tr>
-<tr class="even">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">4</th>
-<td>2seater</td>
-<td class="juphyter-num">5</td>
-<td class="juphyter-num">24.8</td>
-</tr>
-<tr class="odd">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">5</th>
-<td>minivan</td>
-<td class="juphyter-num">11</td>
-<td class="juphyter-num">22.4</td>
-</tr>
-<tr class="even">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">6</th>
-<td>suv</td>
-<td class="juphyter-num">62</td>
-<td class="juphyter-num">18.1</td>
-</tr>
-<tr class="odd">
-<th class="juphyter-rowid" data-quarto-table-cell-role="th">7</th>
-<td>pickup</td>
-<td class="juphyter-num">33</td>
-<td class="juphyter-num">16.9</td>
+<td class="juphyter-num">8</td>
+<td class="juphyter-num">14</td>
+<td class="juphyter-num">15.1</td>
 </tr>
 </tbody>
 </table>
@@ -486,18 +439,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Variables persist across cells, so the next cell plots <code>$byClass</code>. A phiz plot is shown as a chart.</p>
-<div id="f3abe9e3" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Plot::of(<span class="va">$byClass</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'class'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'hwy'</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;col()</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    -&gt;labs(x<span class="ot">:</span> <span class="st">'Vehicle class'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'Mean highway mpg'</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Variables persist across cells, so the next cell plots <code>$mtcars</code> from the cell before. A phiz plot is shown as a chart, here fuel economy against weight.</p>
+<div id="ea73eabb" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode php code-with-copy"><code class="sourceCode php"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Plot::of(<span class="va">$mtcars</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    -&gt;aes(x<span class="ot">:</span> <span class="st">'wt'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'mpg'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    -&gt;point()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    -&gt;labs(x<span class="ot">:</span> <span class="st">'Weight (1,000 lb)'</span><span class="ot">,</span> y<span class="ot">:</span> <span class="st">'Miles per gallon'</span>)<span class="ot">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<div data-phiz="{&quot;$schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.json&quot;,&quot;data&quot;:{&quot;values&quot;:[{&quot;class&quot;:&quot;compact&quot;,&quot;cars&quot;:47,&quot;hwy&quot;:28.3},{&quot;class&quot;:&quot;subcompact&quot;,&quot;cars&quot;:35,&quot;hwy&quot;:28.1},{&quot;class&quot;:&quot;midsize&quot;,&quot;cars&quot;:41,&quot;hwy&quot;:27.3},{&quot;class&quot;:&quot;2seater&quot;,&quot;cars&quot;:5,&quot;hwy&quot;:24.8},{&quot;class&quot;:&quot;minivan&quot;,&quot;cars&quot;:11,&quot;hwy&quot;:22.4},{&quot;class&quot;:&quot;suv&quot;,&quot;cars&quot;:62,&quot;hwy&quot;:18.1},{&quot;class&quot;:&quot;pickup&quot;,&quot;cars&quot;:33,&quot;hwy&quot;:16.9}]},&quot;width&quot;:300,&quot;mark&quot;:{&quot;type&quot;:&quot;bar&quot;},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;class&quot;,&quot;type&quot;:&quot;nominal&quot;,&quot;title&quot;:&quot;Vehicle class&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;hwy&quot;,&quot;type&quot;:&quot;quantitative&quot;,&quot;title&quot;:&quot;Mean highway mpg&quot;}}}"><div data-phiz-view="" wire:ignore=""></div></div>
+<div data-phiz="{&quot;$schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.json&quot;,&quot;data&quot;:{&quot;values&quot;:[{&quot;rownames&quot;:&quot;Mazda RX4&quot;,&quot;mpg&quot;:21.0,&quot;cyl&quot;:6,&quot;disp&quot;:160.0,&quot;hp&quot;:110,&quot;drat&quot;:3.9,&quot;wt&quot;:2.62,&quot;qsec&quot;:16.46,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Mazda RX4 Wag&quot;,&quot;mpg&quot;:21.0,&quot;cyl&quot;:6,&quot;disp&quot;:160.0,&quot;hp&quot;:110,&quot;drat&quot;:3.9,&quot;wt&quot;:2.875,&quot;qsec&quot;:17.02,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Datsun 710&quot;,&quot;mpg&quot;:22.8,&quot;cyl&quot;:4,&quot;disp&quot;:108.0,&quot;hp&quot;:93,&quot;drat&quot;:3.85,&quot;wt&quot;:2.32,&quot;qsec&quot;:18.61,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Hornet 4 Drive&quot;,&quot;mpg&quot;:21.4,&quot;cyl&quot;:6,&quot;disp&quot;:258.0,&quot;hp&quot;:110,&quot;drat&quot;:3.08,&quot;wt&quot;:3.215,&quot;qsec&quot;:19.44,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Hornet Sportabout&quot;,&quot;mpg&quot;:18.7,&quot;cyl&quot;:8,&quot;disp&quot;:360.0,&quot;hp&quot;:175,&quot;drat&quot;:3.15,&quot;wt&quot;:3.44,&quot;qsec&quot;:17.02,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Valiant&quot;,&quot;mpg&quot;:18.1,&quot;cyl&quot;:6,&quot;disp&quot;:225.0,&quot;hp&quot;:105,&quot;drat&quot;:2.76,&quot;wt&quot;:3.46,&quot;qsec&quot;:20.22,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Duster 360&quot;,&quot;mpg&quot;:14.3,&quot;cyl&quot;:8,&quot;disp&quot;:360.0,&quot;hp&quot;:245,&quot;drat&quot;:3.21,&quot;wt&quot;:3.57,&quot;qsec&quot;:15.84,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Merc 240D&quot;,&quot;mpg&quot;:24.4,&quot;cyl&quot;:4,&quot;disp&quot;:146.7,&quot;hp&quot;:62,&quot;drat&quot;:3.69,&quot;wt&quot;:3.19,&quot;qsec&quot;:20.0,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:4,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Merc 230&quot;,&quot;mpg&quot;:22.8,&quot;cyl&quot;:4,&quot;disp&quot;:140.8,&quot;hp&quot;:95,&quot;drat&quot;:3.92,&quot;wt&quot;:3.15,&quot;qsec&quot;:22.9,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:4,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Merc 280&quot;,&quot;mpg&quot;:19.2,&quot;cyl&quot;:6,&quot;disp&quot;:167.6,&quot;hp&quot;:123,&quot;drat&quot;:3.92,&quot;wt&quot;:3.44,&quot;qsec&quot;:18.3,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:4,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Merc 280C&quot;,&quot;mpg&quot;:17.8,&quot;cyl&quot;:6,&quot;disp&quot;:167.6,&quot;hp&quot;:123,&quot;drat&quot;:3.92,&quot;wt&quot;:3.44,&quot;qsec&quot;:18.9,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:4,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Merc 450SE&quot;,&quot;mpg&quot;:16.4,&quot;cyl&quot;:8,&quot;disp&quot;:275.8,&quot;hp&quot;:180,&quot;drat&quot;:3.07,&quot;wt&quot;:4.07,&quot;qsec&quot;:17.4,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:3},{&quot;rownames&quot;:&quot;Merc 450SL&quot;,&quot;mpg&quot;:17.3,&quot;cyl&quot;:8,&quot;disp&quot;:275.8,&quot;hp&quot;:180,&quot;drat&quot;:3.07,&quot;wt&quot;:3.73,&quot;qsec&quot;:17.6,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:3},{&quot;rownames&quot;:&quot;Merc 450SLC&quot;,&quot;mpg&quot;:15.2,&quot;cyl&quot;:8,&quot;disp&quot;:275.8,&quot;hp&quot;:180,&quot;drat&quot;:3.07,&quot;wt&quot;:3.78,&quot;qsec&quot;:18.0,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:3},{&quot;rownames&quot;:&quot;Cadillac Fleetwood&quot;,&quot;mpg&quot;:10.4,&quot;cyl&quot;:8,&quot;disp&quot;:472.0,&quot;hp&quot;:205,&quot;drat&quot;:2.93,&quot;wt&quot;:5.25,&quot;qsec&quot;:17.98,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Lincoln Continental&quot;,&quot;mpg&quot;:10.4,&quot;cyl&quot;:8,&quot;disp&quot;:460.0,&quot;hp&quot;:215,&quot;drat&quot;:3.0,&quot;wt&quot;:5.424,&quot;qsec&quot;:17.82,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Chrysler Imperial&quot;,&quot;mpg&quot;:14.7,&quot;cyl&quot;:8,&quot;disp&quot;:440.0,&quot;hp&quot;:230,&quot;drat&quot;:3.23,&quot;wt&quot;:5.345,&quot;qsec&quot;:17.42,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Fiat 128&quot;,&quot;mpg&quot;:32.4,&quot;cyl&quot;:4,&quot;disp&quot;:78.7,&quot;hp&quot;:66,&quot;drat&quot;:4.08,&quot;wt&quot;:2.2,&quot;qsec&quot;:19.47,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Honda Civic&quot;,&quot;mpg&quot;:30.4,&quot;cyl&quot;:4,&quot;disp&quot;:75.7,&quot;hp&quot;:52,&quot;drat&quot;:4.93,&quot;wt&quot;:1.615,&quot;qsec&quot;:18.52,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Toyota Corolla&quot;,&quot;mpg&quot;:33.9,&quot;cyl&quot;:4,&quot;disp&quot;:71.1,&quot;hp&quot;:65,&quot;drat&quot;:4.22,&quot;wt&quot;:1.835,&quot;qsec&quot;:19.9,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Toyota Corona&quot;,&quot;mpg&quot;:21.5,&quot;cyl&quot;:4,&quot;disp&quot;:120.1,&quot;hp&quot;:97,&quot;drat&quot;:3.7,&quot;wt&quot;:2.465,&quot;qsec&quot;:20.01,&quot;vs&quot;:1,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Dodge Challenger&quot;,&quot;mpg&quot;:15.5,&quot;cyl&quot;:8,&quot;disp&quot;:318.0,&quot;hp&quot;:150,&quot;drat&quot;:2.76,&quot;wt&quot;:3.52,&quot;qsec&quot;:16.87,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;AMC Javelin&quot;,&quot;mpg&quot;:15.2,&quot;cyl&quot;:8,&quot;disp&quot;:304.0,&quot;hp&quot;:150,&quot;drat&quot;:3.15,&quot;wt&quot;:3.435,&quot;qsec&quot;:17.3,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Camaro Z28&quot;,&quot;mpg&quot;:13.3,&quot;cyl&quot;:8,&quot;disp&quot;:350.0,&quot;hp&quot;:245,&quot;drat&quot;:3.73,&quot;wt&quot;:3.84,&quot;qsec&quot;:15.41,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Pontiac Firebird&quot;,&quot;mpg&quot;:19.2,&quot;cyl&quot;:8,&quot;disp&quot;:400.0,&quot;hp&quot;:175,&quot;drat&quot;:3.08,&quot;wt&quot;:3.845,&quot;qsec&quot;:17.05,&quot;vs&quot;:0,&quot;am&quot;:0,&quot;gear&quot;:3,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Fiat X1-9&quot;,&quot;mpg&quot;:27.3,&quot;cyl&quot;:4,&quot;disp&quot;:79.0,&quot;hp&quot;:66,&quot;drat&quot;:4.08,&quot;wt&quot;:1.935,&quot;qsec&quot;:18.9,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:1},{&quot;rownames&quot;:&quot;Porsche 914-2&quot;,&quot;mpg&quot;:26.0,&quot;cyl&quot;:4,&quot;disp&quot;:120.3,&quot;hp&quot;:91,&quot;drat&quot;:4.43,&quot;wt&quot;:2.14,&quot;qsec&quot;:16.7,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:5,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Lotus Europa&quot;,&quot;mpg&quot;:30.4,&quot;cyl&quot;:4,&quot;disp&quot;:95.1,&quot;hp&quot;:113,&quot;drat&quot;:3.77,&quot;wt&quot;:1.513,&quot;qsec&quot;:16.9,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:5,&quot;carb&quot;:2},{&quot;rownames&quot;:&quot;Ford Pantera L&quot;,&quot;mpg&quot;:15.8,&quot;cyl&quot;:8,&quot;disp&quot;:351.0,&quot;hp&quot;:264,&quot;drat&quot;:4.22,&quot;wt&quot;:3.17,&quot;qsec&quot;:14.5,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:5,&quot;carb&quot;:4},{&quot;rownames&quot;:&quot;Ferrari Dino&quot;,&quot;mpg&quot;:19.7,&quot;cyl&quot;:6,&quot;disp&quot;:145.0,&quot;hp&quot;:175,&quot;drat&quot;:3.62,&quot;wt&quot;:2.77,&quot;qsec&quot;:15.5,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:5,&quot;carb&quot;:6},{&quot;rownames&quot;:&quot;Maserati Bora&quot;,&quot;mpg&quot;:15.0,&quot;cyl&quot;:8,&quot;disp&quot;:301.0,&quot;hp&quot;:335,&quot;drat&quot;:3.54,&quot;wt&quot;:3.57,&quot;qsec&quot;:14.6,&quot;vs&quot;:0,&quot;am&quot;:1,&quot;gear&quot;:5,&quot;carb&quot;:8},{&quot;rownames&quot;:&quot;Volvo 142E&quot;,&quot;mpg&quot;:21.4,&quot;cyl&quot;:4,&quot;disp&quot;:121.0,&quot;hp&quot;:109,&quot;drat&quot;:4.11,&quot;wt&quot;:2.78,&quot;qsec&quot;:18.6,&quot;vs&quot;:1,&quot;am&quot;:1,&quot;gear&quot;:4,&quot;carb&quot;:2}]},&quot;mark&quot;:{&quot;type&quot;:&quot;point&quot;,&quot;filled&quot;:true},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;wt&quot;,&quot;type&quot;:&quot;quantitative&quot;,&quot;title&quot;:&quot;Weight (1,000 lb)&quot;,&quot;scale&quot;:{&quot;zero&quot;:false}},&quot;y&quot;:{&quot;field&quot;:&quot;mpg&quot;,&quot;type&quot;:&quot;quantitative&quot;,&quot;title&quot;:&quot;Miles per gallon&quot;,&quot;scale&quot;:{&quot;zero&quot;:false}}}}"><div data-phiz-view="" wire:ignore=""></div></div>
 <script src="https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js" integrity="sha384-VKdcJr3ZaBIJMbVcopTAI/JEuUkSY6qnwVu9iLuw0DnQ9gQ1JjsfZJhXFQAgNi43" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js" integrity="sha384-9/70gNCfOu6G7xXvkdreMfuqAEsoaGJVXV2BN/JLRXkSmcGvnMqtsRx8HZtUWAvI" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js" integrity="sha384-Muy1QRxYFeNrA1zShc1KtN4OfipkR/61gt+HWqN57c1Zxu3Oe16TsilsruVVjfKL" crossorigin="anonymous"></script>
-<script>/* phiz: renders [data-phiz] elements with vega-embed, and re-renders when their spec changes (Livewire morphs). */
+<script>/*
+ * phiz: renders [data-phiz] elements with vega-embed, and re-renders when their spec changes (Livewire morphs).
+ * A [data-phiz-deferred] element fetches its spec from its [data-phiz-spec] link when it nears the viewport, then
+ * renders like any other.
+ */
 (function () {
   if (window.Phiz) return;
   var views = new WeakMap();
@@ -553,10 +510,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     });
   }
 
+  function load(el) {
+    if (el.hasAttribute('data-phiz') || el.getAttribute('data-phiz-deferred') === 'loading') return;
+    var link = el.querySelector('a[data-phiz-spec]');
+    if (!link) return;
+    el.setAttribute('data-phiz-deferred', 'loading');
+    fetch(link.href).then(function (response) {
+      if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+      return response.text();
+    }).then(function (json) {
+      el.setAttribute('data-phiz-deferred', 'loaded');
+      el.setAttribute('data-phiz', json);
+    }).catch(function (error) {
+      el.setAttribute('data-phiz-deferred', 'failed');
+      console.error('phiz: cannot load ' + link.href, error);
+    });
+  }
+
+  var nearby = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { nearby.unobserve(entry.target); load(entry.target); }
+    });
+  }, { rootMargin: '200px' }) : null;
+
+  function defer(el) {
+    if (el.hasAttribute('data-phiz') || el.getAttribute('data-phiz-deferred')) return;
+    if (nearby) nearby.observe(el); else load(el);
+  }
+
   function scan(root) {
     if (root.nodeType !== 1) return;
     if (root.hasAttribute('data-phiz')) render(root);
     root.querySelectorAll('[data-phiz]').forEach(render);
+    if (root.hasAttribute('data-phiz-deferred')) defer(root);
+    root.querySelectorAll('[data-phiz-deferred]').forEach(defer);
   }
 
   function release(root) {
