@@ -80,3 +80,5 @@ tests, the documentation build, and the PHAR.
 ## License
 
 juphyter is released under the MIT license. See [LICENSE](LICENSE).
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) lists the licenses of the
+third-party files in the rendered documentation.
