@@ -25,7 +25,7 @@ Optional:
 | [vl-convert](https://github.com/vega/vl-convert/releases) | Static images of phiz plots in PDF and Word output. See [Output formats](quarto.qmd#output-formats). |
 | phibble, phplyr, and phiz | Data frame tables and charts. See [The PHPstats packages](#the-phpstats-packages). |
 
-## Install juphyter
+## Composer package {#install-juphyter}
 
 Install juphyter for your user and put Composer's bin directory on `PATH`:
 
@@ -34,7 +34,7 @@ composer global require phpstats/juphyter
 export PATH="$(composer global config bin-dir --absolute):$PATH"
 ```
 
-## Register the kernel
+## Kernel registration {#register-the-kernel}
 
 ```bash
 juphyter install --create-venv ~/.venvs/juphyter
@@ -67,7 +67,7 @@ recorded. When Quarto is installed and the Python Quarto would use has no
 Jupyter, it also prints a warning with the `export` line that fixes it. The
 kernel is still registered.
 
-## Check the installation
+## Installation check {#check-the-installation}
 
 ```bash
 juphyter doctor
@@ -92,7 +92,7 @@ Run `juphyter doctor` again after upgrading PHP or Python, or after removing a
 project or an environment. [Troubleshooting](troubleshooting.qmd) covers the
 failures it reports.
 
-## Keeping the PATH entries
+## PATH in new shells {#keeping-the-path-entries}
 
 Both `export` lines last until the shell closes. To keep the `juphyter`
 command in new shells, add Composer's bin directory to your shell startup
@@ -125,7 +125,7 @@ Documents name that kernel as `jupyter: phpstats`, and JupyterLab lists it as
 autoloader it names, even for a notebook inside a Composer project, which is
 why it has its own name.
 
-## Which classes a notebook sees
+## Autoloading {#which-classes-a-notebook-sees}
 
 The kernel starts in the notebook's directory, looks upward for
 `vendor/autoload.php`, and loads the first one it finds. A notebook anywhere
@@ -149,7 +149,7 @@ A `juphyter.json` can also set the memory limit and the include path:
 
 Relative paths resolve against the directory that holds `juphyter.json`.
 
-## Installing into one project
+## Per-project installation {#installing-into-one-project}
 
 juphyter can also be a development dependency of a project:
 
@@ -178,7 +178,7 @@ JupyterLab then lists "PHP 8.3" and "PHP 8.5". An absolute `--php` path is
 recorded as written. A bare name such as `php8.4` is resolved to an absolute
 path, because a kernel cannot rely on `PATH`.
 
-## Where the kernel is registered
+## Kernel location {#where-the-kernel-is-registered}
 
 `juphyter install` writes a kernelspec, the `kernel.json` file Jupyter reads
 to start a kernel, into the per-user Jupyter data directory. Every Jupyter

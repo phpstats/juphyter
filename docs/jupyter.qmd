@@ -3,7 +3,7 @@ title: "JupyterLab"
 jupyter: php
 ---
 
-## Starting a notebook
+## Notebooks {#starting-a-notebook}
 
 Start JupyterLab from the Python environment that has it:
 
@@ -20,7 +20,7 @@ JupyterLab finds kernels in the per-user Jupyter data directory and in
 `JUPYTER_DATA_DIR` when it is set. `jupyter kernelspec list` shows the kernels
 a JupyterLab started from the same environment will find.
 
-## Running cells
+## Cells {#running-cells}
 
 A cell's result appears under it as `Out[n]`. State carries from one cell to
 the next. The stop button interrupts a running cell when PHP has the `pcntl`
@@ -51,7 +51,7 @@ A notebook kept outside the project it works on names the autoloader in a
 }
 ```
 
-[Which classes a notebook sees](install.qmd#which-classes-a-notebook-sees)
+[Autoloading](install.qmd#which-classes-a-notebook-sees)
 lists every way to set it.
 
 ## Tables and plots
@@ -83,7 +83,7 @@ juphyter publishes a plot's specification under
 built-in renderer reads. A plot also carries a static SVG, which JupyterLab
 does not use, for Quarto's PDF and Word output.
 
-## Converting a notebook
+## Conversion {#converting-a-notebook}
 
 `quarto convert` turns a `.ipynb` into a `.qmd` and back, and `jupyter
 nbconvert` exports a notebook to HTML or PDF. Both work on a PHP notebook,

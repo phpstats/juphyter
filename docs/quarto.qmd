@@ -6,7 +6,7 @@ jupyter: php
 Render a `.qmd` document with PHP cells by naming the kernel in its front
 matter. No Quarto extension or other configuration is needed.
 
-## A minimal document
+## Minimal document {#a-minimal-document}
 
 ````markdown
 ---
@@ -106,7 +106,7 @@ Quarto runs the kernel in the document's directory. The kernel looks upward
 from there for `vendor/autoload.php`, so a document inside a Composer project
 can use that project's classes and packages. A document outside any project
 names an autoloader with `JUPHYTER_AUTOLOAD` or a `juphyter.json` beside it.
-[Which classes a notebook sees](install.qmd#which-classes-a-notebook-sees)
+[Autoloading](install.qmd#which-classes-a-notebook-sees)
 lists both.
 
 In a Quarto project, each document names its kernel in its own front matter.

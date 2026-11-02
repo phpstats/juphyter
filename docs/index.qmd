@@ -17,7 +17,7 @@ cell is available in the next.
 - **Quarto:** a `.qmd` that names `jupyter: php` in its front matter renders
   its `{php}` cells to HTML, PDF, or Word. See [Quarto](quarto.qmd).
 
-## What a cell shows
+## Cell output {#what-a-cell-shows}
 
 The value of a cell's last expression is its output. A
 [phibble](https://phibble.phpstats.org) data frame appears as an HTML table
@@ -86,7 +86,7 @@ phplyr($mtcars)
     ->labs(x: 'Weight (1,000 lb)', y: 'Miles per gallon');
 ```
 
-## What the kernel provides
+## Features {#what-the-kernel-provides}
 
 - State across cells, including `use` imports and declared functions and
   classes.
@@ -104,7 +104,7 @@ juphyter requires none of the PHPstats packages. It runs plain PHP, and it
 formats a phibble data frame or a phiz plot when those packages are
 installed.
 
-## How it works
+## Architecture {#how-it-works}
 
 A Python program built on [ipykernel](https://github.com/ipython/ipykernel)
 handles the Jupyter protocol, and a PHP process runs the cells. They talk over

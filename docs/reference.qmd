@@ -74,7 +74,7 @@ Checks juphyter's files, the PHP that runs cells, the Python for the kernel, the
 | 0 | No line is marked `fail`. Lines marked `warn`, such as a missing `pcntl`, are allowed. |
 | 1 | At least one line is marked `fail`, including `Quarto: not ready.` |
 
-[Check the installation](install.qmd#check-the-installation) lists the summary lines.
+[Installation check](install.qmd#check-the-installation) lists the summary lines.
 
 ### `juphyter engine` {#juphyter-engine}
 

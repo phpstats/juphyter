@@ -24,7 +24,7 @@ echo "sum: ", array_sum(range(1, 10)), "\n";
 
 Then run `quarto render first.qmd`, which writes `first.html`.
 
-## A first cell
+## First cell {#a-first-cell}
 
 A cell holds PHP without an opening `<?php` tag. Whatever the cell prints with
 `echo` appears first, and the value of its last expression appears after it.
