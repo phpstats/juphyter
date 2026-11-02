@@ -30,12 +30,12 @@ REPRODUCE_PROTOCOL = [
 REPRODUCE_QUARTO = [
     "python -m pip install -r tests/Quarto/requirements.txt",
     "composer install",
-    "python -m pytest tests/Quarto -v",
+    "JUPHYTER_QUARTO_IDLE=180 python -m pytest tests/Quarto -v",
 ]
 REPRODUCE_FAMILY = [
     "composer install",
     'composer require --dev --prefer-source "phpstats/phibble:^0.5" "phpstats/phplyr:^0.4" "phpstats/phiz:^0.5"',
-    "vendor/bin/pest",
+    "php -d phar.readonly=0 -d extension=<path to php_polars> vendor/bin/pest",
 ]
 
 
@@ -156,6 +156,34 @@ def case(name: str, quantity: str, source: dict) -> dict:
     return entry
 
 
+def exclude(record: str, cases: list[dict], rules: list[tuple[str, str]]) -> tuple[list[dict], list[str]]:
+    """Move skipped cases that do not apply into exclusions, and refuse any other skip.
+
+    rules pairs a substring of a test's name with the exclusion sentence that
+    replaces it. A record lists the checks that ran; a check that does not apply
+    to juphyter or to this run is a limitation, and a check that could have run
+    and did not means the run was incomplete, so the export stops.
+    """
+    kept: list[dict] = []
+    exclusions: list[str] = []
+    unexplained: list[str] = []
+    for c in cases:
+        if c["status"] != "skipped":
+            kept.append(c)
+            continue
+        sentence = next((text for pattern, text in rules if pattern in c["name"]), None)
+        if sentence is None:
+            unexplained.append(f"{c['name']}: {c['reason'] or 'no reason given'}")
+        elif sentence not in exclusions:
+            exclusions.append(sentence)
+    if unexplained:
+        sys.exit(
+            f"export_verifications: {record} has skipped cases that should have run:\n  "
+            + "\n  ".join(unexplained)
+        )
+    return kept, exclusions
+
+
 def write(directory: Path, slug: str, record: dict) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     (directory / f"{slug}.json").write_text(json.dumps(record, indent=4, ensure_ascii=False) + "\n")
@@ -184,8 +212,21 @@ def main() -> None:
     }
 
     protocol = cases_from(junit / "protocol.xml")
-    reference = [c for c in protocol if c["classname"].endswith("JuphyterKernelTests")]
-    behavior = [c for c in protocol if not c["classname"].endswith("JuphyterKernelTests")]
+    reference, protocol_exclusions = exclude(
+        "protocol-conformance",
+        [c for c in protocol if c["classname"].endswith("JuphyterKernelTests")],
+        [
+            ("test_history", "juphyter does not implement the history request."),
+            ("test_inspect", "juphyter does not implement the inspect request."),
+            ("test_clear_output", "juphyter does not send clear_output messages."),
+            ("test_pager", "juphyter does not send pager payloads."),
+        ],
+    )
+    behavior, behavior_exclusions = exclude(
+        "kernel-behavior",
+        [c for c in protocol if not c["classname"].endswith("JuphyterKernelTests")],
+        [],
+    )
     kernel_test = package_version("jupyter_kernel_test")
 
     write(
@@ -215,11 +256,7 @@ def main() -> None:
                 }
             ],
             "cases": [case(humanize(c["name"]), "Messages and output", c) for c in reference],
-            "exclusions": [
-                "History requests are not implemented; the three history checks are skipped.",
-                "inspect_request is not implemented; the inspect check is skipped.",
-                "No clear_output or pager sample is declared; those checks are skipped.",
-            ],
+            "exclusions": protocol_exclusions,
             "reproduce": REPRODUCE_PROTOCOL,
             "source": "tests/Protocol/test_kernel.py",
             "environment": environment,
@@ -254,7 +291,16 @@ def main() -> None:
         },
     )
 
-    quarto_cases = cases_from(junit / "quarto.xml")
+    quarto_cases, quarto_exclusions = exclude(
+        "quarto-render",
+        cases_from(junit / "quarto.xml"),
+        [
+            (
+                "long_idle_period",
+                "Long-idle daemon case not run; tests/Engine/IdleTest.php covers it with a one-second timeout.",
+            ),
+        ],
+    )
     pdf = [c for c in quarto_cases if "pdf_renders_the_plot" in c["name"]]
     if pdf and pdf[0]["status"] == "pass":
         pdf_note = "PDF figure check: run, passed."
@@ -297,9 +343,7 @@ def main() -> None:
                 {"id": "structure", "kind": "exact", "applies_to": "Rendered content; HTML, ipynb, and PDF"}
             ],
             "cases": [case(humanize(c["name"]), "Rendered output", c) for c in quarto_cases],
-            "exclusions": [
-                "Long-idle daemon test: runs only with JUPHYTER_QUARTO_IDLE set; tests/Engine/IdleTest.php covers the behavior with a one-second timeout.",
-            ],
+            "exclusions": quarto_exclusions,
             "known_differences": [
                 "quarto render --to ipynb drops HTML tables and error outputs, for any kernel.",
             ],
@@ -315,6 +359,16 @@ def main() -> None:
     for c in family:
         if c["status"] == "skipped" and not c["reason"]:
             c["reason"] = reasons.get(loose(c["name"]))
+    family, family_exclusions = exclude(
+        "family-compatibility",
+        family,
+        [
+            (
+                "newer syntax stops the whole cell compiling",
+                "The case for syntax newer than the running PHP applies below PHP 8.5; the run uses PHP 8.5.",
+            ),
+        ],
+    )
     versions = {
         "PHP": php,
         "phibble": composer_version(build, "phibble"),
@@ -349,6 +403,7 @@ def main() -> None:
                 {"id": "contract", "kind": "exact", "applies_to": "Asserted values and output"}
             ],
             "cases": [case(family_group(c), family_test(c), c) for c in family],
+            "exclusions": family_exclusions,
             "reproduce": REPRODUCE_FAMILY,
             "source": ".github/workflows/family.yml",
             "environment": environment,

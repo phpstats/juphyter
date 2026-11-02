@@ -142,7 +142,7 @@ describe('a real phibble table', function () {
             );
         }
 
-        $table = Phibble\Polars\PolarsTable::fromRows(penguinRows());
+        $table = Phibble\Polars\PolarsTable::fromTable(Phibble\DataFrame::fromRows(penguinRows()));
 
         expect((new TableFormatter)->supports($table))->toBeTrue()
             ->and(Registry::default()->format($table)->get(MimeBundle::PLAIN))

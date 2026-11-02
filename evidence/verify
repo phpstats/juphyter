@@ -28,6 +28,26 @@ php="$(command -v "${JUPHYTER_EVIDENCE_PHP:-php}")"
 export PATH="$(dirname "$php"):$PATH"
 export JUPHYTER_QUARTO_PHP="$php" JUPHYTER_TEST_PHP="$php" JUPHYTER_EVIDENCE_PHP="$php"
 
+# Every check that can run here runs, because the export refuses a skipped
+# case it cannot account for: the slow idle-kernel render (three minutes by
+# default), the PolarsTable formatter case with the php_polars extension, and
+# the PHAR cases with phar.readonly off.
+export JUPHYTER_QUARTO_IDLE="${JUPHYTER_QUARTO_IDLE:-180}"
+case "$(uname -s)" in
+    Darwin) polars_default="$HOME/Projects/phpolars/target/release/libphp_polars.dylib" ;;
+    *) polars_default="$HOME/Projects/phpolars/target/release/libphp_polars.so" ;;
+esac
+polars="${JUPHYTER_EVIDENCE_POLARS:-$polars_default}"
+php_flags=(-d phar.readonly=0)
+if "$php" -r 'exit(extension_loaded("php_polars") ? 0 : 1);'; then
+    :
+elif [ -f "$polars" ]; then
+    php_flags+=(-d "extension=$polars")
+else
+    echo "evidence/verify: php_polars is not loaded and $polars does not exist; set JUPHYTER_EVIDENCE_POLARS to the built extension." >&2
+    exit 1
+fi
+
 rm -rf "$out"
 mkdir -p "$out/junit" "$out/family"
 cd "$root"
@@ -54,7 +74,7 @@ git archive HEAD | tar -x -C "$out/family"
     composer install --no-interaction --no-progress --quiet
     composer require --dev --no-interaction --no-progress --quiet --prefer-source \
         "phpstats/phibble:^0.5" "phpstats/phplyr:^0.4" "phpstats/phiz:^0.5"
-    "$php" vendor/bin/pest --log-junit "$out/junit/family.xml" \
+    "$php" "${php_flags[@]}" vendor/bin/pest --log-junit "$out/junit/family.xml" \
         --log-teamcity "$out/junit/family.teamcity" >/dev/null || true
     composer show --format=json phpstats/phibble > "$out/phibble.json"
     composer show --format=json phpstats/phplyr > "$out/phplyr.json"
